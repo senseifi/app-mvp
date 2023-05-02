@@ -9,7 +9,6 @@ const Layout = ({ children }: any) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", width: "100vw" }}>
       <ProSidebarProvider>
-        {" "}
         <NavBar />
         <Box sx={{ display: "flex", flexDirection: "row" }}>
           <SideBar />

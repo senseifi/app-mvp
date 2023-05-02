@@ -1,17 +1,45 @@
 import { PaletteMode, createTheme } from "@mui/material";
 
-// Define custom palette options
-// interface MyPaletteOptions {
-//   tertiary: {
-//     main: string;
-//   };
-// }
+declare module "@mui/material/styles" {
+  interface Palette {
+    tertiary: {
+      main: string;
+    };
+  }
+  interface PaletteOptions {
+    tertiary?: {
+      main?: string;
+    };
+  }
 
-// // Augment the PaletteOptions interface
-// declare module "@mui/material/styles" {
-//   interface PaletteOptions extends MyPaletteOptions {}
-// }
-const radius: number = 12;
+  interface TypographyVariants {
+    yellowText: React.CSSProperties;
+  }
+
+  // allow configuration using `createTheme`
+  interface TypographyVariantsOptions {
+    yellowText?: React.CSSProperties;
+  }
+}
+
+// Update the Typography's variant prop options
+declare module "@mui/material/Typography" {
+  interface TypographyPropsVariantOverrides {
+    yellowText: true;
+  }
+}
+
+// Update the Buttons's variant prop options
+declare module "@mui/material/Button" {
+  interface ButtonPropsVariantOverrides {
+    yellowBorder: true;
+    yellowFill: true;
+  }
+}
+
+const radius: number = 10;
+const yellow: string = "#FFDB2C";
+const navyBlue: string = "#071428";
 
 const createAppTheme = (mode: PaletteMode) =>
   createTheme({
@@ -23,36 +51,36 @@ const createAppTheme = (mode: PaletteMode) =>
               main: "#FFFFFF",
             },
             secondary: {
-              main: "#071428",
+              main: navyBlue,
             },
             tertiary: {
-              main: "#FFDB2C",
+              main: yellow,
             },
             text: {
-              primary: "#071428",
+              primary: navyBlue,
               secondary: "#FFDB2C",
             },
             background: {
               default: "#FFFFFF",
             },
-            divider: "#071428",
+            divider: navyBlue,
           }
         : {
             primary: {
-              main: "#071428",
+              main: navyBlue,
             },
             secondary: {
               main: "#FFFFFF",
             },
             tertiary: {
-              main: "#FFDB2C",
+              main: yellow,
             },
             text: {
               primary: "#FFFFFF",
               secondary: "#FFDB2C",
             },
             background: {
-              default: "#071428",
+              default: navyBlue,
             },
             divider: "#FFFFFF",
           }),
@@ -60,6 +88,9 @@ const createAppTheme = (mode: PaletteMode) =>
 
     typography: {
       fontFamily: "Work Sans, sans-serif",
+      yellowText: {
+        color: "#FFDB2C",
+      },
     },
     components: {
       MuiButton: {
@@ -67,8 +98,39 @@ const createAppTheme = (mode: PaletteMode) =>
           root: {
             borderRadius: radius,
             fontWeight: 600,
+            fontSize: "1rem",
+            padding: "0.5rem 1rem",
+            height: "100%",
           },
         },
+        variants: [
+          {
+            props: { variant: "yellowBorder" },
+            style: {
+              textTransform: "uppercase",
+              border: `2px solid ${yellow}`,
+              backgroundColor: "transparent",
+              "&:hover": {
+                color: mode === "light" ? navyBlue : yellow,
+                borderColor: "transparent",
+                backgroundColor: "rgba(255, 219, 44, 0.2)",
+              },
+            },
+          },
+          {
+            props: { variant: "yellowFill" },
+            style: {
+              textTransform: "uppercase",
+              backgroundColor: yellow,
+              color: navyBlue,
+
+              "&:hover": {
+                color: mode === "light" ? navyBlue : yellow,
+                backgroundColor: "rgba(255, 219, 44, 0.2)",
+              },
+            },
+          },
+        ],
       },
     },
   });

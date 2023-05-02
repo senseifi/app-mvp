@@ -118,14 +118,14 @@ const SideBar = () => {
             // component={<Link href="portfolio" />}
             // eslint-disable-next-line
           >
-            Portfolio
+            Home
           </MenuItem>
           <MenuItem
             icon={<AccountBalanceWallet />}
             // component={<Link to="smart-savings" />}
             // eslint-disable-next-line
           >
-            Smart Savings
+            Portfolio
           </MenuItem>
           <MenuItem
             icon={<WaterDrop />}

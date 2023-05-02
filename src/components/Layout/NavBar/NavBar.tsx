@@ -24,17 +24,23 @@ const NavBar = () => {
 
   return (
     <Box
+      paddingX={isSmallScreen ? 1 : 10}
+      paddingY={1}
       sx={{
         height: "4rem",
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "row",
-        background: theme.palette.secondary.main,
-        p: 1,
+        background: "#071428",
+        boxShadow: "0 0 20px  #ffffff50",
+        zIndex: 999,
       }}
     >
       {isSmallScreen ? (
-        <IconButton color="primary" onClick={() => toggleSidebar()}>
+        <IconButton
+          color={theme.palette.mode === "light" ? "primary" : "secondary"}
+          onClick={() => toggleSidebar()}
+        >
           <Menu />
         </IconButton>
       ) : (
@@ -42,7 +48,7 @@ const NavBar = () => {
       )}
       <Image
         alt="SenSei Finance Logo"
-        src={theme.palette.mode === "light" ? logoLight : logoDark}
+        src={logoDark}
         style={{
           maxHeight: "100%",
           width: "auto",
@@ -53,7 +59,11 @@ const NavBar = () => {
         disableElevation
         startIcon={<AccountBalanceWallet />}
         size="large"
-        sx={{ "& span": { margin: isSmallScreen ? 0 : "" } }}
+        sx={{
+          backgroundColor: isSmallScreen ? "transparent" : "#FFF",
+          color: isSmallScreen ? "#FFF" : "#071428",
+          "& span": { margin: isSmallScreen ? 0 : "" },
+        }}
       >
         {isSmallScreen ? "" : "Connect Wallet"}
       </Button>
