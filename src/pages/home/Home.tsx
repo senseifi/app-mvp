@@ -13,15 +13,36 @@ import {
 } from "@mui/material";
 import CountdownDisplay from "@/components/CountdownDisplay/CountdownDisplay";
 import Grid from "@mui/material/Unstable_Grid2";
+import Image from "next/image";
+
+import seiCoin from "../../../src/assets/sei-coin.gif";
+import ShineButton from "@/components/ShineButton/ShineButton";
+import CurrentDraws from "@/components/CurrentDraws/CurrentDraws";
+import { Draw } from "@/types/customTypes";
+import WinnerHistory from "@/components/WinnerHistory/WinnerHistory";
+
+const currentDraws: Draw[] = [
+  {
+    active: true,
+    prize: 200,
+    totDeposit: 20000,
+    totTix: 50000,
+    usrDeposit: 2000,
+    usrTix: 5000,
+    timeRem: 1683146205, //unix timestamp
+  },
+];
 
 const Home = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
-
+  const isMediumScreen = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("md")
+  );
   //   const theme: Theme = useTheme();
   return (
-    <>
+    <Box>
       <Head>
         <title>Sensei App Homepage</title>
         <meta name="description" content="Gamified Defi on Sei network" />
@@ -29,10 +50,7 @@ const Home = () => {
 
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main
-        className={`${styles.main}`}
-        style={isSmallScreen ? { padding: "2rem" } : { padding: "6rem 2rem" }}
-      >
+      <main className={`${styles.main}`}>
         <Grid container spacing={5}>
           <Grid xs={12} md={6}>
             <Typography variant="h1" sx={{ fontWeight: "medium" }}>
@@ -66,11 +84,53 @@ const Home = () => {
             <CountdownDisplay />
           </Grid>
           <Grid xs={12} md={6} alignSelf="center">
-            Test
+            <Image
+              alt="Spinning Sei coin"
+              src={seiCoin}
+              style={{
+                display: "flex",
+                margin: "auto",
+                maxWidth: isSmallScreen ? "50%" : "300px",
+                height: "auto",
+              }}
+            />
+            <Box textAlign="center" marginTop={5}>
+              <Box>
+                <Typography fontSize={20}>Grand Prize:</Typography>
+                <ShineButton>14,632 Sei</ShineButton>
+              </Box>
+
+              <Grid
+                container
+                alignItems="center"
+                justifyContent="center"
+                gap={2}
+              >
+                <Typography fontSize={20}>Total Deposits:</Typography>
+                <Typography fontSize={30}>5,490,368 Sei</Typography>
+              </Grid>
+            </Box>
           </Grid>
         </Grid>
       </main>
-    </>
+      <Box component="section">
+        <Typography variant="h2" my={2}>
+          CurrentDraws
+        </Typography>
+        <Grid container>
+          {currentDraws.map((draw) => (
+            <CurrentDraws />
+          ))}
+          {!isMediumScreen &&
+            [...Array(Math.max(0, 3 - currentDraws.length))].map((_, index) => (
+              <CurrentDraws notActive />
+            ))}
+        </Grid>
+      </Box>
+      <Box component="section">
+        <WinnerHistory />
+      </Box>
+    </Box>
   );
 };
 

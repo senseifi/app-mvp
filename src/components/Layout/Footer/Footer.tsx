@@ -7,6 +7,7 @@ const Footer = () => {
   const theme: Theme = useTheme();
   return (
     <Box
+      component="footer"
       sx={{
         display: "flex",
         flexDirection: "row",

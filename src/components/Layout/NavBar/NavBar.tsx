@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   IconButton,
+  Link,
   Theme,
   Typography,
   useMediaQuery,
@@ -24,6 +25,7 @@ const NavBar = () => {
 
   return (
     <Box
+      component="nav"
       paddingX={isSmallScreen ? 1 : 10}
       paddingY={1}
       sx={{
@@ -46,14 +48,16 @@ const NavBar = () => {
       ) : (
         ""
       )}
-      <Image
-        alt="SenSei Finance Logo"
-        src={logoDark}
-        style={{
-          maxHeight: "100%",
-          width: "auto",
-        }}
-      />
+      <Link href="/home">
+        <Image
+          alt="SenSei Finance Logo"
+          src={logoLight}
+          style={{
+            maxHeight: "100%",
+            width: "auto",
+          }}
+        />
+      </Link>
       <Button
         variant="contained"
         disableElevation

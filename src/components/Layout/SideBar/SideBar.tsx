@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Sidebar,
   Menu,
@@ -8,13 +8,11 @@ import {
   sidebarClasses,
 } from "react-pro-sidebar";
 
-import { useTheme, Theme, makeStyles } from "@mui/material/styles";
+import { useTheme, Theme } from "@mui/material/styles";
 
 import Link from "next/link";
 import {
   AccountBalanceWallet,
-  ChevronLeft,
-  ChevronRight,
   EmojiEvents,
   Error,
   Home,
@@ -22,6 +20,7 @@ import {
   WaterDrop,
 } from "@mui/icons-material";
 import { Box, Button, useMediaQuery } from "@mui/material";
+import { useRouter } from "next/router";
 
 const SideBar = () => {
   const theme: Theme = useTheme();
@@ -39,24 +38,13 @@ const SideBar = () => {
     collapsed,
   } = useProSidebar();
 
-  //router location to Title Case
-  function pathName() {
-    return location.pathname
-      .substring(1)
-      .replace("-", " ")
-      .split(" ")
-      .map(function (word: string) {
-        return word.replace(word[0], word[0].toUpperCase());
-      })
-      .join(" ");
-  }
+  const router = useRouter();
 
   return (
     <Box
       onMouseEnter={() => collapseSidebar(false)}
       onMouseLeave={() => collapseSidebar(true)}
       sx={{ display: "flex", position: "sticky", top: "0px" }}
-      //className="flex md:h-screen md:sticky md:top-0 md:left-0 text-left uppercase"
     >
       <Sidebar
         defaultCollapsed
@@ -88,12 +76,6 @@ const SideBar = () => {
               }
         }
       >
-        <Link href="home">
-          {/* <Savvio
-            className="mt-5 ml-3  block  h-[64px]"
-            style={{ fill: "#2F3130" }}
-          /> */}
-        </Link>
         <Menu
           rootStyles={{
             [`.${menuClasses.button}`]: {
@@ -107,7 +89,7 @@ const SideBar = () => {
               },
             },
             [`.${menuClasses.menuItemRoot}`]: {
-              padding: `${isSmallScreen ? "0 1rem" : ""}`,
+              margin: `${isSmallScreen ? "0 1rem" : ""}`,
             },
 
             marginTop: "1rem",
@@ -115,15 +97,35 @@ const SideBar = () => {
         >
           <MenuItem
             icon={<Home />}
-            // component={<Link href="portfolio" />}
-            // eslint-disable-next-line
+            component={<Link href="/home" />}
+            rootStyles={
+              router.pathname == "/home"
+                ? {
+                    borderRadius: "10px",
+                    backgroundColor: themePalette.secondary.main,
+                    "& span": {
+                      color: themePalette.primary.main,
+                    },
+                  }
+                : {}
+            }
           >
             Home
           </MenuItem>
           <MenuItem
             icon={<AccountBalanceWallet />}
-            // component={<Link to="smart-savings" />}
-            // eslint-disable-next-line
+            component={<Link href="/portfolio" />}
+            rootStyles={
+              router.pathname == "/portfolio"
+                ? {
+                    borderRadius: "10px",
+                    backgroundColor: themePalette.secondary.main,
+                    "& span": {
+                      color: themePalette.primary.main,
+                    },
+                  }
+                : {}
+            }
           >
             Portfolio
           </MenuItem>

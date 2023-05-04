@@ -1,4 +1,9 @@
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
+  --webkit-font-smoothing: antialiased;
+}
+
+section {
+  width: 100%;
 }

@@ -19,6 +19,9 @@ const CountdownDisplay = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+  const isLargeScreen = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("lg")
+  );
   const theme: Theme = useTheme();
 
   const colors: ColorFormat = `#${theme.palette.secondary.main.substring(1)}`;
@@ -64,7 +67,7 @@ const CountdownDisplay = () => {
       justifyContent="space-around"
       gap={1}
       paddingX={isSmallScreen ? 0 : 4}
-      sx={{ mt: 5 }}
+      sx={{ mt: 7 }}
     >
       <CountdownCircleTimer
         {...timerProps}

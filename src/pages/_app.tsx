@@ -1,8 +1,8 @@
 import "@/styles/globals.css";
 import "@fontsource/work-sans/variable.css";
 import "@fontsource/work-sans/400.css";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import type { AppProps } from "next/app";

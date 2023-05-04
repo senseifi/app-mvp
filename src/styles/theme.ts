@@ -1,4 +1,5 @@
 import { PaletteMode, createTheme } from "@mui/material";
+import "@fontsource/work-sans/500.css";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -91,6 +92,11 @@ const createAppTheme = (mode: PaletteMode) =>
       yellowText: {
         color: "#FFDB2C",
       },
+      h2: {
+        color: "#FFDB2C",
+        fontSize: "2rem",
+        fontWeight: 500,
+      },
     },
     components: {
       MuiButton: {
@@ -131,6 +137,35 @@ const createAppTheme = (mode: PaletteMode) =>
             },
           },
         ],
+      },
+      MuiTableCell: {
+        styleOverrides: {
+          root: {
+            fontSize: "1rem",
+            "@media (max-width: 600px)": {
+              fontSize: "0.875rem",
+              padding: "10px",
+            },
+          },
+        },
+      },
+
+      MuiCssBaseline: {
+        styleOverrides: {
+          main: {
+            minHeight: "80vh",
+            padding: "6rem 10rem 2rem 10rem",
+            "@media (max-width: 1200px)": {
+              padding: "2rem",
+            },
+          },
+          section: {
+            padding: "1rem 4rem 2rem 4rem",
+            "@media (max-width: 1200px)": {
+              padding: "2rem",
+            },
+          },
+        },
       },
     },
   });
