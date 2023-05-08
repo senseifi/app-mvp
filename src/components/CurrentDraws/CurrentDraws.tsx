@@ -28,6 +28,7 @@ const CurrentDraws = ({
   // setOpen,
   onEnterNowClick,
   onWithdrawClick,
+  onCheckDrawClick,
 }: {
   draw?: Draw;
   notActive?: boolean;
@@ -35,6 +36,7 @@ const CurrentDraws = ({
   // setOpen: Function;
   onEnterNowClick: Function;
   onWithdrawClick: Function;
+  onCheckDrawClick: Function;
 }) => {
   //Withdraw button for compact UI and encouraging people to keep playing
 
@@ -120,7 +122,7 @@ const CurrentDraws = ({
           <Grid container spacing={1} marginTop={2}>
             <Grid item xs={12} md={5}>
               <Button
-                variant="yellowBorder"
+                variant="yellowFill"
                 size="small"
                 fullWidth
                 sx={{ fontSize: "0.875rem" }}
@@ -133,10 +135,13 @@ const CurrentDraws = ({
             </Grid>
             <Grid item xs={10} md={5}>
               <Button
-                variant="yellowFill"
+                variant="yellowBorder"
                 size="small"
                 fullWidth
                 sx={{ fontSize: "0.875rem" }}
+                onClick={() =>
+                  onCheckDrawClick(draw === undefined ? "" : draw.id)
+                }
               >
                 Check&nbsp;Draw
               </Button>

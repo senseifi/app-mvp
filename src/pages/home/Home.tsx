@@ -21,6 +21,7 @@ import CurrentDraws from "@/components/CurrentDraws/CurrentDraws";
 import { Draw, ModalDetails } from "@/types/customTypes";
 import WinnerHistory from "@/components/WinnerHistory/WinnerHistory";
 import TicketsModal from "@/components/Modals/TicketsModal";
+import CheckWinnerModal from "@/components/Modals/CheckWinnerModal";
 
 const currentDraws: Draw[] = [
   {
@@ -93,7 +94,13 @@ const Home = () => {
           gameID={selectedGameID}
         />
       )}
-
+      {selectedGameID !== undefined && (
+        <CheckWinnerModal
+          open={cwOpen}
+          setOpen={setCwOpen}
+          gameID={selectedGameID}
+        />
+      )}
       <Box>
         <Head>
           <title>Sensei App Homepage</title>
@@ -122,7 +129,7 @@ const Home = () => {
                 <Grid container spacing={2} marginTop={2}>
                   <Grid xs={12} md={6}>
                     <Button
-                      variant="yellowBorder"
+                      variant="yellowFill"
                       size="large"
                       fullWidth
                       onClick={() => onEnterNowClick(currentDraws[0].id)}
@@ -131,7 +138,12 @@ const Home = () => {
                     </Button>
                   </Grid>
                   <Grid xs={12} md={6}>
-                    <Button variant="yellowFill" size="large" fullWidth>
+                    <Button
+                      variant="yellowBorder"
+                      size="large"
+                      fullWidth
+                      onClick={() => onCheckDrawClick(currentDraws[0].id)}
+                    >
                       Check Draw
                     </Button>
                   </Grid>
@@ -185,6 +197,7 @@ const Home = () => {
                 // setOpen={setTmOpen}
                 onEnterNowClick={onEnterNowClick}
                 onWithdrawClick={onWithdrawClick}
+                onCheckDrawClick={onCheckDrawClick}
               />
             ))}
             {!isMediumScreen &&
@@ -197,6 +210,7 @@ const Home = () => {
                     // setOpen={setTmOpen}
                     onEnterNowClick={onEnterNowClick}
                     onWithdrawClick={onWithdrawClick}
+                    onCheckDrawClick={onCheckDrawClick}
                   />
                 )
               )}

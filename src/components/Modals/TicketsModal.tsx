@@ -2,7 +2,6 @@ import {
   Backdrop,
   Box,
   Button,
-  Fade,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -13,14 +12,15 @@ import {
   Slide,
   TextField,
   Theme,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ShineButton from "../ShineButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { Close } from "@mui/icons-material";
+
+import { Close, Help } from "@mui/icons-material";
 import FlipClockCountdown from "@leenguyen/react-flip-clock-countdown";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 
@@ -193,7 +193,18 @@ const TicketsModal = ({
                         InputProps={{ inputProps: { min: 0 } }}
                       />
                     )}
-                    <Typography mb={2}>{helperText}</Typography>
+                    {/* TODO: error messages based on invalid inputs */}
+                    <Box display="flex" alignItems="center" my={2}>
+                      <Typography mr={4}>{helperText}</Typography>
+                      <Tooltip
+                        disableFocusListener
+                        title={
+                          "The tickets you receive are proportional to the amount of tokens you deposit and the time remaining for the draw"
+                        }
+                      >
+                        <Help sx={{ fontSize: "1rem", opacity: 0.5 }} />
+                      </Tooltip>
+                    </Box>
                     <Button
                       variant="yellowFill"
                       size="small"
@@ -243,8 +254,25 @@ const TicketsModal = ({
                     You have <span style={{ fontWeight: "bold" }}>{1000}</span>{" "}
                     Sei deposited in this pool
                   </Typography>
-                  <Typography color="error" my={2}>
-                    Are you sure you want to withdraw?
+                  <TextField
+                    type="number"
+                    label="Sei Amount"
+                    variant="outlined"
+                    color="secondary"
+                    margin="dense"
+                    fullWidth
+                    value={otherValue}
+                    onChange={handleOtherChange}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{ inputProps: { min: 0 } }}
+                  />
+                  {/* TODO: error messages based on invalid inputs */}
+
+                  <Typography color="error" my={2} fontSize="small">
+                    Once you click withdraw, your tokens will be transferred to
+                    your wallet in about 72Hrs
                   </Typography>
                   <Button
                     variant="outlined"

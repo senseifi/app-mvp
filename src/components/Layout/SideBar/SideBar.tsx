@@ -114,18 +114,18 @@ const SideBar = () => {
           </MenuItem>
           <MenuItem
             icon={<AccountBalanceWallet />}
-            component={<Link href="/portfolio" />}
-            rootStyles={
-              router.pathname == "/portfolio"
-                ? {
-                    borderRadius: "10px",
-                    backgroundColor: themePalette.secondary.main,
-                    "& span": {
-                      color: themePalette.primary.main,
-                    },
-                  }
-                : {}
-            }
+            // component={<Link href="/portfolio" />}
+            // rootStyles={
+            //   router.pathname == "/portfolio"
+            //     ? {
+            //         borderRadius: "10px",
+            //         backgroundColor: themePalette.secondary.main,
+            //         "& span": {
+            //           color: themePalette.primary.main,
+            //         },
+            //       }
+            //     : {}
+            // }
           >
             Portfolio
           </MenuItem>
