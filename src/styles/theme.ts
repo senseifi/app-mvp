@@ -37,6 +37,11 @@ declare module "@mui/material/Button" {
     yellowFill: true;
   }
 }
+declare module "@mui/material/Radio" {
+  interface RadioPropsColorOverrides {
+    tertiary: true;
+  }
+}
 
 const radius: number = 10;
 const yellow: string = "#FFDB2C";
@@ -149,7 +154,13 @@ const createAppTheme = (mode: PaletteMode) =>
           },
         },
       },
-
+      // MuiRadio: {
+      //   styleOverrides: {
+      //     checked: {
+      //       color: "#f44336",
+      //     },
+      //   },
+      // },
       MuiCssBaseline: {
         styleOverrides: {
           main: {
@@ -160,7 +171,7 @@ const createAppTheme = (mode: PaletteMode) =>
             },
           },
           section: {
-            padding: "1rem 4rem 2rem 4rem",
+            padding: "1rem 7rem 2rem 7rem",
             "@media (max-width: 1200px)": {
               padding: "2rem",
             },

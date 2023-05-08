@@ -48,7 +48,7 @@ const WinnerHistory = () => {
         borderColor={theme.palette.secondary.main}
         borderRadius={3}
       >
-        <Typography variant="h2" mb={2}>
+        <Typography variant="h2" mb={2} mx={isSmallScreen ? 2 : ""}>
           Winner History
         </Typography>
         <TableContainer>
@@ -68,26 +68,24 @@ const WinnerHistory = () => {
                 {
                   //winners.slice(0, listLength).map((winner) =>
                   winners.map((winner) => (
-                    <>
-                      <StyledTableRow>
-                        {/* first 4 and last 4 characters of TxID */}
-                        <TableCell>
-                          {winner.transaction_id.substring(0, 4)}...
-                          {winner.transaction_id.substring(
-                            winner.transaction_id.length - 4
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {<Moment unix date={winner.timestamp} />}
-                        </TableCell>
-                        {/* first 4 and last 4 characters of account address */}
-                        <TableCell>
-                          {winner.account.substring(0, 4)}...
-                          {winner.account.substring(winner.account.length - 4)}
-                        </TableCell>
-                        <TableCell>{winner.prize_id}</TableCell>
-                      </StyledTableRow>
-                    </>
+                    <StyledTableRow key={winners.indexOf(winner)}>
+                      {/* first 4 and last 4 characters of TxID */}
+                      <TableCell>
+                        {winner.transaction_id.substring(0, 4)}...
+                        {winner.transaction_id.substring(
+                          winner.transaction_id.length - 4
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {<Moment unix date={winner.timestamp} />}
+                      </TableCell>
+                      {/* first 4 and last 4 characters of account address */}
+                      <TableCell>
+                        {winner.account.substring(0, 4)}...
+                        {winner.account.substring(winner.account.length - 4)}
+                      </TableCell>
+                      <TableCell>{winner.prize_id}</TableCell>
+                    </StyledTableRow>
                   ))
                 }
               </TableBody>
@@ -106,28 +104,24 @@ const WinnerHistory = () => {
               </TableHead>
               <TableBody>
                 {winners.map((winner) => (
-                  <>
-                    <StyledTableRow>
-                      {/* first 4 and last 4 characters of TxID */}
-                      <TableCell>
-                        {winner.transaction_id.substring(0, 4)}...
-                      </TableCell>
-                      <TableCell>
-                        {
-                          <Moment
-                            unix
-                            date={winner.timestamp}
-                            format="DD MMM 'YY"
-                          />
-                        }
-                      </TableCell>
-                      {/* first 4 and last 4 characters of account address */}
-                      <TableCell>{winner.account.substring(0, 4)}...</TableCell>
-                      <TableCell>
-                        {winner.prize_id.substring(0, 4)}...
-                      </TableCell>
-                    </StyledTableRow>
-                  </>
+                  <StyledTableRow key={winners.indexOf(winner)}>
+                    {/* first 4 and last 4 characters of TxID */}
+                    <TableCell>
+                      {winner.transaction_id.substring(0, 4)}...
+                    </TableCell>
+                    <TableCell>
+                      {
+                        <Moment
+                          unix
+                          date={winner.timestamp}
+                          format="DD MMM 'YY"
+                        />
+                      }
+                    </TableCell>
+                    {/* first 4 and last 4 characters of account address */}
+                    <TableCell>{winner.account.substring(0, 4)}...</TableCell>
+                    <TableCell>{winner.prize_id.substring(0, 4)}...</TableCell>
+                  </StyledTableRow>
                 ))}
               </TableBody>
             </Table>

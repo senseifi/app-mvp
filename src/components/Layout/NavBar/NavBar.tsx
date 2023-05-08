@@ -60,6 +60,7 @@ const NavBar = () => {
       </Link>
       <Button
         variant="contained"
+        color={theme.palette.mode === "dark" ? "secondary" : "primary"} //workaround
         disableElevation
         startIcon={<AccountBalanceWallet />}
         size="large"
@@ -67,6 +68,9 @@ const NavBar = () => {
           backgroundColor: isSmallScreen ? "transparent" : "#FFF",
           color: isSmallScreen ? "#FFF" : "#071428",
           "& span": { margin: isSmallScreen ? 0 : "" },
+          "&:hover": {
+            backgroundColor: isSmallScreen ? "#ffffff3d" : "",
+          },
         }}
       >
         {isSmallScreen ? "" : "Connect Wallet"}

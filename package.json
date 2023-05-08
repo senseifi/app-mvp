@@ -12,6 +12,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fontsource/work-sans": "^4.5.14",
+    "@leenguyen/react-flip-clock-countdown": "^1.4.0",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.12.1",
     "@types/node": "18.16.0",

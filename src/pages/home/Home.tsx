@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 import styles from "@/styles/Home.module.css";
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -18,13 +18,15 @@ import Image from "next/image";
 import seiCoin from "../../../src/assets/sei-coin.gif";
 import ShineButton from "@/components/ShineButton/ShineButton";
 import CurrentDraws from "@/components/CurrentDraws/CurrentDraws";
-import { Draw } from "@/types/customTypes";
+import { Draw, ModalDetails } from "@/types/customTypes";
 import WinnerHistory from "@/components/WinnerHistory/WinnerHistory";
+import TicketsModal from "@/components/Modals/TicketsModal";
 
 const currentDraws: Draw[] = [
   {
+    id: 2345,
     active: true,
-    prize: 200,
+    prize: 2000,
     totDeposit: 20000,
     totTix: 50000,
     usrDeposit: 2000,
@@ -41,96 +43,170 @@ const Home = () => {
     theme.breakpoints.down("md")
   );
   //   const theme: Theme = useTheme();
+
+  const [tmOpen, setTmOpen] = useState(false);
+  const [cwOpen, setCwOpen] = useState(false);
+
+  const [selectedGameID, setSelectedGameID] = useState<number | undefined>();
+  const [tmType, setTmType] = useState<"enter" | "withdraw">("enter"); // Tickets Modal Type
+
+  const onWithdrawClick = (gameID: number | undefined) => {
+    if (
+      gameID === undefined
+      // || !isConnected
+    )
+      return;
+
+    setSelectedGameID(gameID);
+    setTmType("withdraw");
+    setTmOpen(true);
+  };
+
+  const onEnterNowClick = (gameID: number | undefined) => {
+    if (
+      gameID === undefined
+      // || !isConnected
+    )
+      return;
+    setSelectedGameID(gameID);
+    setTmType("enter");
+    setTmOpen(true);
+  };
+
+  const onCheckDrawClick = (gameID: number | undefined) => {
+    if (
+      gameID === undefined
+      // || !isConnected
+    )
+      return;
+    setSelectedGameID(gameID);
+    setCwOpen(true);
+  };
+
   return (
-    <Box>
-      <Head>
-        <title>Sensei App Homepage</title>
-        <meta name="description" content="Gamified Defi on Sei network" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <>
+      {selectedGameID !== undefined && (
+        <TicketsModal
+          open={tmOpen}
+          setOpen={setTmOpen}
+          tmType={tmType}
+          gameID={selectedGameID}
+        />
+      )}
 
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className={`${styles.main}`}>
-        <Grid container spacing={5}>
-          <Grid xs={12} md={6}>
-            <Typography variant="h1" sx={{ fontWeight: "medium" }}>
-              No Loss DeFi
-              <br />
-              <Typography variant="yellowText">Prize Game</Typography>
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ fontStyle: "italic", fontSize: "1.5rem" }}
-            >
-              Win or Not, you never lose your investment - everyones a winner
-              when you play with SenSei&nbsp;Fi.
-            </Typography>
+      <Box>
+        <Head>
+          <title>Sensei App Homepage</title>
+          <meta name="description" content="Gamified Defi on Sei network" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-            <Box>
-              <Grid container spacing={2} marginTop={2}>
-                <Grid xs={12} md={6}>
-                  <Button variant="yellowBorder" size="large" fullWidth>
-                    {isSmallScreen ? "Deposit" : "Deposit to Win"}
-                  </Button>
-                </Grid>
-                <Grid xs={12} md={6}>
-                  <Button variant="yellowFill" size="large" fullWidth>
-                    Check Draw
-                  </Button>
-                </Grid>
-              </Grid>
-            </Box>
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <main className={`${styles.main}`}>
+          <Grid container spacing={5}>
+            <Grid xs={12} md={6}>
+              <Typography variant="h1" sx={{ fontWeight: "medium" }}>
+                No Loss DeFi
+                <br />
+                <Typography variant="yellowText">Prize Game</Typography>
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{ fontStyle: "italic", fontSize: "1.5rem" }}
+              >
+                Win or Not, you never lose your investment - everyones a winner
+                when you play with SenSei&nbsp;Fi.
+              </Typography>
 
-            <CountdownDisplay />
-          </Grid>
-          <Grid xs={12} md={6} alignSelf="center">
-            <Image
-              alt="Spinning Sei coin"
-              src={seiCoin}
-              style={{
-                display: "flex",
-                margin: "auto",
-                maxWidth: isSmallScreen ? "50%" : "300px",
-                height: "auto",
-              }}
-            />
-            <Box textAlign="center" marginTop={5}>
               <Box>
-                <Typography fontSize={20}>Grand Prize:</Typography>
-                <ShineButton>14,632 Sei</ShineButton>
+                <Grid container spacing={2} marginTop={2}>
+                  <Grid xs={12} md={6}>
+                    <Button
+                      variant="yellowBorder"
+                      size="large"
+                      fullWidth
+                      onClick={() => onEnterNowClick(currentDraws[0].id)}
+                    >
+                      {isSmallScreen ? "Enter" : "Enter to Win"}
+                    </Button>
+                  </Grid>
+                  <Grid xs={12} md={6}>
+                    <Button variant="yellowFill" size="large" fullWidth>
+                      Check Draw
+                    </Button>
+                  </Grid>
+                </Grid>
               </Box>
 
-              <Grid
-                container
-                alignItems="center"
-                justifyContent="center"
-                gap={2}
-              >
-                <Typography fontSize={20}>Total Deposits:</Typography>
-                <Typography fontSize={30}>5,490,368 Sei</Typography>
-              </Grid>
-            </Box>
+              <CountdownDisplay />
+            </Grid>
+            <Grid xs={12} md={6} alignSelf="center">
+              <Image
+                alt="Spinning Sei coin"
+                src={seiCoin}
+                style={{
+                  display: "flex",
+                  margin: "auto",
+                  maxWidth: isSmallScreen ? "50%" : "300px",
+                  height: "auto",
+                }}
+              />
+              <Box textAlign="center" marginTop={5}>
+                <Box>
+                  <Typography fontSize={20}>Grand Prize:</Typography>
+                  <ShineButton>{currentDraws[0].prize} Sei</ShineButton>
+                </Box>
+
+                <Grid
+                  container
+                  alignItems="center"
+                  justifyContent="center"
+                  gap={2}
+                >
+                  <Typography fontSize={20}>Total Deposits:</Typography>
+                  <Typography fontSize={30}>
+                    {currentDraws[0].totDeposit} Sei
+                  </Typography>
+                </Grid>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </main>
-      <Box component="section">
-        <Typography variant="h2" my={2}>
-          CurrentDraws
-        </Typography>
-        <Grid container>
-          {currentDraws.map((draw) => (
-            <CurrentDraws />
-          ))}
-          {!isMediumScreen &&
-            [...Array(Math.max(0, 3 - currentDraws.length))].map((_, index) => (
-              <CurrentDraws notActive />
+        </main>
+        <Box component="section">
+          <Typography variant="h2" my={2}>
+            CurrentDraws
+          </Typography>
+          <Grid container>
+            {currentDraws.map((draw) => (
+              <CurrentDraws
+                key={draw.id}
+                draw={draw}
+                // open={tmOpen}
+                // setOpen={setTmOpen}
+                onEnterNowClick={onEnterNowClick}
+                onWithdrawClick={onWithdrawClick}
+              />
             ))}
-        </Grid>
+            {!isMediumScreen &&
+              [...Array(Math.max(0, 3 - currentDraws.length))].map(
+                (_, index) => (
+                  <CurrentDraws
+                    key={index}
+                    notActive
+                    // open={tmOpen}
+                    // setOpen={setTmOpen}
+                    onEnterNowClick={onEnterNowClick}
+                    onWithdrawClick={onWithdrawClick}
+                  />
+                )
+              )}
+          </Grid>
+        </Box>
+        <Box component="section" mb={10}>
+          <WinnerHistory />
+        </Box>
       </Box>
-      <Box component="section">
-        <WinnerHistory />
-      </Box>
-    </Box>
+    </>
   );
 };
 
