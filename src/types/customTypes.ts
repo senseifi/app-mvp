@@ -1,3 +1,5 @@
+import { ModalProps, Theme } from "@mui/material";
+
 export interface Size {
   width: number | undefined;
   height: number | undefined;
@@ -19,3 +21,7 @@ export type ModalDetails = {
   isOpen: Function;
   id: number;
 };
+
+export interface CustomModalProps extends ModalProps {
+  theme: Theme;
+}

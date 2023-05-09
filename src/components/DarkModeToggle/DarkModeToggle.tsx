@@ -2,6 +2,7 @@ import { Box, IconButton, Switch, useTheme, styled } from "@mui/material";
 import React, { createContext, useContext } from "react";
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
+//TODO: save to local variable so the state persists between reloads
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,

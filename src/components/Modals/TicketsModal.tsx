@@ -23,6 +23,7 @@ import ShineButton from "../ShineButton";
 import { Close, Help } from "@mui/icons-material";
 import FlipClockCountdown from "@leenguyen/react-flip-clock-countdown";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
+import { flipcounterProps, modalProps } from "@/constants/modals";
 
 const style = {
   position: "absolute",
@@ -82,22 +83,11 @@ const TicketsModal = ({
   return (
     <div>
       <Modal
+        {...modalProps()}
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={open}
         onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-            sx: {
-              backgroundColor:
-                theme.palette.mode === "light" ? "#07142860" : "#07142840",
-              backdropFilter: "blur(40px)",
-            },
-          },
-        }}
       >
         <Slide direction="up" in={open}>
           <Box
@@ -216,30 +206,13 @@ const TicketsModal = ({
                   </FormControl>
                   <Box display="flex" mt={3} sx={{ justifyContent: "center" }}>
                     <FlipClockCountdown
-                      to={new Date().getTime() + 24 * 3600 * 1000 + 5000}
-                      labels={["DAYS", "HOURS", "MINUTES", "SECONDS"]}
-                      labelStyle={{
-                        fontSize: 10,
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                        color: theme.palette.secondary.main,
-                      }}
-                      digitBlockStyle={{
-                        width: 20,
-                        height: 30,
-                        fontSize: 20,
-                        color: theme.palette.primary.main,
-                        background: theme.palette.secondary.main,
-                      }}
-                      dividerStyle={{
-                        color: theme.palette.primary.main,
-                        height: 1,
-                      }}
-                      separatorStyle={{
-                        color: theme.palette.secondary.main,
-                        size: "4px",
-                      }}
-                      duration={0.5}
+                      // labelStyle={{
+                      //   fontSize: 10,
+                      //   fontWeight: 600,
+                      //   textTransform: "uppercase",
+                      //   color: theme.palette.secondary.main,
+                      // }}
+                      {...flipcounterProps()}
                     />
                   </Box>
                 </>
