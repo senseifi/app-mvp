@@ -60,6 +60,8 @@ const CheckWinnerModal = ({
     theme.breakpoints.down("sm")
   );
 
+  const [usrIsWinner, setUsrIsWinner] = useState(true);
+
   return (
     <div>
       <Modal
@@ -70,17 +72,20 @@ const CheckWinnerModal = ({
         onClose={handleClose}
       >
         <>
-          <Fireworks
-            options={fireworkOptions}
-            style={{
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              position: "fixed",
-              background: "#00000045",
-            }}
-          />
+          {usrIsWinner && (
+            <Fireworks
+              onClick={handleClose}
+              options={fireworkOptions}
+              style={{
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                background: "#00000045",
+              }}
+            />
+          )}
           <Slide direction="up" in={open}>
             <Box
               sx={{
