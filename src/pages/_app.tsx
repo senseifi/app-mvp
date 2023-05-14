@@ -17,7 +17,7 @@ import { chains, assets } from "chain-registry";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as coin98Wallets } from "@cosmos-kit/coin98-extension";
-import { seiTestnet2AssetList } from "@/config/sei";
+import { seiTestnet2AssetList, seiTestnet2Chain } from "@/config/sei";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState<PaletteMode>("light");
@@ -36,7 +36,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <ChainProvider
-      chains={chains}
+      chains={[...chains, seiTestnet2Chain]}
       assetLists={[...assets, seiTestnet2AssetList]}
       wallets={[keplrWallets[0], ...leapWallets, ...coin98Wallets]}
       wrappedWithChakra={true}
