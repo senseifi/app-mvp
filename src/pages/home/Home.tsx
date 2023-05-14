@@ -25,7 +25,7 @@ import CheckWinnerModal from "@/components/Modals/CheckWinnerModal";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { rpcEndpoint } from "@/config/sei";
-import { seiStakingNLLContract } from "@/config/contracts";
+import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
 import {
   Params,
   GlobalState,
@@ -68,25 +68,12 @@ const Home = ({
   const [selectedGameID, setSelectedGameID] = useState<number | undefined>();
   const [tmType, setTmType] = useState<"enter" | "withdraw">("enter"); // Tickets Modal Type
 
-  const onWithdrawClick = (gameID: number | undefined) => {
-    if (
-      gameID === undefined
-      // || !isConnected
-    )
-      return;
-
-    setSelectedGameID(gameID);
+  const onWithdrawClick = () => {
     setTmType("withdraw");
     setTmOpen(true);
   };
 
-  const onEnterNowClick = (gameID: number | undefined) => {
-    if (
-      gameID === undefined
-      // || !isConnected
-    )
-      return;
-    setSelectedGameID(gameID);
+  const onEnterNowClick = () => {
     setTmType("enter");
     setTmOpen(true);
   };
@@ -103,12 +90,13 @@ const Home = ({
 
   return (
     <>
-      {selectedGameID !== undefined && (
+      {tmOpen && (
         <TicketsModal
           open={tmOpen}
           setOpen={setTmOpen}
           tmType={tmType}
-          gameID={selectedGameID}
+          params={params}
+          globalState={globalState}
         />
       )}
       {selectedGameID !== undefined && (
@@ -149,7 +137,7 @@ const Home = ({
                       variant="yellowFill"
                       size="large"
                       fullWidth
-                      onClick={() => onEnterNowClick(currentDraws[0].id)}
+                      onClick={onEnterNowClick}
                     >
                       {isSmallScreen ? "Enter" : "Enter to Win"}
                     </Button>
@@ -168,7 +156,9 @@ const Home = ({
               </Box>
               <CountdownDisplay
                 startTime={nsToSecs(globalState.game_start_time)}
-                endTime={nsToSecs(globalState.game_start_time) + 604800}
+                endTime={
+                  nsToSecs(globalState.game_start_time) + gameDurationSecs
+                }
               />
             </Grid>
             <Grid xs={12} md={6} alignSelf="center">
