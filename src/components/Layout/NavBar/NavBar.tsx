@@ -15,7 +15,12 @@ import logoDark from "../../../assets/logo-dark.png";
 import { AccountBalanceWallet, Menu } from "@mui/icons-material";
 import { useProSidebar } from "react-pro-sidebar";
 
+import { useChain } from "@cosmos-kit/react";
+import { chainName } from "@/config/sei";
+import { truncateAddress } from "@/utils";
+
 const NavBar = () => {
+  const chain = useChain(chainName);
   const theme: Theme = useTheme();
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -59,6 +64,7 @@ const NavBar = () => {
         />
       </Link>
       <Button
+        onClick={chain.openView}
         variant="contained"
         color={theme.palette.mode === "dark" ? "secondary" : "primary"} //workaround
         disableElevation
@@ -73,7 +79,11 @@ const NavBar = () => {
           },
         }}
       >
-        {isSmallScreen ? "" : "Connect Wallet"}
+        {isSmallScreen
+          ? ""
+          : chain.isWalletConnected
+          ? truncateAddress(chain.address)
+          : "Connect Wallet"}
       </Button>
     </Box>
   );

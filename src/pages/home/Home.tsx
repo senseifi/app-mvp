@@ -22,6 +22,15 @@ import { Draw, ModalDetails } from "@/types/customTypes";
 import WinnerHistory from "@/components/WinnerHistory/WinnerHistory";
 import TicketsModal from "@/components/Modals/TicketsModal";
 import CheckWinnerModal from "@/components/Modals/CheckWinnerModal";
+import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { rpcEndpoint } from "@/config/sei";
+import { seiStakingNLLContract } from "@/config/contracts";
+import {
+  Params,
+  GlobalState,
+} from "@/contract_clients/SenseifiStakingNll.types";
+import { nsToSecs } from "@/utils";
 
 const currentDraws: Draw[] = [
   {
@@ -36,7 +45,15 @@ const currentDraws: Draw[] = [
   },
 ];
 
-const Home = () => {
+const Home = ({
+  params,
+  globalState,
+  totalRewards,
+}: {
+  params: Params;
+  globalState: GlobalState;
+  totalRewards: string;
+}) => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -149,8 +166,10 @@ const Home = () => {
                   </Grid>
                 </Grid>
               </Box>
-
-              <CountdownDisplay />
+              <CountdownDisplay
+                startTime={nsToSecs(globalState.game_start_time)}
+                endTime={nsToSecs(globalState.game_start_time) + 604800}
+              />
             </Grid>
             <Grid xs={12} md={6} alignSelf="center">
               <Image
@@ -166,7 +185,7 @@ const Home = () => {
               <Box textAlign="center" marginTop={5}>
                 <Box>
                   <Typography fontSize={20}>Grand Prize:</Typography>
-                  <ShineButton>{currentDraws[0].prize} Sei</ShineButton>
+                  <ShineButton>{totalRewards} Sei</ShineButton>
                 </Box>
 
                 <Grid
@@ -177,7 +196,7 @@ const Home = () => {
                 >
                   <Typography fontSize={20}>Total Deposits:</Typography>
                   <Typography fontSize={30}>
-                    {currentDraws[0].totDeposit} Sei
+                    {globalState.total_stake} Sei
                   </Typography>
                 </Grid>
               </Box>
@@ -222,6 +241,23 @@ const Home = () => {
       </Box>
     </>
   );
+};
+
+export const getServerSideProps = async () => {
+  const cosmWasmClient = await CosmWasmClient.connect(rpcEndpoint);
+
+  const contract = new SenseifiStakingNllQueryClient(
+    cosmWasmClient,
+    seiStakingNLLContract
+  );
+
+  const [params, globalState, totalRewards] = await Promise.all([
+    contract.getParams(),
+    contract.getGlobalState(),
+    contract.getTotalRewards(),
+  ]);
+
+  return { props: { params, globalState, totalRewards } };
 };
 
 export default Home;
