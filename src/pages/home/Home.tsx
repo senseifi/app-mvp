@@ -186,7 +186,7 @@ const Home = () => {
         </main>
         <Box component="section">
           <Typography variant="h2" my={2}>
-            CurrentDraws
+            Current Draws
           </Typography>
           <Grid container>
             {currentDraws.map((draw) => (
