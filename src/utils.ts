@@ -12,7 +12,7 @@ export const nsToSecs = (ns: string) =>
 export const toAU = (
   amount: string,
   decimal: number = 6,
-  precision: number = 3
+  precision: number = 6
 ) =>
   Number((BigInt(amount) * BigInt(10 ** precision)) / BigInt(10 ** decimal)) /
   10 ** precision;

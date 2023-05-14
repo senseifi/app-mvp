@@ -30,7 +30,7 @@ import {
   Params,
   GlobalState,
 } from "@/contract_clients/SenseifiStakingNll.types";
-import { nsToSecs } from "@/utils";
+import { nsToSecs, toAU } from "@/utils";
 
 const currentDraws: Draw[] = [
   {
@@ -175,7 +175,7 @@ const Home = ({
               <Box textAlign="center" marginTop={5}>
                 <Box>
                   <Typography fontSize={20}>Grand Prize:</Typography>
-                  <ShineButton>{totalRewards} Sei</ShineButton>
+                  <ShineButton>{toAU(totalRewards)} Sei</ShineButton>
                 </Box>
 
                 <Grid
@@ -186,7 +186,7 @@ const Home = ({
                 >
                   <Typography fontSize={20}>Total Deposits:</Typography>
                   <Typography fontSize={30}>
-                    {globalState.total_stake} Sei
+                    {toAU(globalState.total_stake)} Sei
                   </Typography>
                 </Grid>
               </Box>
