@@ -86,3 +86,12 @@ export const modalProps = () => {
 
   return modalProps;
 };
+
+export const gameDetailsGridProps = {
+  display: "flex",
+  justifyContent: "space-between",
+  width: "100%",
+  mx: 3,
+  py: 1,
+  sx: { borderBottom: "1px solid gray" },
+};

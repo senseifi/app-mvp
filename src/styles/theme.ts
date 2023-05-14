@@ -43,6 +43,12 @@ declare module "@mui/material/Radio" {
   }
 }
 
+declare module "@mui/material/Badge" {
+  interface BadgePropsColorOverrides {
+    tertiary: true;
+  }
+}
+
 const radius: number = 10;
 const yellow: string = "#FFDB2C";
 const navyBlue: string = "#071428";

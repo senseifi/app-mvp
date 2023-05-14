@@ -24,6 +24,7 @@ import { Close, Help } from "@mui/icons-material";
 import FlipClockCountdown from "@leenguyen/react-flip-clock-countdown";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import { flipcounterProps, modalProps } from "@/constants/modals";
+import AmountSlider from "../Slider/AmountSlider";
 
 const style = {
   position: "absolute",
@@ -47,14 +48,19 @@ const TicketsModal = ({
   tmType: "enter" | "withdraw";
   gameID: number;
 }) => {
-  const handleClose = () => setOpen(false);
+  //reset states and close modal
+  const handleClose = () => {
+    setSelectedValue(0);
+    setOpen(false);
+  };
+
   const theme: Theme = useTheme();
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
 
-  const [selectedValue, setSelectedValue] = useState<number>(10);
+  const [selectedValue, setSelectedValue] = useState<number>(0);
   const [otherValue, setOtherValue] = useState<number | undefined>();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +78,9 @@ const TicketsModal = ({
     if (otherValue !== undefined) {
       setHelperText(`${otherValue !== undefined && otherValue * 10} Tickets`);
     } else {
-      setHelperText(`${selectedValue * 10} Tickets`);
+      setHelperText(
+        `${Intl.NumberFormat("en-US").format(selectedValue * 10)} Tickets`
+      );
     }
   };
 
@@ -131,58 +139,10 @@ const TicketsModal = ({
                     More deposits = better odds!
                   </ShineButton>
                   <FormControl fullWidth sx={{ mt: 2 }}>
-                    <FormLabel
-                      id="controlled-radio-buttons-group"
-                      color="secondary"
-                      focused
-                      sx={{ fontWeight: "bold" }}
-                    >
-                      Deposit Amount
-                    </FormLabel>
-                    <RadioGroup
-                      aria-labelledby="controlled-radio-buttons-group"
-                      name="controlled-radio-buttons-group"
-                      value={selectedValue}
-                      onChange={handleChange}
-                    >
-                      <FormControlLabel
-                        value={5}
-                        control={<Radio color="tertiary" />}
-                        label="5 Sei"
-                      />
-                      <FormControlLabel
-                        value={10}
-                        control={<Radio color="tertiary" />}
-                        label="10 Sei"
-                      />
-                      <FormControlLabel
-                        value={25}
-                        control={<Radio color="tertiary" />}
-                        label="25 Sei"
-                      />
-
-                      <FormControlLabel
-                        value={0}
-                        control={<Radio color="tertiary" />}
-                        label="other (enter value)"
-                      />
-                    </RadioGroup>
-                    {selectedValue === 0 && (
-                      <TextField
-                        type="number"
-                        label="Sei Amount"
-                        variant="outlined"
-                        color="secondary"
-                        margin="dense"
-                        fullWidth
-                        value={otherValue}
-                        onChange={handleOtherChange}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        InputProps={{ inputProps: { min: 0 } }}
-                      />
-                    )}
+                    <AmountSlider
+                      title={"Deposit Amount"}
+                      setSelectedValue={setSelectedValue}
+                    />
                     {/* TODO: error messages based on invalid inputs */}
                     <Box display="flex" alignItems="center" my={2}>
                       <Typography mr={4}>{helperText}</Typography>
