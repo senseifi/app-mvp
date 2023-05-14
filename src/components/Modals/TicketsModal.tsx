@@ -35,7 +35,10 @@ import {
 import { coin, StdFee } from "@cosmjs/amino";
 import { calculateTickets, nsToSecs, toAU, toSU } from "@/utils";
 import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
-import { SenseifiStakingNllClient } from "@/contract_clients/SenseifiStakingNll.client";
+import {
+  SenseifiStakingNllClient,
+  SenseifiStakingNllQueryClient,
+} from "@/contract_clients/SenseifiStakingNll.client";
 
 const style = {
   position: "absolute",
@@ -81,6 +84,7 @@ const TicketsModal = ({
   const [userBalance, setUserBalance] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [ticketFactor, setTicketFactor] = useState(0);
+  const [stakedAmount, setStakedAmount] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedValue(Number(event.target.value));
@@ -114,8 +118,19 @@ const TicketsModal = ({
       if (chain.address === undefined) return;
 
       const client = await chain.getCosmWasmClient();
-      const balance = await client.getBalance(chain.address, params.denom);
+
+      const contract = new SenseifiStakingNllQueryClient(
+        client,
+        seiStakingNLLContract
+      );
+
+      const [balance, stake] = await Promise.all([
+        client.getBalance(chain.address, params.denom),
+        contract.getUserState({ user: chain.address }),
+      ]);
+
       setUserBalance(balance.amount);
+      setStakedAmount(stake.total_stake);
 
       setTicketFactor(
         calculateTickets(
@@ -149,6 +164,25 @@ const TicketsModal = ({
     };
     const funds = coin(toSU(selectedValue), params.denom);
     await contract.stake({ nonWinner: false }, fee, undefined, [funds]);
+  };
+
+  const unstake = async () => {
+    if (chain.address === undefined || otherValue === undefined) return;
+
+    const client = await chain.getSigningCosmWasmClient();
+
+    const contract = new SenseifiStakingNllClient(
+      client,
+      chain.address,
+      seiStakingNLLContract
+    );
+
+    const fee: StdFee = {
+      amount: [coin("10000", params.denom)],
+      gas: "500000",
+    };
+
+    await contract.unstake({ amount: toSU(otherValue) }, fee);
   };
 
   if (!chain.isWalletConnected) {
@@ -262,7 +296,10 @@ const TicketsModal = ({
                       color: theme.palette.secondary.main,
                     }}
                   >
-                    You have <span style={{ fontWeight: "bold" }}>{1000}</span>{" "}
+                    You have{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {toAU(stakedAmount)}
+                    </span>{" "}
                     Sei deposited in this pool
                   </Typography>
                   <TextField
@@ -290,6 +327,7 @@ const TicketsModal = ({
                     size="small"
                     color="error"
                     fullWidth
+                    onClick={unstake}
                   >
                     Withdraw
                   </Button>
