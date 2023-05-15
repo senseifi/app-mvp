@@ -1,6 +1,6 @@
 import { Chain, AssetList, Asset } from "@chain-registry/types";
 
-export const rpcEndpoint = "https://rpc.atlantic-2.seinetwork.io/";
+export const rpcEndpoint = "https://sei-testnet-rpc.polkachu.com/";
 export const chainName = "seitestnet2Custom";
 
 export const seiTestnet2Chain: Chain = {
