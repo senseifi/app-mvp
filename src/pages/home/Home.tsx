@@ -58,6 +58,11 @@ const Home = ({
   const [selectedGameID, setSelectedGameID] = useState<string | undefined>();
   const [tmType, setTmType] = useState<"enter" | "withdraw">("enter"); // Tickets Modal Type
 
+  const grandPrize = (
+    (BigInt(totalRewards) * BigInt(7)) /
+    BigInt(10)
+  ).toString();
+
   const currentDraws = pastGamesStates.map((v) => {
     let draw: Draw = {
       id: v.game_id,
@@ -72,7 +77,7 @@ const Home = ({
   currentDraws.push({
     id: (BigInt(globalState.game_counter) - BigInt(1)).toString(),
     active: true,
-    prize: totalRewards,
+    prize: grandPrize,
     endTime: nsToSecs(globalState.game_start_time) + gameDurationSecs,
     totDeposit: globalState.total_stake,
   });
@@ -186,7 +191,7 @@ const Home = ({
               <Box textAlign="center" marginTop={5}>
                 <Box>
                   <Typography fontSize={20}>Grand Prize:</Typography>
-                  <ShineButton>{toAU(totalRewards)} Sei</ShineButton>
+                  <ShineButton>{toAU(grandPrize)} Sei</ShineButton>
                 </Box>
 
                 <Grid
