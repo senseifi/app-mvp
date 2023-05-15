@@ -22,6 +22,7 @@ import { Draw, ModalDetails } from "@/types/customTypes";
 import WinnerHistory from "@/components/WinnerHistory/WinnerHistory";
 import TicketsModal from "@/components/Modals/TicketsModal";
 import CheckWinnerModal from "@/components/Modals/CheckWinnerModal";
+import ClaimWithdrawalModal from "@/components/Modals/ClaimWithdrawalModal";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { rpcEndpoint } from "@/config/sei";
@@ -54,6 +55,7 @@ const Home = ({
 
   const [tmOpen, setTmOpen] = useState(false);
   const [cwOpen, setCwOpen] = useState(false);
+  const [cwithdrawOpen, setcwithdrawOpen] = useState(false);
 
   const [selectedGameID, setSelectedGameID] = useState<string | undefined>();
   const [tmType, setTmType] = useState<"enter" | "withdraw">("enter"); // Tickets Modal Type
@@ -104,6 +106,10 @@ const Home = ({
     setCwOpen(true);
   };
 
+  const onClaimWithdrawalClick = () => {
+    setcwithdrawOpen(true);
+  };
+
   return (
     <>
       {tmOpen && (
@@ -120,6 +126,13 @@ const Home = ({
           open={cwOpen}
           setOpen={setCwOpen}
           gameID={selectedGameID}
+          params={params}
+        />
+      )}
+      {cwithdrawOpen && (
+        <ClaimWithdrawalModal
+          open={cwithdrawOpen}
+          setOpen={setcwithdrawOpen}
           params={params}
         />
       )}
@@ -224,6 +237,7 @@ const Home = ({
                 onEnterNowClick={onEnterNowClick}
                 onWithdrawClick={onWithdrawClick}
                 onCheckDrawClick={onCheckDrawClick}
+                onClaimWithdrawalClick={onClaimWithdrawalClick}
               />
             ))}
             {!isMediumScreen &&
@@ -237,6 +251,7 @@ const Home = ({
                     onEnterNowClick={onEnterNowClick}
                     onWithdrawClick={onWithdrawClick}
                     onCheckDrawClick={onCheckDrawClick}
+                    onClaimWithdrawalClick={onClaimWithdrawalClick}
                   />
                 )
               )}

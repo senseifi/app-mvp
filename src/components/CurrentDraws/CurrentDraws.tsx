@@ -37,6 +37,7 @@ const CurrentDraws = ({
   onEnterNowClick,
   onWithdrawClick,
   onCheckDrawClick,
+  onClaimWithdrawalClick,
 }: {
   draw?: Draw;
   notActive?: boolean;
@@ -45,6 +46,7 @@ const CurrentDraws = ({
   onEnterNowClick: Function;
   onWithdrawClick: Function;
   onCheckDrawClick: Function;
+  onClaimWithdrawalClick: Function;
 }) => {
   const chain = useChain(chainName);
 
@@ -367,17 +369,12 @@ const CurrentDraws = ({
                       },
                     }}
                   >
-                    {claimAvailable ? (
-                      <MenuItem>Claim your withdrawal</MenuItem>
-                    ) : (
-                      <MenuItem
-                        onClick={() =>
-                          onWithdrawClick(draw === undefined ? "" : draw.id)
-                        }
-                      >
-                        Withdraw
-                      </MenuItem>
-                    )}
+                    <MenuItem onClick={() => onWithdrawClick()}>
+                      Withdraw
+                    </MenuItem>
+                    <MenuItem onClick={() => onClaimWithdrawalClick()}>
+                      Claim withdrawal
+                    </MenuItem>
                   </Menu>
                 </Grid>
               )}
