@@ -86,9 +86,10 @@ const Home = ({
 
   currentDraws.sort((a, b) => (BigInt(a.id) < BigInt(b.id) ? 1 : -1));
 
-  const lastPastGameID = bigIntMax(
-    pastGamesStates.map((v) => BigInt(v.game_id))
-  ).toString();
+  const lastPastGameID: string | undefined =
+    pastGamesStates.length != 0
+      ? bigIntMax(pastGamesStates.map((v) => BigInt(v.game_id))).toString()
+      : undefined;
 
   const onWithdrawClick = () => {
     setTmType("withdraw");
@@ -177,6 +178,7 @@ const Home = ({
                       variant="yellowBorder"
                       size="large"
                       fullWidth
+                      disabled={lastPastGameID === undefined}
                       onClick={() => onCheckDrawClick(lastPastGameID)}
                     >
                       Check Draw
