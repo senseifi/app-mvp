@@ -28,9 +28,7 @@ export const fireworkOptions: FireworksOptions = {
 
 export const timeToDraw = new Date().getTime() + 24 * 3600 * 1000 + 5000;
 
-export const flipcounterProps = () => {
-  const theme: Theme = useTheme();
-
+export const flipcounterProps = (theme: Theme) => {
   //https://github.com/sLeeNguyen/react-flip-clock-countdown#containerprops
   const flipCDProps: FlipClockCountdownProps = {
     to: timeToDraw,
@@ -66,8 +64,7 @@ export const flipcounterProps = () => {
   return flipCDProps;
 };
 
-export const modalProps = () => {
-  const theme: Theme = useTheme();
+export const modalProps = (theme: Theme) => {
   const modalProps: ModalProps = {
     closeAfterTransition: true,
     slots: { backdrop: Backdrop },

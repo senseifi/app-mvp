@@ -99,7 +99,7 @@ const ClaimWithdrawalModal = ({
 
       setIsLoading(false);
     })();
-  }, [chain.address]);
+  }, [chain.address, params.denom]);
 
   if (!chain.isWalletConnected) {
     chain.openView();
@@ -130,7 +130,7 @@ const ClaimWithdrawalModal = ({
   return (
     <div>
       <Modal
-        {...modalProps()}
+        {...modalProps(theme)}
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={open}

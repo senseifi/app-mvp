@@ -100,7 +100,7 @@ const CheckWinnerModal = ({
 
       setDraw(latestDraw);
     })();
-  }, []);
+  }, [gameID]);
 
   const checkingWinner = () => {
     setLoadingWinner(true);
@@ -186,7 +186,7 @@ const CheckWinnerModal = ({
           <>
             {usrIsWinner === "undefined" && (
               <Box display="flex" mt={3} sx={{ justifyContent: "center" }}>
-                <FlipClockCountdown {...flipcounterProps()} />
+                <FlipClockCountdown {...flipcounterProps(theme)} />
               </Box>
             )}
           </>
@@ -329,7 +329,7 @@ const CheckWinnerModal = ({
   return (
     <div>
       <Modal
-        {...modalProps()}
+        {...modalProps(theme)}
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={open}

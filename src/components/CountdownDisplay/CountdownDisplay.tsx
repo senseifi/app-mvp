@@ -70,7 +70,7 @@ const CountdownDisplay = ({
     const now = Math.floor(Date.now() / 1000);
     setRemainingTime(endTime - now);
     setKey((key) => key + 1);
-  }, []);
+  }, [endTime]);
 
   const renderTime = (dimension: String, time: number) => {
     return (

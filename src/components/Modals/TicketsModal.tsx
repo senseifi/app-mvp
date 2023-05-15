@@ -111,7 +111,7 @@ const TicketsModal = ({
 
   useEffect(() => {
     helperTextMessage();
-  }, [selectedValue, otherValue]);
+  }, [selectedValue, otherValue, helperTextMessage]);
 
   useEffect(() => {
     (async function () {
@@ -194,7 +194,7 @@ const TicketsModal = ({
   return (
     <div>
       <Modal
-        {...modalProps()}
+        {...modalProps(theme)}
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={open}
@@ -278,7 +278,7 @@ const TicketsModal = ({
                       //   textTransform: "uppercase",
                       //   color: theme.palette.secondary.main,
                       // }}
-                      {...flipcounterProps()}
+                      {...flipcounterProps(theme)}
                       to={
                         (nsToSecs(globalState.game_start_time) +
                           gameDurationSecs) *
