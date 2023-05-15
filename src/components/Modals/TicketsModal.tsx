@@ -111,7 +111,7 @@ const TicketsModal = ({
 
   useEffect(() => {
     helperTextMessage();
-  }, [selectedValue, otherValue, helperTextMessage]);
+  }, [selectedValue, otherValue]);
 
   useEffect(() => {
     (async function () {
@@ -144,7 +144,7 @@ const TicketsModal = ({
 
       setIsLoading(false);
     })();
-  }, [chain.address]);
+  }, [chain.address, globalState.game_start_time, params.denom]);
 
   const stake = async () => {
     if (chain.address === undefined) return;

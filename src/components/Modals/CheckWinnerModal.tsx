@@ -235,7 +235,7 @@ const CheckWinnerModal = ({
                   <>
                     <Typography my={2}>
                       <span style={{ fontWeight: "bold" }}>
-                        Are you ready to see if you've won?
+                        Are you ready to see if you&apos;ve won?
                       </span>
                       <br />
                       Keep your fingers crossed...
@@ -297,7 +297,7 @@ const CheckWinnerModal = ({
                       }}
                     >
                       Too bad, <br />
-                      you haven't won this time
+                      you haven&apos;t won this time
                     </Typography>
                     <Button
                       color="secondary"
