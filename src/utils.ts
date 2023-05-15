@@ -18,7 +18,7 @@ export const toAU = (
   10 ** precision;
 
 export const toSU = (amount: number, decimal: number = 6) =>
-  BigInt(amount * 10 ** decimal).toString();
+  BigInt(Math.floor(amount * 10 ** decimal)).toString();
 
 export const roundToDP = (num: number, dp: number) => num.toFixed(dp);
 
