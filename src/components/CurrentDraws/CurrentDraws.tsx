@@ -241,6 +241,7 @@ const CurrentDraws = ({
             </Box>
           )}
           <Box p={3}>
+            <Typography>Round {draw?.id}</Typography>
             <Image
               alt="coin"
               src={seiCoin}

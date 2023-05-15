@@ -115,11 +115,12 @@ const Home = ({
           globalState={globalState}
         />
       )}
-      {selectedGameID !== undefined && (
+      {cwOpen && selectedGameID !== undefined && (
         <CheckWinnerModal
           open={cwOpen}
           setOpen={setCwOpen}
           gameID={selectedGameID}
+          params={params}
         />
       )}
       <Box>
