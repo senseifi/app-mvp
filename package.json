@@ -9,6 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cosmjs/amino": "^0.30.1",
+    "@cosmjs/cosmwasm-stargate": "^0.30.1",
+    "@cosmos-kit/coin98-extension": "^0.2.3",
+    "@cosmos-kit/core": "^1.4.1",
+    "@cosmos-kit/keplr": "^0.33.26",
+    "@cosmos-kit/leap": "^0.14.24",
+    "@cosmos-kit/react": "^1.3.21",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fireworks-js/react": "^2.10.4",
@@ -19,6 +26,7 @@
     "@types/node": "18.16.0",
     "@types/react": "18.0.38",
     "@types/react-dom": "18.0.11",
+    "chain-registry": "^1.13.0",
     "eslint": "8.39.0",
     "eslint-config-next": "13.3.1",
     "next": "13.3.1",

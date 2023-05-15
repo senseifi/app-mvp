@@ -31,6 +31,16 @@ import { Close } from "@mui/icons-material";
 import FlipClockCountdown from "@leenguyen/react-flip-clock-countdown";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import CoinFlipSVG from "../CoinFlipSVG";
+import { Draw } from "@/types/customTypes";
+import { useChain } from "@cosmos-kit/react";
+import { chainName } from "@/config/sei";
+import {
+  SenseifiStakingNllClient,
+  SenseifiStakingNllQueryClient,
+} from "@/contract_clients/SenseifiStakingNll.client";
+import { seiStakingNLLContract } from "@/config/contracts";
+import { StdFee, coin } from "@cosmjs/amino";
+import { Params } from "@/contract_clients/SenseifiStakingNll.types";
 
 const style = {
   position: "absolute",
@@ -46,14 +56,16 @@ const style = {
 const CheckWinnerModal = ({
   open,
   setOpen,
-
   gameID,
+  params,
 }: {
   open: boolean;
   setOpen: Function;
-
-  gameID: number;
+  gameID: string;
+  params: Params;
 }) => {
+  const chain = useChain(chainName);
+
   const theme: Theme = useTheme();
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -62,11 +74,61 @@ const CheckWinnerModal = ({
 
   const [usrIsWinner, setUsrIsWinner] = useState<
     "true" | "false" | "undefined"
-  >("true");
+  >("undefined");
   const [loadingWinner, setLoadingWinner] = useState(false);
+
+  const [draw, setDraw] = useState<Draw>();
+
+  useEffect(() => {
+    (async function () {
+      const client = await chain.getCosmWasmClient();
+
+      const contract = new SenseifiStakingNllQueryClient(
+        client,
+        seiStakingNLLContract
+      );
+
+      const gameState = await contract.getGameState({ gameId: gameID });
+
+      let latestDraw: Draw = {
+        id: gameID,
+        active: false,
+        prize: gameState.total_prize,
+        winner: gameState.winner,
+        prizeClaimed: gameState.prize_claimed,
+      };
+
+      setDraw(latestDraw);
+    })();
+  }, []);
 
   const checkingWinner = () => {
     setLoadingWinner(true);
+    setTimeout(() => {
+      setLoadingWinner(false);
+      setUsrIsWinner(draw?.winner === chain.address ? "true" : "false");
+    }, 5000);
+  };
+
+  const claimPrize = async () => {
+    if (chain.address === undefined) return;
+
+    if (draw?.prizeClaimed === false) {
+      const client = await chain.getSigningCosmWasmClient();
+
+      const contract = new SenseifiStakingNllClient(
+        client,
+        chain.address,
+        seiStakingNLLContract
+      );
+
+      const fee: StdFee = {
+        amount: [coin("10000", params.denom)],
+        gas: "500000",
+      };
+
+      await contract.claimPrize({ gameId: gameID }, fee, undefined, undefined);
+    }
   };
 
   //reset states and close modal
@@ -200,14 +262,24 @@ const CheckWinnerModal = ({
                         // color: "gray",
                       }}
                     >
+                      Round {gameID}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        mt: 2,
+                        mb: 5,
+                        fontSize: 28,
+                        fontWeight: "bold",
+                        // color: "gray",
+                      }}
+                    >
                       You have won!
                     </Typography>
                     <Button
                       variant="yellowFill"
                       size="small"
                       fullWidth
-
-                      // onClick={()=>()}
+                      onClick={claimPrize}
                     >
                       Claim your prize
                     </Button>
@@ -246,6 +318,13 @@ const CheckWinnerModal = ({
       </Box>
     );
   };
+
+  if (draw === undefined) return <></>;
+
+  if (!chain.isWalletConnected) {
+    chain.openView();
+    return <></>;
+  }
 
   return (
     <div>

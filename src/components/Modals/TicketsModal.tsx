@@ -26,6 +26,20 @@ import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import { flipcounterProps, modalProps } from "@/constants/modals";
 import AmountSlider from "../Slider/AmountSlider";
 
+import { useChain } from "@cosmos-kit/react";
+import { chainName } from "@/config/sei";
+import {
+  GlobalState,
+  Params,
+} from "@/contract_clients/SenseifiStakingNll.types";
+import { coin, StdFee } from "@cosmjs/amino";
+import { calculateTickets, nsToSecs, toAU, toSU } from "@/utils";
+import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
+import {
+  SenseifiStakingNllClient,
+  SenseifiStakingNllQueryClient,
+} from "@/contract_clients/SenseifiStakingNll.client";
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -41,13 +55,17 @@ const TicketsModal = ({
   open,
   setOpen,
   tmType,
-  gameID,
+  params,
+  globalState,
 }: {
   open: boolean;
   setOpen: Function;
   tmType: "enter" | "withdraw";
-  gameID: number;
+  params: Params;
+  globalState: GlobalState;
 }) => {
+  const chain = useChain(chainName);
+
   //reset states and close modal
   const handleClose = () => {
     setSelectedValue(0);
@@ -62,6 +80,11 @@ const TicketsModal = ({
 
   const [selectedValue, setSelectedValue] = useState<number>(0);
   const [otherValue, setOtherValue] = useState<number | undefined>();
+
+  const [userBalance, setUserBalance] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [ticketFactor, setTicketFactor] = useState(BigInt(0));
+  const [stakedAmount, setStakedAmount] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedValue(Number(event.target.value));
@@ -79,7 +102,9 @@ const TicketsModal = ({
       setHelperText(`${otherValue !== undefined && otherValue * 10} Tickets`);
     } else {
       setHelperText(
-        `${Intl.NumberFormat("en-US").format(selectedValue * 10)} Tickets`
+        `~ ${Intl.NumberFormat("en-US").format(
+          toAU((BigInt(toSU(selectedValue)) * ticketFactor).toString())
+        )} Tickets`
       );
     }
   };
@@ -87,6 +112,84 @@ const TicketsModal = ({
   useEffect(() => {
     helperTextMessage();
   }, [selectedValue, otherValue]);
+
+  useEffect(() => {
+    (async function () {
+      if (chain.address === undefined) return;
+
+      const client = await chain.getCosmWasmClient();
+
+      const contract = new SenseifiStakingNllQueryClient(
+        client,
+        seiStakingNLLContract
+      );
+
+      const [balance, stake] = await Promise.all([
+        client.getBalance(chain.address, params.denom),
+        contract.getUserState({ user: chain.address }),
+      ]);
+
+      setUserBalance(balance.amount);
+      setStakedAmount(stake.total_stake);
+
+      setTicketFactor(
+        calculateTickets(
+          BigInt(0),
+          BigInt(1),
+          BigInt(Math.floor(Date.now() / 1000)),
+          BigInt(nsToSecs(globalState.game_start_time)),
+          BigInt(nsToSecs(globalState.game_start_time) + gameDurationSecs)
+        )
+      );
+
+      setIsLoading(false);
+    })();
+  }, [chain.address]);
+
+  const stake = async () => {
+    if (chain.address === undefined) return;
+
+    const client = await chain.getSigningCosmWasmClient();
+
+    const contract = new SenseifiStakingNllClient(
+      client,
+      chain.address,
+      seiStakingNLLContract
+    );
+
+    const fee: StdFee = {
+      amount: [coin("10000", params.denom)],
+      gas: "500000",
+    };
+    const funds = coin(toSU(selectedValue), params.denom);
+    await contract.stake({ nonWinner: false }, fee, undefined, [funds]);
+  };
+
+  const unstake = async () => {
+    if (chain.address === undefined || otherValue === undefined) return;
+
+    const client = await chain.getSigningCosmWasmClient();
+
+    const contract = new SenseifiStakingNllClient(
+      client,
+      chain.address,
+      seiStakingNLLContract
+    );
+
+    const fee: StdFee = {
+      amount: [coin("10000", params.denom)],
+      gas: "500000",
+    };
+
+    await contract.unstake({ amount: toSU(otherValue) }, fee);
+  };
+
+  if (!chain.isWalletConnected) {
+    chain.openView();
+    return <></>;
+  }
+
+  if (isLoading) return <></>;
 
   return (
     <div>
@@ -140,8 +243,10 @@ const TicketsModal = ({
                   </ShineButton>
                   <FormControl fullWidth sx={{ mt: 2 }}>
                     <AmountSlider
+                      usrTokens={toAU(userBalance)}
                       title={"Deposit Amount"}
                       setSelectedValue={setSelectedValue}
+                      dp={3}
                     />
                     {/* TODO: error messages based on invalid inputs */}
                     <Box display="flex" alignItems="center" my={2}>
@@ -160,6 +265,7 @@ const TicketsModal = ({
                       size="small"
                       fullWidth
                       // sx={{ fontSize: "0.875rem" }}
+                      onClick={stake}
                     >
                       Enter Draw
                     </Button>
@@ -173,6 +279,11 @@ const TicketsModal = ({
                       //   color: theme.palette.secondary.main,
                       // }}
                       {...flipcounterProps()}
+                      to={
+                        (nsToSecs(globalState.game_start_time) +
+                          gameDurationSecs) *
+                        1000
+                      }
                     />
                   </Box>
                 </>
@@ -184,7 +295,10 @@ const TicketsModal = ({
                       color: theme.palette.secondary.main,
                     }}
                   >
-                    You have <span style={{ fontWeight: "bold" }}>{1000}</span>{" "}
+                    You have{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {toAU(stakedAmount)}
+                    </span>{" "}
                     Sei deposited in this pool
                   </Typography>
                   <TextField
@@ -212,6 +326,7 @@ const TicketsModal = ({
                     size="small"
                     color="error"
                     fullWidth
+                    onClick={unstake}
                   >
                     Withdraw
                   </Button>

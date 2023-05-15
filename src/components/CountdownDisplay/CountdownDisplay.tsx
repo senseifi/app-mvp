@@ -1,5 +1,5 @@
 import { Box, Theme, useMediaQuery, useTheme } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ColorFormat,
   CountdownCircleTimer,
@@ -9,13 +9,32 @@ const minuteSeconds = 60;
 const hourSeconds = 3600;
 const daySeconds = 86400;
 
-const getTimeSeconds = (time: number) => (minuteSeconds - time) | 0;
-const getTimeMinutes = (time: number) =>
-  ((time % hourSeconds) / minuteSeconds) | 0;
-const getTimeHours = (time: number) => ((time % daySeconds) / hourSeconds) | 0;
-const getTimeDays = (time: number) => (time / daySeconds) | 0;
+const getDaysInSecs = (timeSec: number) =>
+  Math.floor(timeSec / daySeconds) * daySeconds;
 
-const CountdownDisplay = () => {
+const getHoursInSecs = (timeSec: number) =>
+  Math.floor((timeSec - getDaysInSecs(timeSec)) / hourSeconds) * hourSeconds;
+
+const getMinsInSecs = (timeSec: number) =>
+  Math.floor(
+    (timeSec - getDaysInSecs(timeSec) - getHoursInSecs(timeSec)) / minuteSeconds
+  ) * minuteSeconds;
+
+const getSecs = (timeSec: number) =>
+  Math.floor(
+    timeSec -
+      getDaysInSecs(timeSec) -
+      getHoursInSecs(timeSec) -
+      getMinsInSecs(timeSec)
+  );
+
+const CountdownDisplay = ({
+  startTime,
+  endTime,
+}: {
+  startTime: number;
+  endTime: number;
+}) => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -44,12 +63,14 @@ const CountdownDisplay = () => {
     lineHeight: "1.5rem",
   };
 
-  const stratTime = Date.now() / 1000; // use UNIX timestamp in seconds
-  const endTime = stratTime + 243248; // use UNIX timestamp in seconds
+  const [remainingTime, setRemainingTime] = useState(0);
+  const [key, setKey] = useState(0);
 
-  const remainingTime = endTime - stratTime;
-  const days = Math.ceil(remainingTime / daySeconds);
-  const daysDuration = days * daySeconds;
+  useEffect(() => {
+    const now = Math.floor(Date.now() / 1000);
+    setRemainingTime(endTime - now);
+    setKey((key) => key + 1);
+  }, []);
 
   const renderTime = (dimension: String, time: number) => {
     return (
@@ -71,19 +92,26 @@ const CountdownDisplay = () => {
     >
       <CountdownCircleTimer
         {...timerProps}
-        duration={daysDuration}
-        initialRemainingTime={remainingTime}
+        key={`${key}-day`}
+        duration={getDaysInSecs(endTime - startTime)}
+        initialRemainingTime={getDaysInSecs(remainingTime)}
       >
         {({ elapsedTime }) => (
           <span style={spanStyle}>
-            {renderTime("days", getTimeDays(daysDuration - elapsedTime))}
+            {renderTime(
+              "days",
+              (getDaysInSecs(endTime - startTime) -
+                getDaysInSecs(elapsedTime)) /
+                daySeconds
+            )}
           </span>
         )}
       </CountdownCircleTimer>
       <CountdownCircleTimer
         {...timerProps}
+        key={`${key}-hr`}
         duration={daySeconds}
-        initialRemainingTime={remainingTime % daySeconds}
+        initialRemainingTime={getHoursInSecs(remainingTime)}
         onComplete={(totalElapsedTime) => ({
           shouldRepeat: remainingTime - totalElapsedTime > hourSeconds,
         })}
@@ -92,15 +120,16 @@ const CountdownDisplay = () => {
           <span style={spanStyle}>
             {renderTime(
               `${isSmallScreen ? "hrs" : "hours"}`,
-              getTimeHours(daySeconds - elapsedTime)
+              24 - getHoursInSecs(elapsedTime) / hourSeconds
             )}
           </span>
         )}
       </CountdownCircleTimer>
       <CountdownCircleTimer
         {...timerProps}
+        key={`${key}-min`}
         duration={hourSeconds}
-        initialRemainingTime={remainingTime % hourSeconds}
+        initialRemainingTime={getMinsInSecs(remainingTime)}
         onComplete={(totalElapsedTime) => ({
           shouldRepeat: remainingTime - totalElapsedTime > minuteSeconds,
         })}
@@ -109,15 +138,16 @@ const CountdownDisplay = () => {
           <span style={spanStyle}>
             {renderTime(
               `${isSmallScreen ? "mins" : "minutes"}`,
-              getTimeMinutes(hourSeconds - elapsedTime)
+              60 - getMinsInSecs(elapsedTime) / minuteSeconds
             )}
           </span>
         )}
       </CountdownCircleTimer>
       <CountdownCircleTimer
         {...timerProps}
+        key={`${key}-sec`}
         duration={minuteSeconds}
-        initialRemainingTime={remainingTime % minuteSeconds}
+        initialRemainingTime={getSecs(remainingTime)}
         onComplete={(totalElapsedTime) => ({
           shouldRepeat: remainingTime - totalElapsedTime > 0,
         })}
@@ -126,7 +156,7 @@ const CountdownDisplay = () => {
           <span style={spanStyle}>
             {renderTime(
               `${isSmallScreen ? "secs" : "seconds"}`,
-              getTimeSeconds(elapsedTime)
+              60 - getSecs(elapsedTime)
             )}
           </span>
         )}

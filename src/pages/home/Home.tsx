@@ -22,21 +22,29 @@ import { Draw, ModalDetails } from "@/types/customTypes";
 import WinnerHistory from "@/components/WinnerHistory/WinnerHistory";
 import TicketsModal from "@/components/Modals/TicketsModal";
 import CheckWinnerModal from "@/components/Modals/CheckWinnerModal";
+import ClaimWithdrawalModal from "@/components/Modals/ClaimWithdrawalModal";
+import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { rpcEndpoint } from "@/config/sei";
+import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
+import {
+  Params,
+  GlobalState,
+  GameState,
+} from "@/contract_clients/SenseifiStakingNll.types";
+import { nsToSecs, toAU, bigIntMax } from "@/utils";
 
-const currentDraws: Draw[] = [
-  {
-    id: 2345,
-    active: true,
-    prize: 2000,
-    totDeposit: 20000,
-    totTix: 50000,
-    usrDeposit: 2000,
-    usrTix: 5000,
-    timeRem: 1683146205, //unix timestamp
-  },
-];
-
-const Home = () => {
+const Home = ({
+  params,
+  globalState,
+  totalRewards,
+  pastGamesStates,
+}: {
+  params: Params;
+  globalState: GlobalState;
+  totalRewards: string;
+  pastGamesStates: GameState[];
+}) => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -47,58 +55,85 @@ const Home = () => {
 
   const [tmOpen, setTmOpen] = useState(false);
   const [cwOpen, setCwOpen] = useState(false);
+  const [cwithdrawOpen, setcwithdrawOpen] = useState(false);
 
-  const [selectedGameID, setSelectedGameID] = useState<number | undefined>();
+  const [selectedGameID, setSelectedGameID] = useState<string | undefined>();
   const [tmType, setTmType] = useState<"enter" | "withdraw">("enter"); // Tickets Modal Type
 
-  const onWithdrawClick = (gameID: number | undefined) => {
-    if (
-      gameID === undefined
-      // || !isConnected
-    )
-      return;
+  const grandPrize = (
+    (BigInt(totalRewards) * BigInt(7)) /
+    BigInt(10)
+  ).toString();
 
-    setSelectedGameID(gameID);
+  const currentDraws = pastGamesStates.map((v) => {
+    let draw: Draw = {
+      id: v.game_id,
+      active: false,
+      prize: v.total_prize,
+      winner: v.winner,
+      prizeClaimed: v.prize_claimed,
+    };
+    return draw;
+  });
+
+  currentDraws.push({
+    id: (BigInt(globalState.game_counter) - BigInt(1)).toString(),
+    active: true,
+    prize: grandPrize,
+    endTime: nsToSecs(globalState.game_start_time) + gameDurationSecs,
+    totDeposit: globalState.total_stake,
+  });
+
+  currentDraws.sort((a, b) => (BigInt(a.id) < BigInt(b.id) ? 1 : -1));
+
+  const lastPastGameID = bigIntMax(
+    pastGamesStates.map((v) => BigInt(v.game_id))
+  ).toString();
+
+  const onWithdrawClick = () => {
     setTmType("withdraw");
     setTmOpen(true);
   };
 
-  const onEnterNowClick = (gameID: number | undefined) => {
-    if (
-      gameID === undefined
-      // || !isConnected
-    )
-      return;
-    setSelectedGameID(gameID);
+  const onEnterNowClick = () => {
     setTmType("enter");
     setTmOpen(true);
   };
 
-  const onCheckDrawClick = (gameID: number | undefined) => {
-    if (
-      gameID === undefined
-      // || !isConnected
-    )
-      return;
+  const onCheckDrawClick = (gameID: string | undefined) => {
+    if (gameID === undefined) return;
     setSelectedGameID(gameID);
     setCwOpen(true);
   };
 
+  const onClaimWithdrawalClick = () => {
+    setcwithdrawOpen(true);
+  };
+
   return (
     <>
-      {selectedGameID !== undefined && (
+      {tmOpen && (
         <TicketsModal
           open={tmOpen}
           setOpen={setTmOpen}
           tmType={tmType}
-          gameID={selectedGameID}
+          params={params}
+          globalState={globalState}
         />
       )}
-      {selectedGameID !== undefined && (
+      {cwOpen && selectedGameID !== undefined && (
         <CheckWinnerModal
           open={cwOpen}
           setOpen={setCwOpen}
           gameID={selectedGameID}
+          params={params}
+        />
+      )}
+      {cwithdrawOpen && (
+        <ClaimWithdrawalModal
+          open={cwithdrawOpen}
+          setOpen={setcwithdrawOpen}
+          params={params}
         />
       )}
       <Box>
@@ -132,7 +167,7 @@ const Home = () => {
                       variant="yellowFill"
                       size="large"
                       fullWidth
-                      onClick={() => onEnterNowClick(currentDraws[0].id)}
+                      onClick={onEnterNowClick}
                     >
                       {isSmallScreen ? "Enter" : "Enter to Win"}
                     </Button>
@@ -142,15 +177,19 @@ const Home = () => {
                       variant="yellowBorder"
                       size="large"
                       fullWidth
-                      onClick={() => onCheckDrawClick(currentDraws[0].id)}
+                      onClick={() => onCheckDrawClick(lastPastGameID)}
                     >
                       Check Draw
                     </Button>
                   </Grid>
                 </Grid>
               </Box>
-
-              <CountdownDisplay />
+              <CountdownDisplay
+                startTime={nsToSecs(globalState.game_start_time)}
+                endTime={
+                  nsToSecs(globalState.game_start_time) + gameDurationSecs
+                }
+              />
             </Grid>
             <Grid xs={12} md={6} alignSelf="center">
               <Image
@@ -166,7 +205,7 @@ const Home = () => {
               <Box textAlign="center" marginTop={5}>
                 <Box>
                   <Typography fontSize={20}>Grand Prize:</Typography>
-                  <ShineButton>{currentDraws[0].prize} Sei</ShineButton>
+                  <ShineButton>{toAU(grandPrize)} Sei</ShineButton>
                 </Box>
 
                 <Grid
@@ -177,7 +216,7 @@ const Home = () => {
                 >
                   <Typography fontSize={20}>Total Deposits:</Typography>
                   <Typography fontSize={30}>
-                    {currentDraws[0].totDeposit} Sei
+                    {toAU(globalState.total_stake)} Sei
                   </Typography>
                 </Grid>
               </Box>
@@ -198,6 +237,7 @@ const Home = () => {
                 onEnterNowClick={onEnterNowClick}
                 onWithdrawClick={onWithdrawClick}
                 onCheckDrawClick={onCheckDrawClick}
+                onClaimWithdrawalClick={onClaimWithdrawalClick}
               />
             ))}
             {!isMediumScreen &&
@@ -211,6 +251,7 @@ const Home = () => {
                     onEnterNowClick={onEnterNowClick}
                     onWithdrawClick={onWithdrawClick}
                     onCheckDrawClick={onCheckDrawClick}
+                    onClaimWithdrawalClick={onClaimWithdrawalClick}
                   />
                 )
               )}
@@ -222,6 +263,30 @@ const Home = () => {
       </Box>
     </>
   );
+};
+
+export const getServerSideProps = async () => {
+  const cosmWasmClient = await CosmWasmClient.connect(rpcEndpoint);
+
+  const contract = new SenseifiStakingNllQueryClient(
+    cosmWasmClient,
+    seiStakingNLLContract
+  );
+
+  const [params, globalState, totalRewards] = await Promise.all([
+    contract.getParams(),
+    contract.getGlobalState(),
+    contract.getTotalRewards(),
+  ]);
+
+  const pastGamesStates: GameState[] = [];
+  const numPastGames = BigInt(globalState.game_counter) - BigInt(1);
+
+  for (let i = BigInt(0); i < numPastGames; i++) {
+    pastGamesStates.push(await contract.getGameState({ gameId: i.toString() }));
+  }
+
+  return { props: { params, globalState, totalRewards, pastGamesStates } };
 };
 
 export default Home;
