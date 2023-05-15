@@ -258,12 +258,12 @@ export const getServerSideProps = async () => {
     contract.getTotalRewards(),
   ]);
 
+  const pastGamesStates: GameState[] = [];
   const numPastGames = BigInt(globalState.game_counter) - BigInt(1);
-  const pastGamesPrmArr = [];
+
   for (let i = BigInt(0); i < numPastGames; i++) {
-    pastGamesPrmArr.push(contract.getGameState({ gameId: i.toString() }));
+    pastGamesStates.push(await contract.getGameState({ gameId: i.toString() }));
   }
-  const pastGamesStates = await Promise.all(pastGamesPrmArr);
 
   return { props: { params, globalState, totalRewards, pastGamesStates } };
 };
