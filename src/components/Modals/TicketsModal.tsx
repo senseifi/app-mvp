@@ -83,7 +83,7 @@ const TicketsModal = ({
 
   const [userBalance, setUserBalance] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [ticketFactor, setTicketFactor] = useState(0);
+  const [ticketFactor, setTicketFactor] = useState(BigInt(0));
   const [stakedAmount, setStakedAmount] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +103,7 @@ const TicketsModal = ({
     } else {
       setHelperText(
         `~ ${Intl.NumberFormat("en-US").format(
-          selectedValue * ticketFactor
+          toAU((BigInt(toSU(selectedValue)) * ticketFactor).toString())
         )} Tickets`
       );
     }
@@ -134,13 +134,12 @@ const TicketsModal = ({
 
       setTicketFactor(
         calculateTickets(
-          0,
-          1,
-          Math.floor(Date.now() / 1000),
-          nsToSecs(globalState.game_start_time),
-          nsToSecs(globalState.game_start_time) + gameDurationSecs
-        ) /
-          10 ** 6
+          BigInt(0),
+          BigInt(1),
+          BigInt(Math.floor(Date.now() / 1000)),
+          BigInt(nsToSecs(globalState.game_start_time)),
+          BigInt(nsToSecs(globalState.game_start_time) + gameDurationSecs)
+        )
       );
 
       setIsLoading(false);

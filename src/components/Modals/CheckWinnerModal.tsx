@@ -46,13 +46,11 @@ const style = {
 const CheckWinnerModal = ({
   open,
   setOpen,
-
   gameID,
 }: {
   open: boolean;
   setOpen: Function;
-
-  gameID: number;
+  gameID: string;
 }) => {
   const theme: Theme = useTheme();
 
@@ -191,6 +189,17 @@ const CheckWinnerModal = ({
                 )}
                 {usrIsWinner === "true" && (
                   <>
+                    <Typography
+                      sx={{
+                        mt: 2,
+                        mb: 5,
+                        fontSize: 28,
+                        fontWeight: "bold",
+                        // color: "gray",
+                      }}
+                    >
+                      Round {gameID}
+                    </Typography>
                     <Typography
                       sx={{
                         mt: 2,

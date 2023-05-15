@@ -6,14 +6,16 @@ export interface Size {
 }
 
 export type Draw = {
-  id: number;
+  id: string;
   active: boolean;
-  prize: number;
-  totDeposit: number;
-  totTix: number;
-  usrDeposit: number;
-  usrTix: number;
-  timeRem: number;
+  prize: string;
+  totDeposit?: string;
+  totTix?: string;
+  usrDeposit?: string;
+  usrTix?: string;
+  endTime?: number;
+  winner?: string;
+  prizeClaimed?: boolean;
 };
 
 export type ModalDetails = {

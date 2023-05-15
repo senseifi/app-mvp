@@ -29,30 +29,20 @@ import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
 import {
   Params,
   GlobalState,
+  GameState,
 } from "@/contract_clients/SenseifiStakingNll.types";
-import { nsToSecs, toAU } from "@/utils";
-
-const currentDraws: Draw[] = [
-  {
-    id: 2345,
-    active: true,
-    prize: 2000,
-    totDeposit: 20000,
-    totTix: 50000,
-    usrDeposit: 2000,
-    usrTix: 5000,
-    timeRem: 1683146205, //unix timestamp
-  },
-];
+import { nsToSecs, toAU, bigIntMax } from "@/utils";
 
 const Home = ({
   params,
   globalState,
   totalRewards,
+  pastGamesStates,
 }: {
   params: Params;
   globalState: GlobalState;
   totalRewards: string;
+  pastGamesStates: GameState[];
 }) => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -65,8 +55,33 @@ const Home = ({
   const [tmOpen, setTmOpen] = useState(false);
   const [cwOpen, setCwOpen] = useState(false);
 
-  const [selectedGameID, setSelectedGameID] = useState<number | undefined>();
+  const [selectedGameID, setSelectedGameID] = useState<string | undefined>();
   const [tmType, setTmType] = useState<"enter" | "withdraw">("enter"); // Tickets Modal Type
+
+  const currentDraws = pastGamesStates.map((v) => {
+    let draw: Draw = {
+      id: v.game_id,
+      active: false,
+      prize: v.total_prize,
+      winner: v.winner,
+      prizeClaimed: v.prize_claimed,
+    };
+    return draw;
+  });
+
+  currentDraws.push({
+    id: (BigInt(globalState.game_counter) - BigInt(1)).toString(),
+    active: true,
+    prize: totalRewards,
+    endTime: nsToSecs(globalState.game_start_time) + gameDurationSecs,
+    totDeposit: globalState.total_stake,
+  });
+
+  currentDraws.sort((a, b) => (BigInt(a.id) < BigInt(b.id) ? 1 : -1));
+
+  const lastPastGameID = bigIntMax(
+    pastGamesStates.map((v) => BigInt(v.game_id))
+  ).toString();
 
   const onWithdrawClick = () => {
     setTmType("withdraw");
@@ -78,12 +93,8 @@ const Home = ({
     setTmOpen(true);
   };
 
-  const onCheckDrawClick = (gameID: number | undefined) => {
-    if (
-      gameID === undefined
-      // || !isConnected
-    )
-      return;
+  const onCheckDrawClick = (gameID: string | undefined) => {
+    if (gameID === undefined) return;
     setSelectedGameID(gameID);
     setCwOpen(true);
   };
@@ -147,7 +158,7 @@ const Home = ({
                       variant="yellowBorder"
                       size="large"
                       fullWidth
-                      onClick={() => onCheckDrawClick(currentDraws[0].id)}
+                      onClick={() => onCheckDrawClick(lastPastGameID)}
                     >
                       Check Draw
                     </Button>
@@ -247,7 +258,14 @@ export const getServerSideProps = async () => {
     contract.getTotalRewards(),
   ]);
 
-  return { props: { params, globalState, totalRewards } };
+  const numPastGames = BigInt(globalState.game_counter) - BigInt(1);
+  const pastGamesPrmArr = [];
+  for (let i = BigInt(0); i < numPastGames; i++) {
+    pastGamesPrmArr.push(contract.getGameState({ gameId: i.toString() }));
+  }
+  const pastGamesStates = await Promise.all(pastGamesPrmArr);
+
+  return { props: { params, globalState, totalRewards, pastGamesStates } };
 };
 
 export default Home;

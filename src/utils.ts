@@ -23,20 +23,32 @@ export const toSU = (amount: number, decimal: number = 6) =>
 export const roundToDP = (num: number, dp: number) => num.toFixed(dp);
 
 export const calculateTickets = (
-  totalTickets: number,
-  totalStake: number,
-  lastUpdateTime: number,
-  gameStartTime: number,
-  currentTime: number
+  totalTickets: BigInt,
+  totalStake: BigInt,
+  lastUpdateTime: BigInt,
+  gameStartTime: BigInt,
+  currentTime: BigInt
 ) => {
-  const validLastUpdateTime = Math.max(lastUpdateTime, gameStartTime);
+  const validLastUpdateTime =
+    lastUpdateTime > gameStartTime ? lastUpdateTime : gameStartTime;
 
   let inRange = false;
   if (lastUpdateTime >= gameStartTime) {
     inRange = true;
   }
 
-  const validTotalTickets = inRange ? totalTickets : 0;
+  const validTotalTickets: BigInt = inRange ? totalTickets : BigInt(0);
 
-  return validTotalTickets + totalStake * (currentTime - validLastUpdateTime);
+  const diff =
+    BigInt(currentTime.toString()) - BigInt(validLastUpdateTime.toString());
+
+  const additional = BigInt(totalStake.toString()) + BigInt(diff.toString());
+
+  const newTickets =
+    BigInt(validTotalTickets.toString()) + BigInt(additional.toString());
+
+  return newTickets;
 };
+
+export const bigIntMax = (args: BigInt[]) =>
+  args.reduce((m, e) => (e > m ? e : m));

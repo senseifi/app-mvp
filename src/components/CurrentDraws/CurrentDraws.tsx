@@ -21,6 +21,11 @@ import FlipClockCountdown from "@leenguyen/react-flip-clock-countdown";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import { Info, Person, Undo } from "@mui/icons-material";
 import { gameDetailsGridProps } from "@/constants/modals";
+import { calculateTickets, nsToSecs, toAU } from "@/utils";
+import { useChain } from "@cosmos-kit/react";
+import { chainName } from "@/config/sei";
+import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
+import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
 
 const ITEM_HEIGHT = 48;
 
@@ -41,6 +46,8 @@ const CurrentDraws = ({
   onWithdrawClick: Function;
   onCheckDrawClick: Function;
 }) => {
+  const chain = useChain(chainName);
+
   //Withdraw button for compact UI and encouraging people to keep playing
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -62,6 +69,75 @@ const CurrentDraws = ({
   //After clicking withdraw, once the amount is available
   const [claimAvailable, setClaimAvailable] = useState(false);
 
+  const [stats, setStats] = useState<{
+    totalDeposit: string;
+    totalTickets: string;
+    userDeposit: undefined | string;
+    userTickets: undefined | string;
+  }>({
+    totalDeposit: "",
+    totalTickets: "",
+    userDeposit: undefined,
+    userTickets: undefined,
+  });
+
+  const fetchStats = async () => {
+    const client = await chain.getCosmWasmClient();
+
+    const contract = new SenseifiStakingNllQueryClient(
+      client,
+      seiStakingNLLContract
+    );
+
+    const [params, globalState] = await Promise.all([
+      contract.getParams(),
+      contract.getGlobalState(),
+    ]);
+
+    const totalTickets = BigInt(globalState.total_tickets);
+    const totalStake = BigInt(globalState.total_stake);
+    const lastUpdateTime = BigInt(nsToSecs(globalState.last_update_time));
+    const gameStartTime = BigInt(nsToSecs(globalState.game_start_time));
+    const currentTime = BigInt(Math.floor(Date.now() / 1000));
+
+    const newTotalTickets = calculateTickets(
+      totalTickets,
+      totalStake,
+      lastUpdateTime,
+      gameStartTime,
+      gameStartTime + BigInt(gameDurationSecs)
+    );
+
+    let newUserTickets: BigInt | undefined = undefined;
+    let userStake: BigInt | undefined = undefined;
+
+    if (chain.address) {
+      const userState = await contract.getUserState({ user: chain.address });
+
+      const totalTickets = BigInt(userState.total_tickets);
+      const totalStake = BigInt(userState.total_stake);
+      const lastUpdateTime = BigInt(nsToSecs(userState.last_update_time));
+
+      userStake = totalStake;
+      newUserTickets = calculateTickets(
+        totalTickets,
+        totalStake,
+        lastUpdateTime,
+        gameStartTime,
+        gameStartTime + BigInt(gameDurationSecs)
+      );
+    }
+
+    setStats({
+      totalDeposit: totalStake.toString(),
+      totalTickets: newTotalTickets.toString(),
+      userDeposit: userStake?.toString(),
+      userTickets: newUserTickets?.toString(),
+    });
+
+    setShowDetails(true);
+  };
+
   if (!notActive) {
     return (
       <>
@@ -74,16 +150,18 @@ const CurrentDraws = ({
           borderColor={theme.palette.secondary.main}
           position={"relative"}
         >
-          <Box textAlign="end" height={10} position="absolute" right={0}>
-            <IconButton
-              aria-label="more"
-              color="secondary"
-              sx={{ p: 0.5 }}
-              onClick={() => setShowDetails(true)}
-            >
-              <Info />
-            </IconButton>
-          </Box>
+          {draw?.active ? (
+            <Box textAlign="end" height={10} position="absolute" right={0}>
+              <IconButton
+                aria-label="more"
+                color="secondary"
+                sx={{ p: 0.5 }}
+                onClick={fetchStats}
+              >
+                <Info />
+              </IconButton>
+            </Box>
+          ) : null}
           {showDetails && (
             <Box
               bgcolor={theme.palette.primary.main}
@@ -124,25 +202,39 @@ const CurrentDraws = ({
                 <Grid {...gameDetailsGridProps}>
                   <Typography>Total Deposit:</Typography>
                   <Typography>
-                    {Intl.NumberFormat("en-US").format(1234)} Sei
+                    {Intl.NumberFormat("en-US").format(
+                      toAU(stats.totalDeposit)
+                    )}{" "}
+                    Sei
                   </Typography>
                 </Grid>
                 <Grid {...gameDetailsGridProps}>
                   <Typography>Total Tickets:</Typography>
                   <Typography>
-                    {Intl.NumberFormat("en-US").format(123456)}
+                    {Intl.NumberFormat("en-US").format(
+                      toAU(stats.totalTickets)
+                    )}
                   </Typography>
                 </Grid>
                 <Grid {...gameDetailsGridProps} mt={3}>
                   <Typography fontWeight="bold">Your Deposit:</Typography>
                   <Typography fontWeight="bold">
-                    {Intl.NumberFormat("en-US").format(123)} Sei
+                    {stats.userDeposit !== undefined
+                      ? Intl.NumberFormat("en-US").format(
+                          toAU(stats.userDeposit)
+                        )
+                      : "-"}{" "}
+                    Sei
                   </Typography>
                 </Grid>
                 <Grid {...gameDetailsGridProps}>
                   <Typography fontWeight="bold">Your Tickets:</Typography>
                   <Typography fontWeight="bold">
-                    {Intl.NumberFormat("en-US").format(12345)}
+                    {stats.userTickets !== undefined
+                      ? Intl.NumberFormat("en-US").format(
+                          toAU(stats.userTickets)
+                        )
+                      : "-"}
                   </Typography>
                 </Grid>
               </Grid>
@@ -168,19 +260,26 @@ const CurrentDraws = ({
             >
               <Typography>Grand Prize:&nbsp;</Typography>
               <Typography fontWeight="bold">
-                {draw === undefined ? "" : draw.prize}
+                {draw === undefined ? "" : toAU(draw.prize)}
               </Typography>
             </Grid>
-            <Grid container px={3} justifyContent="center">
-              <Typography>Total Deposits:&nbsp;</Typography>
-              <Typography fontWeight="bold" mb={2}>
-                {draw === undefined ? "" : draw.totDeposit}
-
-                {/* {draw === undefined ? "" : draw.id} */}
-              </Typography>
-            </Grid>
+            {draw?.totDeposit !== undefined ? (
+              <Grid container px={3} justifyContent="center">
+                <Typography>Total Deposits:&nbsp;</Typography>
+                <Typography fontWeight="bold" mb={2}>
+                  {toAU(draw.totDeposit)}
+                </Typography>
+              </Grid>
+            ) : (
+              <Grid container px={3} justifyContent="center">
+                <Typography>&nbsp;</Typography>
+                <Typography fontWeight="bold" mb={2}>
+                  &nbsp;
+                </Typography>
+              </Grid>
+            )}
             <FlipClockCountdown
-              to={new Date().getTime() + 24 * 3600 * 1000 + 5000}
+              to={draw?.endTime !== undefined ? draw.endTime * 1000 : 0}
               labels={["DAYS", "HOURS", "MINUTES", "SECONDS"]}
               labelStyle={{
                 fontSize: 10,
@@ -202,82 +301,85 @@ const CurrentDraws = ({
               }}
               duration={0.5}
             />
-            <Grid container spacing={1} marginTop={2}>
-              <Grid item xs={12} md={5}>
-                <Button
-                  variant="yellowFill"
-                  size="small"
-                  fullWidth
-                  sx={{ fontSize: "0.875rem" }}
-                  onClick={() =>
-                    onEnterNowClick(draw === undefined ? "" : draw.id)
-                  }
-                >
-                  Enter
-                </Button>
-              </Grid>
-              <Grid item xs={10} md={5}>
-                <Button
-                  variant="yellowBorder"
-                  size="small"
-                  fullWidth
-                  sx={{ fontSize: "0.875rem" }}
-                  onClick={() =>
-                    onCheckDrawClick(draw === undefined ? "" : draw.id)
-                  }
-                >
-                  Check&nbsp;Draw
-                </Button>
-              </Grid>
-              <Grid item xs={2} md={2} sx={{ paddingLeft: "0 !important" }}>
-                <IconButton
-                  aria-label="more"
-                  id="long-button"
-                  aria-controls={openMenu ? "long-menu" : undefined}
-                  aria-expanded={openMenu ? "true" : undefined}
-                  aria-haspopup="true"
-                  onClick={handleClick}
-                  color="secondary"
-                >
-                  {claimAvailable ? (
-                    <Badge badgeContent="!" color="tertiary">
+            <Grid container spacing={1} marginTop={2} justifyContent="center">
+              {draw?.active ? (
+                <Grid item xs={12} md={5}>
+                  <Button
+                    variant="yellowFill"
+                    size="small"
+                    fullWidth
+                    sx={{ fontSize: "0.875rem" }}
+                    onClick={() => onEnterNowClick()}
+                  >
+                    Enter
+                  </Button>
+                </Grid>
+              ) : (
+                <Grid item xs={10} md={5}>
+                  <Button
+                    variant="yellowBorder"
+                    size="small"
+                    fullWidth
+                    sx={{ fontSize: "0.875rem" }}
+                    onClick={() =>
+                      onCheckDrawClick(draw === undefined ? "" : draw.id)
+                    }
+                  >
+                    Check&nbsp;Draw
+                  </Button>
+                </Grid>
+              )}
+              {draw?.active && (
+                <Grid item xs={2} md={2} sx={{ paddingLeft: "0 !important" }}>
+                  <IconButton
+                    aria-label="more"
+                    id="long-button"
+                    aria-controls={openMenu ? "long-menu" : undefined}
+                    aria-expanded={openMenu ? "true" : undefined}
+                    aria-haspopup="true"
+                    onClick={handleClick}
+                    color="secondary"
+                  >
+                    {claimAvailable ? (
+                      <Badge badgeContent="!" color="tertiary">
+                        <MoreVertIcon />
+                      </Badge>
+                    ) : (
                       <MoreVertIcon />
-                    </Badge>
-                  ) : (
-                    <MoreVertIcon />
-                  )}
-                </IconButton>
-                <Menu
-                  id="long-menu"
-                  MenuListProps={{
-                    "aria-labelledby": "long-button",
-                  }}
-                  anchorEl={anchorEl}
-                  open={openMenu}
-                  onClose={handleClose}
-                  PaperProps={{
-                    style: {
-                      maxHeight: ITEM_HEIGHT * 4.5,
-                      width: "max-content",
-                      border: "2px solid",
-                      borderColor: theme.palette.tertiary.main,
-                      borderRadius: 10,
-                    },
-                  }}
-                >
-                  {claimAvailable ? (
-                    <MenuItem>Claim your withdrawal</MenuItem>
-                  ) : (
-                    <MenuItem
-                      onClick={() =>
-                        onWithdrawClick(draw === undefined ? "" : draw.id)
-                      }
-                    >
-                      Withdraw
-                    </MenuItem>
-                  )}
-                </Menu>
-              </Grid>
+                    )}
+                  </IconButton>
+                  <Menu
+                    id="long-menu"
+                    MenuListProps={{
+                      "aria-labelledby": "long-button",
+                    }}
+                    anchorEl={anchorEl}
+                    open={openMenu}
+                    onClose={handleClose}
+                    PaperProps={{
+                      style: {
+                        maxHeight: ITEM_HEIGHT * 4.5,
+                        width: "max-content",
+                        border: "2px solid",
+                        borderColor: theme.palette.tertiary.main,
+                        borderRadius: 10,
+                      },
+                    }}
+                  >
+                    {claimAvailable ? (
+                      <MenuItem>Claim your withdrawal</MenuItem>
+                    ) : (
+                      <MenuItem
+                        onClick={() =>
+                          onWithdrawClick(draw === undefined ? "" : draw.id)
+                        }
+                      >
+                        Withdraw
+                      </MenuItem>
+                    )}
+                  </Menu>
+                </Grid>
+              )}
             </Grid>
           </Box>
         </Box>
