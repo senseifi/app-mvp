@@ -33,8 +33,10 @@ import {
   GameState,
 } from "@/contract_clients/SenseifiStakingNll.types";
 import { nsToSecs, toAU, bigIntMax } from "@/utils";
+import Loader from "@/components/Loader/Loader";
+import Notification from "@/components/Notification/Notification";
 
-const Home = ({
+const home = ({
   params,
   globalState,
   totalRewards,
@@ -111,6 +113,15 @@ const Home = ({
     setcwithdrawOpen(true);
   };
 
+  const [openNotif, setOpenNotif] = useState(false);
+  const handleCloseNotif = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenNotif(false);
+  };
+
   return (
     <>
       {tmOpen && (
@@ -146,6 +157,16 @@ const Home = ({
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <main className={`${styles.main}`}>
+          {/* <Button variant="contained" onClick={() => setOpenNotif(true)}>
+            Show Snackbar
+          </Button>
+          <Notification
+            open={openNotif}
+            message="This is a simple snackbar"
+            onClose={handleCloseNotif}
+            severity="error" //success, info, warning, error
+
+          /> */}
           <Grid container spacing={5}>
             <Grid xs={12} md={6}>
               <Typography variant="h1" sx={{ fontWeight: "medium" }}>
@@ -291,4 +312,4 @@ export const getServerSideProps = async () => {
   return { props: { params, globalState, totalRewards, pastGamesStates } };
 };
 
-export default Home;
+export default home;

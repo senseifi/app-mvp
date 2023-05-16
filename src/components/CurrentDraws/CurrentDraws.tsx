@@ -10,6 +10,7 @@ import {
   Menu,
   MenuItem,
   Badge,
+  Chip,
 } from "@mui/material";
 import React, { CSSProperties, useState } from "react";
 import seiCoin from "../../assets/sei-coin.png";
@@ -243,7 +244,15 @@ const CurrentDraws = ({
             </Box>
           )}
           <Box p={3}>
-            <Typography>Round {draw?.id}</Typography>
+            <Box
+              textAlign="end"
+              height={10}
+              position="absolute"
+              left={0}
+              top={0}
+            >
+              <Chip label={" Round " + draw?.id} sx={{ m: 1 }} />
+            </Box>
             <Image
               alt="coin"
               src={seiCoin}
@@ -306,7 +315,7 @@ const CurrentDraws = ({
             />
             <Grid container spacing={1} marginTop={2} justifyContent="center">
               {draw?.active ? (
-                <Grid item xs={12} md={5}>
+                <Grid item xs={10} md={10}>
                   <Button
                     variant="yellowFill"
                     size="small"
@@ -318,7 +327,7 @@ const CurrentDraws = ({
                   </Button>
                 </Grid>
               ) : (
-                <Grid item xs={10} md={5}>
+                <Grid item xs={10} md={10}>
                   <Button
                     variant="yellowBorder"
                     size="small"

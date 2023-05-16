@@ -53,7 +53,7 @@ const NavBar = () => {
       ) : (
         ""
       )}
-      <Link href="/home">
+      <Link href="/home" width={"100%"}>
         <Image
           alt="SenSei Finance Logo"
           src={logoLight}
@@ -68,7 +68,7 @@ const NavBar = () => {
         variant="contained"
         color={theme.palette.mode === "dark" ? "secondary" : "primary"} //workaround
         disableElevation
-        startIcon={<AccountBalanceWallet />}
+        startIcon={<AccountBalanceWallet sx={{ ml: 1 }} />}
         size="large"
         sx={{
           backgroundColor: isSmallScreen ? "transparent" : "#FFF",
@@ -79,11 +79,13 @@ const NavBar = () => {
           },
         }}
       >
-        {isSmallScreen
-          ? ""
-          : chain.isWalletConnected
-          ? truncateAddress(chain.address)
-          : "Connect Wallet"}
+        {isSmallScreen ? (
+          ""
+        ) : chain.isWalletConnected ? (
+          truncateAddress(chain.address)
+        ) : (
+          <span style={{ marginRight: "0.5rem" }}>Connect&nbsp;Wallet</span>
+        )}
       </Button>
     </Box>
   );

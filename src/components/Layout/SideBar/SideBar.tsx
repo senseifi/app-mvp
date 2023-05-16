@@ -19,7 +19,7 @@ import {
   IntegrationInstructions,
   WaterDrop,
 } from "@mui/icons-material";
-import { Box, Button, useMediaQuery } from "@mui/material";
+import { Box, Button, Grid, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/router";
 
 const SideBar = () => {
@@ -127,35 +127,130 @@ const SideBar = () => {
             //     : {}
             // }
           >
-            Portfolio
+            <Grid
+              container
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Grid item>Portfolio</Grid>
+              <Grid
+                item
+                sx={{
+                  fontSize: "10px",
+                  px: 1,
+                  backgroundColor: "#ffdc2c6e",
+                  border: "1px solid #FFDB2C",
+                  borderRadius: "5px",
+                }}
+              >
+                SOON
+              </Grid>
+            </Grid>
           </MenuItem>
           <MenuItem
             icon={<WaterDrop />}
             // component={<Link to="liquidity" />}
             // eslint-disable-next-line
           >
-            Liquidity
+            <Grid
+              container
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Grid item>Liquidity</Grid>
+              <Grid
+                item
+                sx={{
+                  fontSize: "10px",
+                  px: 1,
+                  backgroundColor: "#ffdc2c6e",
+                  border: "1px solid #FFDB2C",
+                  borderRadius: "5px",
+                }}
+              >
+                SOON
+              </Grid>
+            </Grid>
           </MenuItem>
           <MenuItem
             icon={<EmojiEvents />}
             //component={<Link to="rewards" />}
             // eslint-disable-next-line
           >
-            Rewards
+            <Grid
+              container
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Grid item>Rewards</Grid>
+              <Grid
+                item
+                sx={{
+                  fontSize: "10px",
+                  px: 1,
+                  backgroundColor: "#ffdc2c6e",
+                  border: "1px solid #FFDB2C",
+                  borderRadius: "5px",
+                }}
+              >
+                SOON
+              </Grid>
+            </Grid>
           </MenuItem>
           <MenuItem
             icon={<IntegrationInstructions />}
             //component={<Link to="developers" />}
             // eslint-disable-next-line
           >
-            Developers
+            <Grid
+              container
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Grid item>Developers</Grid>
+              <Grid
+                item
+                sx={{
+                  fontSize: "10px",
+                  px: 1,
+                  backgroundColor: "#ffdc2c6e",
+                  border: "1px solid #FFDB2C",
+                  borderRadius: "5px",
+                }}
+              >
+                SOON
+              </Grid>
+            </Grid>
           </MenuItem>
           <MenuItem
             icon={<Error />}
             //component={<Link to="help" />}
             // eslint-disable-next-line
           >
-            Help
+            <Grid
+              container
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Grid item>Help</Grid>
+              <Grid
+                item
+                sx={{
+                  fontSize: "10px",
+                  px: 1,
+                  backgroundColor: "#ffdc2c6e",
+                  border: "1px solid #FFDB2C",
+                  borderRadius: "5px",
+                }}
+              >
+                SOON
+              </Grid>
+            </Grid>
           </MenuItem>
         </Menu>
       </Sidebar>

@@ -1,5 +1,6 @@
 import { PaletteMode, createTheme } from "@mui/material";
 import "@fontsource/work-sans/500.css";
+import "@fontsource/work-sans/600.css";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -181,6 +182,33 @@ const createAppTheme = (mode: PaletteMode) =>
             "@media (max-width: 1200px)": {
               padding: "2rem",
             },
+          },
+        },
+      },
+      MuiAlert: {
+        styleOverrides: {
+          root: {
+            borderRadius: "8px",
+            boxShadow:
+              "0px 0px 10px rgba(0, 0, 0, 0.1), inset 0px 0px 10px rgba(0, 0, 0, 0.2)",
+
+            border: "1px solid",
+            borderLeft: "15px solid",
+            paddingLeft: "16px",
+            backgroundColor: "#fff",
+            color: navyBlue,
+          },
+          filledSuccess: {
+            borderColor: "#4caf50",
+          },
+          filledInfo: {
+            borderColor: "#2196f3",
+          },
+          filledWarning: {
+            borderColor: "#ff9800",
+          },
+          filledError: {
+            borderColor: "#f44336",
           },
         },
       },
