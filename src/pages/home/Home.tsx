@@ -37,7 +37,7 @@ import Loader from "@/components/Loader/Loader";
 import Notification from "@/components/Notification/Notification";
 import { useChain } from "@cosmos-kit/react";
 
-const home = ({
+const Home = ({
   params,
   globalState,
   totalRewards,
@@ -346,4 +346,4 @@ export const getServerSideProps = async () => {
   return { props: { params, globalState, totalRewards, pastGamesStates } };
 };
 
-export default home;
+export default Home;
