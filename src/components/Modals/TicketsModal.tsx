@@ -327,6 +327,10 @@ const TicketsModal = ({
                     color="error"
                     fullWidth
                     onClick={unstake}
+                    disabled={
+                      BigInt(toSU(otherValue ?? 0)) > BigInt(stakedAmount) ||
+                      (otherValue ?? 0) <= 0
+                    }
                   >
                     Withdraw
                   </Button>
