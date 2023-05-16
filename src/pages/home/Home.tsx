@@ -113,7 +113,21 @@ const home = ({
     setcwithdrawOpen(true);
   };
 
+  const showNotif = (
+    message: string,
+    severity: "success" | "info" | "warning" | "error"
+  ) => {
+    setNotifMsg(message);
+    setNotifSev(severity);
+    setOpenNotif(true);
+  };
+
   const [openNotif, setOpenNotif] = useState(false);
+  const [notifMsg, setNotifMsg] = useState("");
+  const [notifSev, setNotifSev] = useState<
+    "success" | "info" | "warning" | "error"
+  >("info");
+
   const handleCloseNotif = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
@@ -131,6 +145,7 @@ const home = ({
           tmType={tmType}
           params={params}
           globalState={globalState}
+          showNotif={showNotif}
         />
       )}
       {cwOpen && selectedGameID !== undefined && (
@@ -139,6 +154,7 @@ const home = ({
           setOpen={setCwOpen}
           gameID={selectedGameID}
           params={params}
+          showNotif={showNotif}
         />
       )}
       {cwithdrawOpen && (
@@ -146,6 +162,7 @@ const home = ({
           open={cwithdrawOpen}
           setOpen={setcwithdrawOpen}
           params={params}
+          showNotif={showNotif}
         />
       )}
       <Box>
@@ -157,16 +174,12 @@ const home = ({
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <main className={`${styles.main}`}>
-          {/* <Button variant="contained" onClick={() => setOpenNotif(true)}>
-            Show Snackbar
-          </Button>
           <Notification
             open={openNotif}
-            message="This is a simple snackbar"
+            message={notifMsg}
             onClose={handleCloseNotif}
-            severity="error" //success, info, warning, error
-
-          /> */}
+            severity={notifSev}
+          />
           <Grid container spacing={5}>
             <Grid xs={12} md={6}>
               <Typography variant="h1" sx={{ fontWeight: "medium" }}>
@@ -261,6 +274,7 @@ const home = ({
                 onWithdrawClick={onWithdrawClick}
                 onCheckDrawClick={onCheckDrawClick}
                 onClaimWithdrawalClick={onClaimWithdrawalClick}
+                showNotif={showNotif}
               />
             ))}
             {!isMediumScreen &&
@@ -275,6 +289,7 @@ const home = ({
                     onWithdrawClick={onWithdrawClick}
                     onCheckDrawClick={onCheckDrawClick}
                     onClaimWithdrawalClick={onClaimWithdrawalClick}
+                    showNotif={showNotif}
                   />
                 )
               )}

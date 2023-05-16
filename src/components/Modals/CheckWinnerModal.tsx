@@ -41,6 +41,7 @@ import {
 import { seiStakingNLLContract } from "@/config/contracts";
 import { StdFee, coin } from "@cosmjs/amino";
 import { Params } from "@/contract_clients/SenseifiStakingNll.types";
+import { toAU } from "@/utils";
 
 const style = {
   position: "absolute",
@@ -58,11 +59,13 @@ const CheckWinnerModal = ({
   setOpen,
   gameID,
   params,
+  showNotif,
 }: {
   open: boolean;
   setOpen: Function;
   gameID: string;
   params: Params;
+  showNotif: Function;
 }) => {
   const chain = useChain(chainName);
 
@@ -81,24 +84,36 @@ const CheckWinnerModal = ({
 
   useEffect(() => {
     (async function () {
-      const client = await chain.getCosmWasmClient();
+      try {
+        const client = await chain.getCosmWasmClient();
 
-      const contract = new SenseifiStakingNllQueryClient(
-        client,
-        seiStakingNLLContract
-      );
+        const contract = new SenseifiStakingNllQueryClient(
+          client,
+          seiStakingNLLContract
+        );
 
-      const gameState = await contract.getGameState({ gameId: gameID });
+        const gameState = await contract.getGameState({ gameId: gameID });
 
-      let latestDraw: Draw = {
-        id: gameID,
-        active: false,
-        prize: gameState.total_prize,
-        winner: gameState.winner,
-        prizeClaimed: gameState.prize_claimed,
-      };
+        let latestDraw: Draw = {
+          id: gameID,
+          active: false,
+          prize: gameState.total_prize,
+          winner: gameState.winner,
+          prizeClaimed: gameState.prize_claimed,
+        };
 
-      setDraw(latestDraw);
+        setDraw(latestDraw);
+      } catch (e) {
+        let errorMsg = "";
+        if (typeof e === "string") {
+          errorMsg = e.toUpperCase();
+        } else if (e instanceof Error) {
+          errorMsg = e.message;
+        }
+
+        showNotif(errorMsg, "error");
+        setOpen(false);
+      }
     })();
   }, [gameID]);
 
@@ -114,20 +129,46 @@ const CheckWinnerModal = ({
     if (chain.address === undefined) return;
 
     if (draw?.prizeClaimed === false) {
-      const client = await chain.getSigningCosmWasmClient();
+      try {
+        const client = await chain.getSigningCosmWasmClient();
 
-      const contract = new SenseifiStakingNllClient(
-        client,
-        chain.address,
-        seiStakingNLLContract
-      );
+        const contract = new SenseifiStakingNllClient(
+          client,
+          chain.address,
+          seiStakingNLLContract
+        );
 
-      const fee: StdFee = {
-        amount: [coin("10000", params.denom)],
-        gas: "500000",
-      };
+        const fee: StdFee = {
+          amount: [coin("10000", params.denom)],
+          gas: "500000",
+        };
 
-      await contract.claimPrize({ gameId: gameID }, fee, undefined, undefined);
+        await contract.claimPrize(
+          { gameId: gameID },
+          fee,
+          undefined,
+          undefined
+        );
+
+        showNotif(
+          `Successfully claimed ${toAU(draw.totDeposit ?? "0")}`,
+          "success"
+        );
+        setOpen(false);
+      } catch (e) {
+        let errorMsg = "";
+        if (typeof e === "string") {
+          errorMsg = e.toUpperCase();
+        } else if (e instanceof Error) {
+          errorMsg = e.message;
+        }
+
+        showNotif(errorMsg, "error");
+        setOpen(false);
+      }
+    } else {
+      showNotif(`Prize has already been claimed ;)`, "info");
+      setOpen(false);
     }
   };
 

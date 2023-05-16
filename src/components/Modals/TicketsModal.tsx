@@ -57,12 +57,14 @@ const TicketsModal = ({
   tmType,
   params,
   globalState,
+  showNotif,
 }: {
   open: boolean;
   setOpen: Function;
   tmType: "enter" | "withdraw";
   params: Params;
   globalState: GlobalState;
+  showNotif: Function;
 }) => {
   const chain = useChain(chainName);
 
@@ -116,72 +118,111 @@ const TicketsModal = ({
   useEffect(() => {
     (async function () {
       if (chain.address === undefined) return;
+      try {
+        const client = await chain.getCosmWasmClient();
 
-      const client = await chain.getCosmWasmClient();
+        const contract = new SenseifiStakingNllQueryClient(
+          client,
+          seiStakingNLLContract
+        );
 
-      const contract = new SenseifiStakingNllQueryClient(
-        client,
-        seiStakingNLLContract
-      );
+        const [balance, stake] = await Promise.all([
+          client.getBalance(chain.address, params.denom),
+          contract.getUserState({ user: chain.address }),
+        ]);
 
-      const [balance, stake] = await Promise.all([
-        client.getBalance(chain.address, params.denom),
-        contract.getUserState({ user: chain.address }),
-      ]);
+        setUserBalance(balance.amount);
+        setStakedAmount(stake.total_stake);
 
-      setUserBalance(balance.amount);
-      setStakedAmount(stake.total_stake);
+        setTicketFactor(
+          calculateTickets(
+            BigInt(0),
+            BigInt(1),
+            BigInt(Math.floor(Date.now() / 1000)),
+            BigInt(nsToSecs(globalState.game_start_time)),
+            BigInt(nsToSecs(globalState.game_start_time) + gameDurationSecs)
+          )
+        );
 
-      setTicketFactor(
-        calculateTickets(
-          BigInt(0),
-          BigInt(1),
-          BigInt(Math.floor(Date.now() / 1000)),
-          BigInt(nsToSecs(globalState.game_start_time)),
-          BigInt(nsToSecs(globalState.game_start_time) + gameDurationSecs)
-        )
-      );
+        setIsLoading(false);
+      } catch (e) {
+        let errorMsg = "";
+        if (typeof e === "string") {
+          errorMsg = e.toUpperCase();
+        } else if (e instanceof Error) {
+          errorMsg = e.message;
+        }
 
-      setIsLoading(false);
+        showNotif(errorMsg, "error");
+        setOpen(false);
+      }
     })();
   }, [chain.address, globalState.game_start_time, params.denom]);
 
   const stake = async () => {
     if (chain.address === undefined) return;
 
-    const client = await chain.getSigningCosmWasmClient();
+    try {
+      const client = await chain.getSigningCosmWasmClient();
 
-    const contract = new SenseifiStakingNllClient(
-      client,
-      chain.address,
-      seiStakingNLLContract
-    );
+      const contract = new SenseifiStakingNllClient(
+        client,
+        chain.address,
+        seiStakingNLLContract
+      );
 
-    const fee: StdFee = {
-      amount: [coin("10000", params.denom)],
-      gas: "500000",
-    };
-    const funds = coin(toSU(selectedValue), params.denom);
-    await contract.stake({ nonWinner: false }, fee, undefined, [funds]);
+      const fee: StdFee = {
+        amount: [coin("10000", params.denom)],
+        gas: "500000",
+      };
+      const funds = coin(toSU(selectedValue), params.denom);
+      await contract.stake({ nonWinner: false }, fee, undefined, [funds]);
+
+      showNotif(`Successfully deposited ${selectedValue} SEI`, "success");
+      setOpen(false);
+    } catch (e) {
+      let errorMsg = "";
+      if (typeof e === "string") {
+        errorMsg = e.toUpperCase();
+      } else if (e instanceof Error) {
+        errorMsg = e.message;
+      }
+
+      showNotif(errorMsg, "error");
+    }
   };
 
   const unstake = async () => {
     if (chain.address === undefined || otherValue === undefined) return;
 
-    const client = await chain.getSigningCosmWasmClient();
+    try {
+      const client = await chain.getSigningCosmWasmClient();
 
-    const contract = new SenseifiStakingNllClient(
-      client,
-      chain.address,
-      seiStakingNLLContract
-    );
+      const contract = new SenseifiStakingNllClient(
+        client,
+        chain.address,
+        seiStakingNLLContract
+      );
 
-    const fee: StdFee = {
-      amount: [coin("10000", params.denom)],
-      gas: "500000",
-    };
+      const fee: StdFee = {
+        amount: [coin("10000", params.denom)],
+        gas: "500000",
+      };
 
-    await contract.unstake({ amount: toSU(otherValue) }, fee);
+      await contract.unstake({ amount: toSU(otherValue) }, fee);
+
+      showNotif(`Successfully withdrew ${otherValue} SEI`, "success");
+      setOpen(false);
+    } catch (e) {
+      let errorMsg = "";
+      if (typeof e === "string") {
+        errorMsg = e.toUpperCase();
+      } else if (e instanceof Error) {
+        errorMsg = e.message;
+      }
+
+      showNotif(errorMsg, "error");
+    }
   };
 
   if (!chain.isWalletConnected) {

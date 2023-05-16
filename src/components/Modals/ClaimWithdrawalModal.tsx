@@ -44,10 +44,12 @@ const ClaimWithdrawalModal = ({
   open,
   setOpen,
   params,
+  showNotif,
 }: {
   open: boolean;
   setOpen: Function;
   params: Params;
+  showNotif: Function;
 }) => {
   const chain = useChain(chainName);
 
@@ -70,34 +72,46 @@ const ClaimWithdrawalModal = ({
     (async function () {
       if (chain.address === undefined) return;
 
-      const client = await chain.getCosmWasmClient();
+      try {
+        const client = await chain.getCosmWasmClient();
 
-      const contract = new SenseifiStakingNllQueryClient(
-        client,
-        seiStakingNLLContract
-      );
+        const contract = new SenseifiStakingNllQueryClient(
+          client,
+          seiStakingNLLContract
+        );
 
-      const [globalState, ctcbalance, userState] = await Promise.all([
-        contract.getGlobalState(),
-        client.getBalance(seiStakingNLLContract, params.denom),
-        contract.getUserState({ user: chain.address }),
-      ]);
+        const [globalState, ctcbalance, userState] = await Promise.all([
+          contract.getGlobalState(),
+          client.getBalance(seiStakingNLLContract, params.denom),
+          contract.getUserState({ user: chain.address }),
+        ]);
 
-      setUnstakeAmount(userState.total_unstake);
+        setUnstakeAmount(userState.total_unstake);
 
-      const ctcAvailable =
-        BigInt(ctcbalance.amount) -
-        BigInt(globalState.total_unclaimed_prize) -
-        BigInt(globalState.total_rewards);
+        const ctcAvailable =
+          BigInt(ctcbalance.amount) -
+          BigInt(globalState.total_unclaimed_prize) -
+          BigInt(globalState.total_rewards);
 
-      const claimAmount =
-        ctcAvailable < BigInt(userState.total_unstake)
-          ? "0"
-          : userState.total_unstake;
+        const claimAmount =
+          ctcAvailable < BigInt(userState.total_unstake)
+            ? "0"
+            : userState.total_unstake;
 
-      setClaimAmount(claimAmount);
+        setClaimAmount(claimAmount);
 
-      setIsLoading(false);
+        setIsLoading(false);
+      } catch (e) {
+        let errorMsg = "";
+        if (typeof e === "string") {
+          errorMsg = e.toUpperCase();
+        } else if (e instanceof Error) {
+          errorMsg = e.message;
+        }
+
+        showNotif(errorMsg, "error");
+        setOpen(false);
+      }
     })();
   }, [chain.address, params.denom]);
 
@@ -108,21 +122,34 @@ const ClaimWithdrawalModal = ({
 
   const claimWithdrawal = async () => {
     if (chain.address === undefined) return;
+    try {
+      const client = await chain.getSigningCosmWasmClient();
 
-    const client = await chain.getSigningCosmWasmClient();
+      const contract = new SenseifiStakingNllClient(
+        client,
+        chain.address,
+        seiStakingNLLContract
+      );
 
-    const contract = new SenseifiStakingNllClient(
-      client,
-      chain.address,
-      seiStakingNLLContract
-    );
+      const fee: StdFee = {
+        amount: [coin("10000", params.denom)],
+        gas: "500000",
+      };
 
-    const fee: StdFee = {
-      amount: [coin("10000", params.denom)],
-      gas: "500000",
-    };
+      await contract.claimUnstake(fee);
 
-    await contract.claimUnstake(fee);
+      showNotif(`Successfully claimed ${toAU(claimAmount)} SEI`, "success");
+      setOpen(false);
+    } catch (e) {
+      let errorMsg = "";
+      if (typeof e === "string") {
+        errorMsg = e.toUpperCase();
+      } else if (e instanceof Error) {
+        errorMsg = e.message;
+      }
+
+      showNotif(errorMsg, "error");
+    }
   };
 
   if (isLoading) return <></>;

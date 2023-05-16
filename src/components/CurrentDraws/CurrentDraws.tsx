@@ -39,6 +39,7 @@ const CurrentDraws = ({
   onWithdrawClick,
   onCheckDrawClick,
   onClaimWithdrawalClick,
+  showNotif,
 }: {
   draw?: Draw;
   notActive?: boolean;
@@ -48,6 +49,7 @@ const CurrentDraws = ({
   onWithdrawClick: Function;
   onCheckDrawClick: Function;
   onClaimWithdrawalClick: Function;
+  showNotif: Function;
 }) => {
   const chain = useChain(chainName);
 
@@ -85,60 +87,71 @@ const CurrentDraws = ({
   });
 
   const fetchStats = async () => {
-    const client = await chain.getCosmWasmClient();
+    try {
+      const client = await chain.getCosmWasmClient();
 
-    const contract = new SenseifiStakingNllQueryClient(
-      client,
-      seiStakingNLLContract
-    );
+      const contract = new SenseifiStakingNllQueryClient(
+        client,
+        seiStakingNLLContract
+      );
 
-    const [params, globalState] = await Promise.all([
-      contract.getParams(),
-      contract.getGlobalState(),
-    ]);
+      const [params, globalState] = await Promise.all([
+        contract.getParams(),
+        contract.getGlobalState(),
+      ]);
 
-    const totalTickets = BigInt(globalState.total_tickets);
-    const totalStake = BigInt(globalState.total_stake);
-    const lastUpdateTime = BigInt(nsToSecs(globalState.last_update_time));
-    const gameStartTime = BigInt(nsToSecs(globalState.game_start_time));
-    const currentTime = BigInt(Math.floor(Date.now() / 1000));
+      const totalTickets = BigInt(globalState.total_tickets);
+      const totalStake = BigInt(globalState.total_stake);
+      const lastUpdateTime = BigInt(nsToSecs(globalState.last_update_time));
+      const gameStartTime = BigInt(nsToSecs(globalState.game_start_time));
+      const currentTime = BigInt(Math.floor(Date.now() / 1000));
 
-    const newTotalTickets = calculateTickets(
-      totalTickets,
-      totalStake,
-      lastUpdateTime,
-      gameStartTime,
-      gameStartTime + BigInt(gameDurationSecs)
-    );
-
-    let newUserTickets: BigInt | undefined = undefined;
-    let userStake: BigInt | undefined = undefined;
-
-    if (chain.address) {
-      const userState = await contract.getUserState({ user: chain.address });
-
-      const totalTickets = BigInt(userState.total_tickets);
-      const totalStake = BigInt(userState.total_stake);
-      const lastUpdateTime = BigInt(nsToSecs(userState.last_update_time));
-
-      userStake = totalStake;
-      newUserTickets = calculateTickets(
+      const newTotalTickets = calculateTickets(
         totalTickets,
         totalStake,
         lastUpdateTime,
         gameStartTime,
         gameStartTime + BigInt(gameDurationSecs)
       );
+
+      let newUserTickets: BigInt | undefined = undefined;
+      let userStake: BigInt | undefined = undefined;
+
+      if (chain.address) {
+        const userState = await contract.getUserState({ user: chain.address });
+
+        const totalTickets = BigInt(userState.total_tickets);
+        const totalStake = BigInt(userState.total_stake);
+        const lastUpdateTime = BigInt(nsToSecs(userState.last_update_time));
+
+        userStake = totalStake;
+        newUserTickets = calculateTickets(
+          totalTickets,
+          totalStake,
+          lastUpdateTime,
+          gameStartTime,
+          gameStartTime + BigInt(gameDurationSecs)
+        );
+      }
+
+      setStats({
+        totalDeposit: totalStake.toString(),
+        totalTickets: newTotalTickets.toString(),
+        userDeposit: userStake?.toString(),
+        userTickets: newUserTickets?.toString(),
+      });
+
+      setShowDetails(true);
+    } catch (e) {
+      let errorMsg = "";
+      if (typeof e === "string") {
+        errorMsg = e.toUpperCase();
+      } else if (e instanceof Error) {
+        errorMsg = e.message;
+      }
+
+      showNotif(errorMsg, "error");
     }
-
-    setStats({
-      totalDeposit: totalStake.toString(),
-      totalTickets: newTotalTickets.toString(),
-      userDeposit: userStake?.toString(),
-      userTickets: newUserTickets?.toString(),
-    });
-
-    setShowDetails(true);
   };
 
   if (!notActive) {
