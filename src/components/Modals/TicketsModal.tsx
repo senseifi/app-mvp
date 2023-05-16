@@ -225,11 +225,6 @@ const TicketsModal = ({
     }
   };
 
-  if (!chain.isWalletConnected) {
-    chain.openView();
-    return <></>;
-  }
-
   if (isLoading) return <></>;
 
   return (

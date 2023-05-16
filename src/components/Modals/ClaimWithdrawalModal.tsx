@@ -115,11 +115,6 @@ const ClaimWithdrawalModal = ({
     })();
   }, [chain.address, params.denom]);
 
-  if (!chain.isWalletConnected) {
-    chain.openView();
-    return <></>;
-  }
-
   const claimWithdrawal = async () => {
     if (chain.address === undefined) return;
     try {

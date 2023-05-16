@@ -362,11 +362,6 @@ const CheckWinnerModal = ({
 
   if (draw === undefined) return <></>;
 
-  if (!chain.isWalletConnected) {
-    chain.openView();
-    return <></>;
-  }
-
   return (
     <div>
       <Modal

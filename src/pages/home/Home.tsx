@@ -25,7 +25,7 @@ import CheckWinnerModal from "@/components/Modals/CheckWinnerModal";
 import ClaimWithdrawalModal from "@/components/Modals/ClaimWithdrawalModal";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { rpcEndpoint } from "@/config/sei";
+import { chainName, rpcEndpoint } from "@/config/sei";
 import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
 import {
   Params,
@@ -35,6 +35,7 @@ import {
 import { nsToSecs, toAU, bigIntMax } from "@/utils";
 import Loader from "@/components/Loader/Loader";
 import Notification from "@/components/Notification/Notification";
+import { useChain } from "@cosmos-kit/react";
 
 const home = ({
   params,
@@ -47,6 +48,8 @@ const home = ({
   totalRewards: string;
   pastGamesStates: GameState[];
 }) => {
+  const chain = useChain(chainName);
+
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -94,22 +97,38 @@ const home = ({
       : undefined;
 
   const onWithdrawClick = () => {
+    if (!chain.isWalletConnected) {
+      showNotif("Please connect your wallet first :)", "info");
+      return;
+    }
     setTmType("withdraw");
     setTmOpen(true);
   };
 
   const onEnterNowClick = () => {
+    if (!chain.isWalletConnected) {
+      showNotif("Please connect your wallet first :)", "info");
+      return;
+    }
     setTmType("enter");
     setTmOpen(true);
   };
 
   const onCheckDrawClick = (gameID: string | undefined) => {
     if (gameID === undefined) return;
+    if (!chain.isWalletConnected) {
+      showNotif("Please connect your wallet first :)", "info");
+      return;
+    }
     setSelectedGameID(gameID);
     setCwOpen(true);
   };
 
   const onClaimWithdrawalClick = () => {
+    if (!chain.isWalletConnected) {
+      showNotif("Please connect your wallet first :)", "info");
+      return;
+    }
     setcwithdrawOpen(true);
   };
 
