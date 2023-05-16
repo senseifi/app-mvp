@@ -42,10 +42,11 @@ export const calculateTickets = (
   const diff =
     BigInt(currentTime.toString()) - BigInt(validLastUpdateTime.toString());
 
-  const additional = BigInt(totalStake.toString()) + BigInt(diff.toString());
+  const additional = BigInt(totalStake.toString()) * BigInt(diff.toString());
 
   const newTickets =
-    BigInt(validTotalTickets.toString()) + BigInt(additional.toString());
+    (BigInt(validTotalTickets.toString()) + BigInt(additional.toString())) /
+    BigInt(10 ** 4); // ticket scale factor for FE only
 
   return newTickets;
 };
