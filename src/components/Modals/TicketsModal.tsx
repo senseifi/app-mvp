@@ -318,8 +318,8 @@ const TicketsModal = ({
                   {/* TODO: error messages based on invalid inputs */}
 
                   <Typography color="error" my={2} fontSize="small">
-                    Once you click withdraw, your tokens will be transferred to
-                    your wallet in about 72Hrs
+                    Once you click withdraw, your tokens will be avaiable to be
+                    claimed in about 72Hrs
                   </Typography>
                   <Button
                     variant="outlined"
