@@ -79,11 +79,13 @@ const CurrentDraws = ({
   const [stats, setStats] = useState<{
     totalDeposit: string;
     totalTickets: string;
+    numDepositors: string;
     userDeposit: undefined | string;
     userTickets: undefined | string;
   }>({
     totalDeposit: "",
     totalTickets: "",
+    numDepositors: "",
     userDeposit: undefined,
     userTickets: undefined,
   });
@@ -106,6 +108,7 @@ const CurrentDraws = ({
 
       const totalTickets = BigInt(globalState.total_tickets);
       const totalStake = BigInt(globalState.total_stake);
+      const numDepositors = globalState.num_stakers;
       const lastUpdateTime = BigInt(nsToSecs(globalState.last_update_time));
       const gameStartTime = BigInt(nsToSecs(globalState.game_start_time));
       const currentTime = BigInt(Math.floor(Date.now() / 1000));
@@ -141,6 +144,7 @@ const CurrentDraws = ({
       setStats({
         totalDeposit: totalStake.toString(),
         totalTickets: newTotalTickets.toString(),
+        numDepositors: numDepositors,
         userDeposit: userStake?.toString(),
         userTickets: newUserTickets?.toString(),
       });
@@ -223,6 +227,10 @@ const CurrentDraws = ({
                 Game Stats
               </Typography>
               <Grid container my={1}>
+                <Grid {...gameDetailsGridProps}>
+                  <Typography>No. of Depositors:</Typography>
+                  <Typography>{stats.numDepositors}</Typography>
+                </Grid>
                 <Grid {...gameDetailsGridProps}>
                   <Typography>Total Deposit:</Typography>
                   <Typography>
