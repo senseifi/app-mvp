@@ -18,6 +18,7 @@ import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as coin98Wallets } from "@cosmos-kit/coin98-extension";
 import { seiTestnet2AssetList, seiTestnet2Chain } from "@/config/sei";
+import WalletModal from "@/components/Modals/WalletModal";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState<PaletteMode>("light");

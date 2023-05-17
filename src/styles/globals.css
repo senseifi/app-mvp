@@ -136,3 +136,38 @@ svg.coin-flip {
 .flip-card-back {
   transform: rotateY(180deg);
 }
+
+/* wallet modal */
+
+#chakra-modal-\:Rlsm\: {
+  padding: inherit !important;
+}
+
+.css-1rbh5kx {
+  display: flex !important;
+  flex-direction: column !important;
+}
+#leap-extension,
+#keplr-extension {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+#coin98-extension .simple-display-wallet-list-text {
+  text-align: right !important;
+}
+
+.simple-display-wallet-list-icon {
+  margin: auto !important;
+  margin-left: 0 !important;
+  display: flex;
+  align-items: center;
+  height: max-content;
+  min-height: 10px !important;
+}
+#leap-extension .simple-display-wallet-list-icon img,
+#keplr-extension .simple-display-wallet-list-icon img {
+  width: 32px;
+}
