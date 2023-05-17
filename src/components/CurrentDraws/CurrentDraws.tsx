@@ -27,6 +27,7 @@ import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
+import Loader from "../Loader/Loader";
 
 const ITEM_HEIGHT = 48;
 
@@ -70,6 +71,7 @@ const CurrentDraws = ({
   const theme: Theme = useTheme();
 
   const [showDetails, setShowDetails] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   //After clicking withdraw, once the amount is available
   const [claimAvailable, setClaimAvailable] = useState(false);
@@ -88,6 +90,8 @@ const CurrentDraws = ({
 
   const fetchStats = async () => {
     try {
+      setIsLoading(true);
+
       const client = await chain.getCosmWasmClient();
 
       const contract = new SenseifiStakingNllQueryClient(
@@ -151,6 +155,8 @@ const CurrentDraws = ({
       }
 
       showNotif(errorMsg, "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -165,7 +171,9 @@ const CurrentDraws = ({
           borderRadius={3}
           borderColor={theme.palette.secondary.main}
           position={"relative"}
+          overflow={"hidden"}
         >
+          {isLoading && <Loader />}
           {draw?.active ? (
             <Box textAlign="end" height={10} position="absolute" right={0}>
               <IconButton

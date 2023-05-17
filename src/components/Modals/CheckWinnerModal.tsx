@@ -42,6 +42,7 @@ import { seiStakingNLLContract } from "@/config/contracts";
 import { StdFee, coin } from "@cosmjs/amino";
 import { Params } from "@/contract_clients/SenseifiStakingNll.types";
 import { toAU } from "@/utils";
+import Loader from "../Loader/Loader";
 
 const style = {
   position: "absolute",
@@ -75,6 +76,8 @@ const CheckWinnerModal = ({
     theme.breakpoints.down("sm")
   );
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [usrIsWinner, setUsrIsWinner] = useState<
     "true" | "false" | "undefined"
   >("undefined");
@@ -85,6 +88,8 @@ const CheckWinnerModal = ({
   useEffect(() => {
     (async function () {
       try {
+        setIsLoading(true);
+
         const client = await chain.getCosmWasmClient();
 
         const contract = new SenseifiStakingNllQueryClient(
@@ -113,6 +118,8 @@ const CheckWinnerModal = ({
 
         showNotif(errorMsg, "error");
         setOpen(false);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [gameID]);
@@ -130,6 +137,8 @@ const CheckWinnerModal = ({
 
     if (draw?.prizeClaimed === false) {
       try {
+        setIsLoading(true);
+
         const client = await chain.getSigningCosmWasmClient();
 
         const contract = new SenseifiStakingNllClient(
@@ -151,7 +160,7 @@ const CheckWinnerModal = ({
         );
 
         showNotif(
-          `Successfully claimed ${toAU(draw.totDeposit ?? "0")}`,
+          `Successfully claimed ${toAU(draw.totDeposit ?? "0")} SEI`,
           "success"
         );
         setOpen(false);
@@ -165,6 +174,8 @@ const CheckWinnerModal = ({
 
         showNotif(errorMsg, "error");
         setOpen(false);
+      } finally {
+        setIsLoading(false);
       }
     } else {
       showNotif(`Prize has already been claimed ;)`, "info");
@@ -360,8 +371,6 @@ const CheckWinnerModal = ({
     );
   };
 
-  if (draw === undefined) return <></>;
-
   return (
     <div>
       <Modal
@@ -395,6 +404,7 @@ const CheckWinnerModal = ({
                 height: "100%",
               }}
             >
+              {isLoading && <Loader />}
               <ModalContent />
             </Box>
           </Slide>

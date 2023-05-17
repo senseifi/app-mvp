@@ -39,6 +39,7 @@ import {
   SenseifiStakingNllClient,
   SenseifiStakingNllQueryClient,
 } from "@/contract_clients/SenseifiStakingNll.client";
+import Loader from "../Loader/Loader";
 
 const style = {
   position: "absolute",
@@ -118,7 +119,10 @@ const TicketsModal = ({
   useEffect(() => {
     (async function () {
       if (chain.address === undefined) return;
+
       try {
+        setIsLoading(true);
+
         const client = await chain.getCosmWasmClient();
 
         const contract = new SenseifiStakingNllQueryClient(
@@ -143,8 +147,6 @@ const TicketsModal = ({
             BigInt(nsToSecs(globalState.game_start_time) + gameDurationSecs)
           )
         );
-
-        setIsLoading(false);
       } catch (e) {
         let errorMsg = "";
         if (typeof e === "string") {
@@ -155,6 +157,8 @@ const TicketsModal = ({
 
         showNotif(errorMsg, "error");
         setOpen(false);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [chain.address, globalState.game_start_time, params.denom]);
@@ -163,6 +167,8 @@ const TicketsModal = ({
     if (chain.address === undefined) return;
 
     try {
+      setIsLoading(true);
+
       const client = await chain.getSigningCosmWasmClient();
 
       const contract = new SenseifiStakingNllClient(
@@ -189,6 +195,8 @@ const TicketsModal = ({
       }
 
       showNotif(errorMsg, "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -196,6 +204,8 @@ const TicketsModal = ({
     if (chain.address === undefined || otherValue === undefined) return;
 
     try {
+      setIsLoading(true);
+
       const client = await chain.getSigningCosmWasmClient();
 
       const contract = new SenseifiStakingNllClient(
@@ -222,10 +232,10 @@ const TicketsModal = ({
       }
 
       showNotif(errorMsg, "error");
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  if (isLoading) return <></>;
 
   return (
     <div>
@@ -245,6 +255,7 @@ const TicketsModal = ({
               height: "100%",
             }}
           >
+            {isLoading && <Loader />}
             <Box
               sx={{
                 width: isSmallScreen ? "100%" : 400,

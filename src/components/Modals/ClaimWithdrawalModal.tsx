@@ -28,6 +28,7 @@ import {
   SenseifiStakingNllClient,
   SenseifiStakingNllQueryClient,
 } from "@/contract_clients/SenseifiStakingNll.client";
+import Loader from "../Loader/Loader";
 
 const style = {
   position: "absolute",
@@ -73,6 +74,8 @@ const ClaimWithdrawalModal = ({
       if (chain.address === undefined) return;
 
       try {
+        setIsLoading(true);
+
         const client = await chain.getCosmWasmClient();
 
         const contract = new SenseifiStakingNllQueryClient(
@@ -111,6 +114,8 @@ const ClaimWithdrawalModal = ({
 
         showNotif(errorMsg, "error");
         setOpen(false);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [chain.address, params.denom]);
@@ -118,6 +123,8 @@ const ClaimWithdrawalModal = ({
   const claimWithdrawal = async () => {
     if (chain.address === undefined) return;
     try {
+      setIsLoading(true);
+
       const client = await chain.getSigningCosmWasmClient();
 
       const contract = new SenseifiStakingNllClient(
@@ -144,10 +151,10 @@ const ClaimWithdrawalModal = ({
       }
 
       showNotif(errorMsg, "error");
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  if (isLoading) return <></>;
 
   return (
     <div>
@@ -167,6 +174,7 @@ const ClaimWithdrawalModal = ({
               height: "100%",
             }}
           >
+            {isLoading && <Loader />}
             <Box
               sx={{
                 width: isSmallScreen ? "100%" : 400,
