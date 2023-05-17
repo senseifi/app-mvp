@@ -13,7 +13,7 @@ const WalletModal = ({ isOpen, setOpen, walletRepo }: WalletModalProps) => {
     <div>
       <Modal open={isOpen} onClose={onCloseModal}>
         <div>
-          {walletRepo.wallets.map(({ walletName, connect }) => (
+          {walletRepo?.wallets.map(({ walletName, connect }) => (
             <Button
               key={walletName}
               //   colorScheme="blue"
