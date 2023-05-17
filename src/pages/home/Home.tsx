@@ -210,8 +210,8 @@ const Home = ({
                 variant="subtitle1"
                 sx={{ fontStyle: "italic", fontSize: "1.5rem" }}
               >
-                Win or Not, you never lose your investment - everyone's a winner
-                when you play with SenSei&nbsp;Fi.
+                Win or Not, you never lose your investment - everyone&apos;s a
+                winner when you play with SenSei&nbsp;Fi.
               </Typography>
 
               <Box>
