@@ -1,4 +1,4 @@
 export const seiStakingNLLContract =
-  "sei1vst58mpa8sa6f6ymwn5ma6jrfh2fjvgrrtfcymlyfrk5m8h56j5qupmnt3";
+  "sei1klqwerlam95r7nwrv8zyz4ufzm34ud2q0qurz0tyx60uu8n47j6quck7a2";
 
 export const gameDurationSecs = 604800;
