@@ -139,7 +139,7 @@ svg.coin-flip {
 
 /* wallet modal */
 
-/* #chakra-modal-\:Rlsm\: {
+#chakra-modal-\:Rlsm\: {
   padding: inherit !important;
 }
 
@@ -170,4 +170,4 @@ svg.coin-flip {
 #leap-extension .simple-display-wallet-list-icon img,
 #keplr-extension .simple-display-wallet-list-icon img {
   width: 32px;
-} */
+}
