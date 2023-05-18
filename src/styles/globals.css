@@ -140,22 +140,55 @@ svg.coin-flip {
 /* wallet modal */
 
 #chakra-modal-\:Rlsm\: {
-  padding: inherit !important;
+  padding: 1rem !important;
+
+  border: 3px solid #ffdb2c;
+  box-shadow: 0 0 1rem #ffdb2c, inset 0 0 1rem rgba(0, 0, 0, 0.2);
+  /* 
+  transition: none !important;
+  transform-origin: 0 !important; */
 }
 
+/* backdrop */
+.css-wl0d9u {
+  backdrop-filter: blur(10px);
+}
+
+/* Buttons container div */
 .css-1rbh5kx {
   display: flex !important;
   flex-direction: column !important;
 }
+
+/* Coin 98 */
+.css-bdr917 {
+  margin-top: 0;
+}
+
 #leap-extension,
 #keplr-extension {
   display: flex !important;
   flex-direction: row !important;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
   padding: 0.5rem;
+  border: 1px solid #071428;
 }
-#coin98-extension .simple-display-wallet-list-text {
+
+#leap-extension:hover,
+#keplr-extension:hover {
+  background-color: #ffdb2c60;
+}
+
+#coin98-extension {
+  border: 1px solid #071428;
+}
+
+#coin98-extension:hover {
+  background-color: #ffdb2c60;
+}
+
+.simple-display-wallet-list-text {
   text-align: right !important;
 }
 
@@ -164,10 +197,17 @@ svg.coin-flip {
   margin-left: 0 !important;
   display: flex;
   align-items: center;
-  height: max-content;
+  height: auto !important;
+  max-height: fit-content;
   min-height: 10px !important;
 }
 #leap-extension .simple-display-wallet-list-icon img,
 #keplr-extension .simple-display-wallet-list-icon img {
   width: 32px;
+}
+
+/* Disconnect */
+.css-1hht8j9 {
+  border-radius: 0.75rem !important;
+  background-color: #071428 !important;
 }

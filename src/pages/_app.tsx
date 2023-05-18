@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import "@fontsource/work-sans/variable.css";
 import "@fontsource/work-sans/400.css";
 
+import React from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
@@ -18,7 +19,9 @@ import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as coin98Wallets } from "@cosmos-kit/coin98-extension";
 import { seiTestnet2AssetList, seiTestnet2Chain } from "@/config/sei";
-import WalletModal from "@/components/Modals/WalletModal";
+import { WalletErrorView } from "@/components/WalletModalViews/WalletErrorView";
+import { WalletConnectOptions } from "@cosmos-kit/core";
+import { WalletNotExistView } from "@/components/WalletModalViews/WalletNotExistView";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState<PaletteMode>("light");
@@ -35,12 +38,19 @@ export default function App({ Component, pageProps }: AppProps) {
     []
   );
 
+  const wc: WalletConnectOptions = {
+    signClient: { projectId: "4afa5ea436cd7a7f5995d0508c2f6a3b" },
+  };
+
   return (
     <ChainProvider
       chains={[...chains, seiTestnet2Chain]}
       assetLists={[...assets, seiTestnet2AssetList]}
-      wallets={[keplrWallets[0], ...leapWallets, ...coin98Wallets]}
+      wallets={[keplrWallets[0], leapWallets[0], ...coin98Wallets]}
       wrappedWithChakra={true}
+      modalViews={{ Error: WalletErrorView, NotExist: WalletNotExistView }}
+      includeAllWalletsOnMobile={true}
+      walletConnectOptions={wc}
     >
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
