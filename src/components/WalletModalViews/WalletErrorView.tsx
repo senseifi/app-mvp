@@ -20,15 +20,16 @@ export const WalletErrorView = ({
   } = wallet;
 
   const addCustom =
+    prettyName === "Leap" &&
     message ===
-    "This wallet is not supported on mobile, please use desktop browsers.";
+      "This wallet is not supported on mobile, please use desktop browsers.";
 
-  const customLogoStatus = addCustom ? LogoStatus.Warning : LogoStatus.Error;
+  const status = addCustom ? LogoStatus.Warning : LogoStatus.Error;
 
-  const customContentHeader = addCustom ? "Just one more step..." : message;
+  const contentHeader = addCustom ? "Just one more step" : message;
 
-  const customContentDesc = addCustom
-    ? `This wallet is not supported on mobile web, please use the dApp browser in ${prettyName} mobile app or a desktop browser.`
+  const contentDesc = addCustom
+    ? `This wallet is not supported in mobile browsers, please use the dApp browser in ${prettyName} mobile app or a desktop browser.`
     : message;
 
   const modalHead = (
@@ -48,10 +49,10 @@ export const WalletErrorView = ({
 
   const modalContent = (
     <SimpleDisplayModalContent
-      status={customLogoStatus}
+      status={status}
       logo={logo}
-      contentHeader={customContentHeader}
-      contentDesc={customContentDesc}
+      contentHeader={contentHeader}
+      contentDesc={contentDesc}
       bottomButton={
         <Box px={6}>
           <ConnectWalletButton

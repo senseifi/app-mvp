@@ -19,8 +19,9 @@ import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as coin98Wallets } from "@cosmos-kit/coin98-extension";
 import { seiTestnet2AssetList, seiTestnet2Chain } from "@/config/sei";
-import { WalletErrorView } from "@/components/WalletErrorView/WalletErrorView";
+import { WalletErrorView } from "@/components/WalletModalViews/WalletErrorView";
 import { WalletConnectOptions } from "@cosmos-kit/core";
+import { WalletNotExistView } from "@/components/WalletModalViews/WalletNotExistView";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState<PaletteMode>("light");
@@ -45,9 +46,9 @@ export default function App({ Component, pageProps }: AppProps) {
     <ChainProvider
       chains={[...chains, seiTestnet2Chain]}
       assetLists={[...assets, seiTestnet2AssetList]}
-      wallets={[keplrWallets[0], ...leapWallets, ...coin98Wallets]}
+      wallets={[keplrWallets[0], leapWallets[0], ...coin98Wallets]}
       wrappedWithChakra={true}
-      modalViews={{ Error: WalletErrorView }}
+      modalViews={{ Error: WalletErrorView, NotExist: WalletNotExistView }}
       includeAllWalletsOnMobile={true}
       walletConnectOptions={wc}
     >
