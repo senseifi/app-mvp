@@ -20,6 +20,7 @@ import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as coin98Wallets } from "@cosmos-kit/coin98-extension";
 import { seiTestnet2AssetList, seiTestnet2Chain } from "@/config/sei";
 import { WalletErrorView } from "@/components/WalletErrorView/WalletErrorView";
+import { WalletConnectOptions } from "@cosmos-kit/core";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState<PaletteMode>("light");
@@ -36,6 +37,10 @@ export default function App({ Component, pageProps }: AppProps) {
     []
   );
 
+  const wc: WalletConnectOptions = {
+    signClient: { projectId: "4afa5ea436cd7a7f5995d0508c2f6a3b" },
+  };
+
   return (
     <ChainProvider
       chains={[...chains, seiTestnet2Chain]}
@@ -44,6 +49,7 @@ export default function App({ Component, pageProps }: AppProps) {
       wrappedWithChakra={true}
       modalViews={{ Error: WalletErrorView }}
       includeAllWalletsOnMobile={true}
+      walletConnectOptions={wc}
     >
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
