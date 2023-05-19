@@ -4,7 +4,7 @@ import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import React, { useState } from "react";
 
-const liquidity = () => {
+const Liquidity = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -56,4 +56,4 @@ const liquidity = () => {
   );
 };
 
-export default liquidity;
+export default Liquidity;
