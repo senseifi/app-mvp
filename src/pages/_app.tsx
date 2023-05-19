@@ -46,7 +46,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <ChainProvider
       chains={[...chains, seiTestnet2Chain]}
       assetLists={[...assets, seiTestnet2AssetList]}
-      wallets={[keplrWallets[0], leapWallets[0], ...coin98Wallets]}
+      wallets={[keplrWallets[0], ...leapWallets, ...coin98Wallets]}
       wrappedWithChakra={true}
       modalViews={{ Error: WalletErrorView, NotExist: WalletNotExistView }}
       includeAllWalletsOnMobile={true}
