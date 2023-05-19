@@ -76,6 +76,18 @@ export type QueryMsg =
     }
   | {
       get_total_rewards: {};
+    }
+  | {
+      get_users_asc: {
+        limit?: number | null;
+        start_after?: Addr | null;
+      };
+    }
+  | {
+      get_users_desc: {
+        limit?: number | null;
+        start_after?: Addr | null;
+      };
     };
 export type Addr = string;
 export interface GameState {
@@ -109,3 +121,4 @@ export interface UserState {
   total_tickets: Uint128;
   total_unstake: Uint128;
 }
+export type ArrayOfAddr = Addr[];
