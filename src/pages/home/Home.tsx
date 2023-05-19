@@ -49,9 +49,6 @@ const Home = ({
   totalRewards: string;
   pastGamesStates: GameState[];
 }) => {
-  const router = useRouter();
-  const imageUrl = `${process.env.NEXT_PUBLIC_BASE_URL}${router.asPath}`;
-
   const chain = useChain(chainName);
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -199,7 +196,7 @@ const Home = ({
             property="og:description"
             content="Gamified Defi on Sei network"
           />
-          <meta property="og:image" content={imageUrl} />
+          <meta property="og:image" content="/logo192.png" />
           <meta property="og:url" content={process.env.NEXT_PUBLIC_BASE_URL} />
           <meta property="og:type" content="website" />
 
