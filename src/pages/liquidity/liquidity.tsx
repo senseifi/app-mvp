@@ -3,6 +3,35 @@ import { Box, Theme, Typography, useMediaQuery } from "@mui/material";
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import React, { useState } from "react";
+import LPList from "@/components/LPList/LPList";
+
+//need to restart server for update to take effect on ui
+const poolList = [
+  {
+    stake: "sei",
+    earn1: "sei",
+    earn2: "sen",
+    apr: 12.5,
+    tvl: 41413895,
+    endTime: 1684953010,
+  },
+  {
+    stake: "sei",
+    earn1: "sei",
+    // earn2: "sen",
+    apr: 25.5,
+    tvl: 41413895,
+    endTime: 1692678338,
+  },
+  {
+    stake: "sei",
+    earn1: "sen",
+    earn2: "pepe",
+    apr: 19.6,
+    tvl: 41413895,
+    endTime: 1698981938,
+  },
+];
 
 const Liquidity = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -45,12 +74,15 @@ const Liquidity = () => {
             onClose={handleCloseNotif}
             severity={notifSev}
           />
-          <Box component="section">
-            <Typography variant="h1" sx={{ fontWeight: "medium" }}>
-              Liquidity Pools
-            </Typography>
-          </Box>
+          <Typography variant="h1" sx={{ fontWeight: "medium" }}>
+            Liquidity Pools
+          </Typography>
         </main>
+        <Box component="section">
+          {poolList.map((pool, i) => (
+            <LPList key={i} {...pool} />
+          ))}
+        </Box>
       </Box>
     </>
   );

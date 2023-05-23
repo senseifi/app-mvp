@@ -33,10 +33,9 @@ import {
   GameState,
 } from "@/contract_clients/SenseifiStakingNll.types";
 import { nsToSecs, toAU, bigIntMax } from "@/utils";
-import Loader from "@/components/Loader/Loader";
+
 import Notification from "@/components/Notification/Notification";
 import { useChain } from "@cosmos-kit/react";
-import { useRouter } from "next/router";
 
 const Home = ({
   params,

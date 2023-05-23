@@ -171,7 +171,7 @@ const createAppTheme = (mode: PaletteMode) =>
       MuiCssBaseline: {
         styleOverrides: {
           main: {
-            minHeight: "80vh",
+            // minHeight: "80vh",
             padding: "6rem 10rem 2rem 10rem",
             "@media (max-width: 1200px)": {
               padding: "2rem",
