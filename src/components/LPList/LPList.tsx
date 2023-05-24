@@ -1,4 +1,4 @@
-import { Box, Theme, Typography, useTheme } from "@mui/material";
+import { Box, Divider, Grid, Theme, Typography, useTheme } from "@mui/material";
 import React from "react";
 
 import { SwapHoriz } from "@mui/icons-material";
@@ -7,40 +7,80 @@ import PoolText from "../PoolText/PoolText";
 
 import timeRemaining from "../TimeRemaining";
 import Image from "next/image";
+import { PoolList } from "@/types/customTypes";
 const ICON_WIDTH = 50;
+
+//token to usd exchange rates: 1 token = x USD
+//token1
+type Token = "sei" | "sen" | "pepe";
+interface EarningsBreakdown {
+  earnAmt1: number; //quantity in earn1 tokens (not USD)
+  earnAmt2?: number; //quantity in earn2 tokens (not USD)
+}
+
+const exchangeRates: Record<string, number> = {
+  sei: 0.5,
+  sen: 0.1,
+  pepe: 0.001,
+};
 
 const LPList = ({
   stake,
   earn1,
   earn2,
   apr,
+  distributionRatio,
   tvl,
   endTime,
-}: {
-  stake: String;
-  earn1: String;
-  earn2?: String;
-  apr: number;
-  tvl: number;
-  endTime: number;
-}) => {
+  usrStake,
+}: PoolList) => {
   const theme: Theme = useTheme();
   let time = timeRemaining(endTime);
 
+  //calculate rewards in earn1 and earn2
+  const rewardsCalc = () => {
+    const dailyReturnPercent = apr / 365;
+    const stakeConverted = usrStake * exchangeRates[stake];
+    const dailyReturnAmt = (dailyReturnPercent / 100) * stakeConverted;
+
+    if (
+      earn2 === undefined ||
+      distributionRatio === undefined //second condition added to quiet ts-check
+    ) {
+      const earnings: EarningsBreakdown = {
+        earnAmt1: dailyReturnAmt * exchangeRates[earn1],
+      };
+      return earnings;
+    } else {
+      const earnings: EarningsBreakdown = {
+        earnAmt1:
+          (dailyReturnAmt * (1 - distributionRatio)) / exchangeRates[earn1],
+        earnAmt2: (dailyReturnAmt * distributionRatio) / exchangeRates[earn2],
+      };
+      return earnings;
+    }
+  };
+
+  const { earnAmt1, earnAmt2 } = rewardsCalc();
+
   return (
     <>
-      <Box
-        sx={{
-          border: "1px solid",
-          borderColor: "secondary",
-          my: 5,
-          px: 7,
-          py: 3,
-          borderRadius: 3,
-        }}
-      >
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Box display="flex" alignItems="center">
+      <Box sx={{ my: 5, px: 7, py: 3, border: "1px solid", borderRadius: 3 }}>
+        <Grid
+          container
+          gap={2}
+          sx={{
+            justifyContent: "space-between",
+            borderColor: "secondary",
+          }}
+        >
+          <Grid
+            item
+            md={4.5}
+            display="flex"
+            alignItems="center"
+            p="0 !important"
+          >
             <Box sx={{ height: ICON_WIDTH, scale: "105%", display: "flex" }}>
               <Image
                 alt="stake coin icon"
@@ -98,24 +138,62 @@ const LPList = ({
                   </Box>
                 )}
               </Box>
-              <PoolText
-                header="Earn"
-                body={`${earn1.toUpperCase()} ${
-                  earn2 !== undefined ? ` + ${earn2.toUpperCase()}` : ``
-                }`}
-              />
             </Box>
-          </Box>
-          <PoolText header="Est. APR" body={`${apr}%`} />
-          <PoolText
-            header="TVL"
-            body={
-              Intl.NumberFormat("en-US").format(tvl) + " " + stake.toUpperCase()
-            }
-          />
-
-          <PoolText header="Ends in" body={time} />
-        </Box>
+            <PoolText
+              header="Earn"
+              body={`${earn1.toUpperCase()} ${
+                earn2 !== undefined ? ` + ${earn2.toUpperCase()}` : ``
+              }`}
+            />
+          </Grid>
+          <Grid item p="0 !important">
+            <PoolText header="Est. APR" body={`${apr}%`} />
+          </Grid>
+          <Grid item md={2} p="0 !important">
+            <PoolText
+              header="TVL"
+              body={
+                Intl.NumberFormat("en-US").format(tvl) +
+                " " +
+                stake.toUpperCase()
+              }
+            />
+          </Grid>
+          <Grid item md={1.2} p="0 !important">
+            <PoolText header="Ends in" body={time} />
+          </Grid>
+        </Grid>
+        <Divider variant="middle" sx={{ mt: 5, borderColor: "#8181814d" }} />
+        <Grid container>
+          {usrStake !== 0 ? (
+            <>
+              <Grid item md={3}>
+                <PoolText
+                  large
+                  header="My Stake"
+                  body={usrStake}
+                  body2={stake.toUpperCase()}
+                />
+              </Grid>
+              <Grid item md={3}>
+                <PoolText
+                  large
+                  header="My Est. Daily Rewards"
+                  body={Math.round(earnAmt1 * 10000) / 10000}
+                  body2={earn1.toUpperCase()}
+                  body3={
+                    earnAmt2 !== undefined
+                      ? Math.round(earnAmt2 * 10000) / 10000
+                      : ""
+                  }
+                  body4={earn2 !== undefined ? earn2.toUpperCase() : ""}
+                />
+              </Grid>
+            </>
+          ) : (
+            <Typography mt={2}>Participate now to start earning!</Typography>
+          )}
+        </Grid>
       </Box>
     </>
   );

@@ -4,16 +4,19 @@ import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import React, { useState } from "react";
 import LPList from "@/components/LPList/LPList";
+import { PoolList } from "@/types/customTypes";
 
-//need to restart server for update to take effect on ui
-const poolList = [
+//need to restart server for changes to the const to take effect on ui
+const poolList: PoolList[] = [
   {
     stake: "sei",
     earn1: "sei",
     earn2: "sen",
     apr: 12.5,
+    distributionRatio: 0.5,
     tvl: 41413895,
     endTime: 1684953010,
+    usrStake: 5000,
   },
   {
     stake: "sei",
@@ -22,14 +25,17 @@ const poolList = [
     apr: 25.5,
     tvl: 41413895,
     endTime: 1692678338,
+    usrStake: 0,
   },
   {
     stake: "sei",
     earn1: "sen",
     earn2: "pepe",
     apr: 19.6,
+    distributionRatio: 0.8,
     tvl: 41413895,
     endTime: 1698981938,
+    usrStake: 12400,
   },
 ];
 
