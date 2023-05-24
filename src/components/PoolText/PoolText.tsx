@@ -1,4 +1,5 @@
 import { Box, Theme, Typography, useTheme } from "@mui/material";
+import "@fontsource/work-sans/500.css";
 import "@fontsource/work-sans/600.css";
 import React from "react";
 
@@ -68,13 +69,15 @@ const PoolText = ({
                 : theme.palette.tertiary.main,
             fontWeight: 600,
             fontSize: 14,
-            px: theme.palette.mode === "light" ? 1 : 0,
-            backgroundColor:
-              theme.palette.mode === "light"
-                ? theme.palette.tertiary.main
-                : "transparent",
+
+            //px: theme.palette.mode === "light" ? 1 : 0,
+            // backgroundColor:
+            //   theme.palette.mode === "light"
+            //     ? theme.palette.tertiary.main
+            //     : "transparent",
             width: "max-content",
-            borderRadius: 1.5,
+            borderBottom: theme.palette.mode === "light" ? 2 : 1,
+            borderColor: theme.palette.tertiary.main,
           }}
         >
           {header}

@@ -1,7 +1,18 @@
-import { Box, Divider, Grid, Theme, Typography, useTheme } from "@mui/material";
-import React from "react";
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  Menu,
+  MenuItem,
+  Theme,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import React, { useState } from "react";
 
-import { SwapHoriz } from "@mui/icons-material";
+import { MoreVert, SwapHoriz } from "@mui/icons-material";
 import "@fontsource/work-sans/600.css";
 import PoolText from "../PoolText/PoolText";
 
@@ -9,6 +20,7 @@ import timeRemaining from "../TimeRemaining";
 import Image from "next/image";
 import { PoolList } from "@/types/customTypes";
 const ICON_WIDTH = 50;
+const ITEM_HEIGHT = 48;
 
 //token to usd exchange rates: 1 token = x USD
 //token1
@@ -62,6 +74,18 @@ const LPList = ({
   };
 
   const { earnAmt1, earnAmt2 } = rewardsCalc();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const openMenu = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  //After clicking withdraw, once the amount is available
+  const [claimAvailable, setClaimAvailable] = useState(false);
 
   return (
     <>
@@ -164,10 +188,16 @@ const LPList = ({
           </Grid>
         </Grid>
         <Divider variant="middle" sx={{ mt: 5, borderColor: "#8181814d" }} />
-        <Grid container>
+        <Grid
+          container
+          sx={{
+            mt: 2,
+            alignItems: "center",
+          }}
+        >
           {usrStake !== 0 ? (
             <>
-              <Grid item md={3}>
+              <Grid item md={5.7}>
                 <PoolText
                   large
                   header="My Stake"
@@ -191,8 +221,56 @@ const LPList = ({
               </Grid>
             </>
           ) : (
-            <Typography mt={2}>Participate now to start earning!</Typography>
+            <Grid item md={10}>
+              <Typography sx={{ fontWeight: 600 }}>
+                Participate now to start earning!
+              </Typography>
+            </Grid>
           )}
+          <Grid item xs={10} md={2} sx={{ ml: "auto", display: "flex" }}>
+            <Button
+              variant="yellowFill"
+              size="small"
+              fullWidth
+              sx={{ fontSize: "0.875rem", height: "auto" }}
+              // onClick={() => onEnterNowClick()}
+            >
+              Deposit
+            </Button>
+            <IconButton
+              aria-label="more"
+              id="long-button"
+              aria-controls={openMenu ? "long-menu" : undefined}
+              aria-expanded={openMenu ? "true" : undefined}
+              aria-haspopup="true"
+              onClick={handleClick}
+              color="secondary"
+            >
+              <MoreVert />
+            </IconButton>
+            <Menu
+              id="long-menu"
+              MenuListProps={{
+                "aria-labelledby": "long-button",
+              }}
+              anchorEl={anchorEl}
+              open={openMenu}
+              onClose={handleClose}
+              PaperProps={{
+                style: {
+                  maxHeight: ITEM_HEIGHT * 4.5,
+                  width: "max-content",
+                  border: "2px solid",
+                  borderColor: theme.palette.tertiary.main,
+                  borderRadius: 10,
+                },
+              }}
+            >
+              <MenuItem>Withdraw</MenuItem>
+              <MenuItem>Claim withdrawal</MenuItem>
+            </Menu>
+          </Grid>
+          <Grid item xs={2} md={2} sx={{ paddingLeft: "0 !important" }}></Grid>
         </Grid>
       </Box>
     </>
