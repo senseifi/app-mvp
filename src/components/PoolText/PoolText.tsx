@@ -1,4 +1,4 @@
-import { Box, Theme, Typography, useTheme } from "@mui/material";
+import { Box, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
 import "@fontsource/work-sans/500.css";
 import "@fontsource/work-sans/600.css";
 import React from "react";
@@ -6,11 +6,18 @@ import React from "react";
 const formatNumber = (value: number) =>
   Intl.NumberFormat("en-US").format(value);
 
-const renderBody = (value: number | string) => (
+const renderBody = (value: number | string, isSmallScreen: Boolean) => (
   <Typography
     sx={{
       px: typeof value === "number" ? 1 : 0,
-      fontSize: typeof value === "number" ? 24 : 16,
+      fontSize:
+        typeof value === "number"
+          ? isSmallScreen
+            ? 20
+            : 24
+          : isSmallScreen
+          ? 14
+          : 16,
       fontWeight: typeof value === "number" ? 500 : 600,
       color: typeof value === "number" ? "gray" : "",
     }}
@@ -35,14 +42,18 @@ const PoolText = ({
   large?: Boolean;
 }) => {
   const theme: Theme = useTheme();
+  const isSmallScreen = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("sm")
+  );
+
   if (large) {
     return (
-      <Box sx={{ mt: 3 }}>
+      <Box sx={{ mt: isSmallScreen ? 2 : 3 }}>
         <Typography
           sx={{
             fontSize: 16,
             px: 1,
-            py: 1,
+            py: isSmallScreen ? 0 : 1,
             width: "max-content",
             borderRadius: 1.5,
           }}
@@ -50,11 +61,12 @@ const PoolText = ({
           {header}
         </Typography>
         <Box display="flex" alignItems="baseline">
-          {renderBody(body)}
-          {body2 !== undefined && renderBody(body2)}
-          {body3 !== undefined && renderBody(",")}
-          {body3 !== undefined && renderBody(body3)}
-          {body4 !== undefined && renderBody(body4)}
+          {renderBody(body, isSmallScreen)}
+
+          {body2 !== undefined && renderBody(body2, isSmallScreen)}
+          {body3 !== undefined && renderBody(",", isSmallScreen)}
+          {body3 !== undefined && renderBody(body3, isSmallScreen)}
+          {body4 !== undefined && renderBody(body4, isSmallScreen)}
         </Box>
       </Box>
     );
@@ -68,13 +80,8 @@ const PoolText = ({
                 ? "#071428"
                 : theme.palette.tertiary.main,
             fontWeight: 600,
-            fontSize: 14,
+            fontSize: isSmallScreen ? 12 : 14,
 
-            //px: theme.palette.mode === "light" ? 1 : 0,
-            // backgroundColor:
-            //   theme.palette.mode === "light"
-            //     ? theme.palette.tertiary.main
-            //     : "transparent",
             width: "max-content",
             borderBottom: theme.palette.mode === "light" ? 2 : 1,
             borderColor: theme.palette.tertiary.main,
@@ -82,7 +89,9 @@ const PoolText = ({
         >
           {header}
         </Typography>
-        <Typography sx={{ fontSize: 20 }}>{body}</Typography>
+        <Typography sx={{ fontSize: isSmallScreen ? 14 : 20 }}>
+          {body}
+        </Typography>
       </Box>
     );
   }

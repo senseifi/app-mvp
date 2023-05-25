@@ -8,6 +8,7 @@ import {
   MenuItem,
   Theme,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import React, { useState } from "react";
@@ -19,7 +20,7 @@ import PoolText from "../PoolText/PoolText";
 import timeRemaining from "../TimeRemaining";
 import Image from "next/image";
 import { PoolList } from "@/types/customTypes";
-const ICON_WIDTH = 50;
+
 const ITEM_HEIGHT = 48;
 
 //token to usd exchange rates: 1 token = x USD
@@ -47,8 +48,13 @@ const LPList = ({
   usrStake,
 }: PoolList) => {
   const theme: Theme = useTheme();
-  let time = timeRemaining(endTime);
 
+  const isSmallScreen = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("sm")
+  );
+
+  let time = timeRemaining(endTime);
+  const ICON_WIDTH = isSmallScreen ? 45 : 50;
   //calculate rewards in earn1 and earn2
   const rewardsCalc = () => {
     const dailyReturnPercent = apr / 365;
@@ -89,7 +95,15 @@ const LPList = ({
 
   return (
     <>
-      <Box sx={{ my: 5, px: 7, py: 3, border: "1px solid", borderRadius: 3 }}>
+      <Box
+        sx={{
+          my: 5,
+          px: isSmallScreen ? 2 : 7,
+          py: isSmallScreen ? 2 : 3,
+          border: "1px solid",
+          borderRadius: 3,
+        }}
+      >
         <Grid
           container
           gap={2}
@@ -100,10 +114,12 @@ const LPList = ({
         >
           <Grid
             item
+            xs={12}
             md={4.5}
             display="flex"
             alignItems="center"
             p="0 !important"
+            mb={isSmallScreen ? 2 : 0}
           >
             <Box sx={{ height: ICON_WIDTH, scale: "105%", display: "flex" }}>
               <Image
@@ -116,9 +132,9 @@ const LPList = ({
               <PoolText header="Stake" body={stake.toUpperCase()} />
             </Box>
             <SwapHoriz
-              fontSize="large"
+              fontSize={isSmallScreen ? "medium" : "large"}
               sx={{
-                mx: 2,
+                mx: isSmallScreen ? 1 : 2,
               }}
             />
             <Box sx={{ display: "flex" }}>
@@ -127,7 +143,7 @@ const LPList = ({
                   display: "flex",
                   flexDirection: "row",
                   position: "relative",
-                  width: ICON_WIDTH * 1.5,
+                  width: ICON_WIDTH * (earn2 !== undefined ? 1.5 : 1),
                   height: ICON_WIDTH,
                 }}
               >
@@ -177,7 +193,10 @@ const LPList = ({
             <PoolText
               header="TVL"
               body={
-                Intl.NumberFormat("en-US").format(tvl) +
+                Intl.NumberFormat("en-US", {
+                  notation: isSmallScreen ? "compact" : "standard",
+                  maximumSignificantDigits: isSmallScreen ? 4 : undefined,
+                }).format(tvl) +
                 " " +
                 stake.toUpperCase()
               }
@@ -187,17 +206,21 @@ const LPList = ({
             <PoolText header="Ends in" body={time} />
           </Grid>
         </Grid>
-        <Divider variant="middle" sx={{ mt: 5, borderColor: "#8181814d" }} />
+        <Divider
+          variant="middle"
+          sx={{ mt: isSmallScreen ? 2 : 5, borderColor: "#8181814d" }}
+        />
         <Grid
           container
           sx={{
-            mt: 2,
+            gap: 1,
+            mt: isSmallScreen ? 0 : 2,
             alignItems: "center",
           }}
         >
           {usrStake !== 0 ? (
             <>
-              <Grid item md={5.7}>
+              <Grid item xs={12} md={5.7}>
                 <PoolText
                   large
                   header="My Stake"
@@ -205,7 +228,7 @@ const LPList = ({
                   body2={stake.toUpperCase()}
                 />
               </Grid>
-              <Grid item md={3}>
+              <Grid item xs={12} md={3}>
                 <PoolText
                   large
                   header="My Est. Daily Rewards"
@@ -221,13 +244,18 @@ const LPList = ({
               </Grid>
             </>
           ) : (
-            <Grid item md={10}>
-              <Typography sx={{ fontWeight: 600 }}>
+            <Grid item md={9}>
+              <Typography sx={{ mt: 2, fontWeight: 600 }}>
                 Participate now to start earning!
               </Typography>
             </Grid>
           )}
-          <Grid item xs={10} md={2} sx={{ ml: "auto", display: "flex" }}>
+          <Grid
+            item
+            xs={12}
+            md={2}
+            sx={{ mt: isSmallScreen ? 2 : 0, ml: "auto", display: "flex" }}
+          >
             <Button
               variant="yellowFill"
               size="small"

@@ -104,6 +104,11 @@ const createAppTheme = (mode: PaletteMode) =>
       yellowText: {
         color: "#FFDB2C",
       },
+      h1: {
+        "@media (max-width: 768px)": {
+          fontSize: "4.5rem",
+        },
+      },
       h2: {
         color: "#FFDB2C",
         fontSize: "2rem",
@@ -180,7 +185,7 @@ const createAppTheme = (mode: PaletteMode) =>
           section: {
             padding: "1rem 7rem 2rem 7rem",
             "@media (max-width: 1200px)": {
-              padding: "2rem",
+              padding: "0 1.5rem 2rem 1.5rem",
             },
           },
         },

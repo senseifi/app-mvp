@@ -80,7 +80,13 @@ const Liquidity = () => {
             onClose={handleCloseNotif}
             severity={notifSev}
           />
-          <Typography variant="h1" sx={{ fontWeight: "medium" }}>
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: isSmallScreen ? "4rem !important" : "",
+              fontWeight: "medium",
+            }}
+          >
             Liquidity Pools
           </Typography>
         </main>
