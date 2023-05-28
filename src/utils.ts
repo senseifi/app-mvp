@@ -1,3 +1,5 @@
+import { seiTokenDenom, senTokenDenom } from "./config/contracts";
+
 export const truncateAddress = (
   address: string | undefined,
   numChars: number = 5
@@ -53,3 +55,23 @@ export const calculateTickets = (
 
 export const bigIntMax = (args: BigInt[]) =>
   args.reduce((m, e) => (e > m ? e : m));
+
+export const getPrettyDenom = (denom: string) => {
+  if (denom === seiTokenDenom) {
+    return "sei";
+  } else if (denom === senTokenDenom) {
+    return "sen";
+  } else {
+    return denom;
+  }
+};
+
+export const getTokenImg = (denom: string) => {
+  if (denom === seiTokenDenom) {
+    return "/tokenIcons/sei.png";
+  } else if (denom === senTokenDenom) {
+    return "/tokenIcons/sen.png";
+  } else {
+    return `/tokenIcons/${denom}.png`;
+  }
+};

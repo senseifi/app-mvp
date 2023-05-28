@@ -1,1 +1,1 @@
-export { default } from "./liquidity";
+export { default, getServerSideProps } from "./liquidity";

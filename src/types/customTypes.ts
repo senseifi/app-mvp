@@ -29,13 +29,15 @@ export interface CustomModalProps extends ModalProps {
 }
 
 export type PoolList = {
+  address: string;
   stake: string;
+  stakePretty: string;
   earn1: string;
+  earn1Pretty: string;
   earn2?: string; //preferably the weaker token
+  earn2Pretty?: string;
   apr: number;
   distributionRatio?: PoolList["earn2"] extends undefined ? undefined : number; // distribution of earn1 amt(in USD):earn2 amt(in USD) if applicable. can only be defined if earn2 is also defined
-  tvl: number;
-
+  tvl: string;
   endTime: number;
-  usrStake: number;
 };

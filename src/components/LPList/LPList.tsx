@@ -11,7 +11,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { MoreVert, SwapHoriz } from "@mui/icons-material";
 import "@fontsource/work-sans/600.css";
@@ -20,6 +20,15 @@ import PoolText from "../PoolText/PoolText";
 import timeRemaining from "../TimeRemaining";
 import Image from "next/image";
 import { PoolList } from "@/types/customTypes";
+import { useChain } from "@cosmos-kit/react";
+import { chainName } from "@/config/sei";
+import {
+  SenseifiStakingPoolClient,
+  SenseifiStakingPoolQueryClient,
+} from "@/contract_clients/SenseifiStakingPool.client";
+import { StdFee, coin } from "@cosmjs/amino";
+import { getTokenImg, toAU } from "@/utils";
+import { UserState } from "@/contract_clients/SenseifiStakingPool.types";
 
 const ITEM_HEIGHT = 48;
 
@@ -38,15 +47,19 @@ const exchangeRates: Record<string, number> = {
 };
 
 const LPList = ({
+  address,
   stake,
+  stakePretty,
   earn1,
+  earn1Pretty,
   earn2,
+  earn2Pretty,
   apr,
   distributionRatio,
   tvl,
   endTime,
-  usrStake,
 }: PoolList) => {
+  const chain = useChain(chainName);
   const theme: Theme = useTheme();
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -56,30 +69,31 @@ const LPList = ({
   let time = timeRemaining(endTime);
   const ICON_WIDTH = isSmallScreen ? 45 : 50;
   //calculate rewards in earn1 and earn2
-  const rewardsCalc = () => {
-    const dailyReturnPercent = apr / 365;
-    const stakeConverted = usrStake * exchangeRates[stake];
-    const dailyReturnAmt = (dailyReturnPercent / 100) * stakeConverted;
+  // const rewardsCalc = () => {
+  //   const dailyReturnPercent = apr / 365;
+  //   const stakeConverted = 45 * exchangeRates[stake];
+  //   const dailyReturnAmt = (dailyReturnPercent / 100) * stakeConverted;
 
-    if (
-      earn2 === undefined ||
-      distributionRatio === undefined //second condition added to quiet ts-check
-    ) {
-      const earnings: EarningsBreakdown = {
-        earnAmt1: dailyReturnAmt * exchangeRates[earn1],
-      };
-      return earnings;
-    } else {
-      const earnings: EarningsBreakdown = {
-        earnAmt1:
-          (dailyReturnAmt * (1 - distributionRatio)) / exchangeRates[earn1],
-        earnAmt2: (dailyReturnAmt * distributionRatio) / exchangeRates[earn2],
-      };
-      return earnings;
-    }
-  };
+  //   if (
+  //     earn2 === undefined ||
+  //     distributionRatio === undefined //second condition added to quiet ts-check
+  //   ) {
+  //     const earnings: EarningsBreakdown = {
+  //       earnAmt1: dailyReturnAmt * exchangeRates[earn1],
+  //     };
+  //     return earnings;
+  //   } else {
+  //     const earnings: EarningsBreakdown = {
+  //       earnAmt1:
+  //         (dailyReturnAmt * (1 - distributionRatio)) / exchangeRates[earn1],
+  //       earnAmt2: (dailyReturnAmt * distributionRatio) / exchangeRates[earn2],
+  //     };
+  //     return earnings;
+  //   }
+  // };
 
-  const { earnAmt1, earnAmt2 } = rewardsCalc();
+  // const { earnAmt1, earnAmt2 } = rewardsCalc();
+  const [userState, setUserState] = useState<UserState | undefined>(undefined);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -88,6 +102,44 @@ const LPList = ({
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const fetchSetUserState = async () => {
+    if (chain.address === undefined) {
+      setUserState(undefined);
+      return;
+    }
+
+    const client = await chain.getCosmWasmClient();
+    const contract = new SenseifiStakingPoolQueryClient(client, address);
+    const userState = await contract.getUserState({ user: chain.address });
+    setUserState(userState);
+  };
+
+  useEffect(() => {
+    fetchSetUserState();
+  }, [chain.address]);
+
+  const supplyRewards = async () => {
+    if (chain.address === undefined) return;
+
+    try {
+      const client = await chain.getSigningCosmWasmClient();
+
+      const contract = new SenseifiStakingPoolClient(
+        client,
+        chain.address,
+        address
+      );
+
+      const fee: StdFee = {
+        amount: [coin("10000", "usei")],
+        gas: "500000",
+      };
+      const funds = [coin("1200", "usei")];
+      const res = await contract.supplyRewards(fee, undefined, funds);
+      console.log(res.transactionHash);
+    } catch (e) {}
   };
 
   //After clicking withdraw, once the amount is available
@@ -126,10 +178,10 @@ const LPList = ({
                 alt="stake coin icon"
                 width={ICON_WIDTH}
                 height={ICON_WIDTH}
-                src={`/tokenIcons/${stake}.png`}
+                src={getTokenImg(stake)}
               />
 
-              <PoolText header="Stake" body={stake.toUpperCase()} />
+              <PoolText header="Stake" body={stakePretty.toUpperCase()} />
             </Box>
             <SwapHoriz
               fontSize={isSmallScreen ? "medium" : "large"}
@@ -158,7 +210,7 @@ const LPList = ({
                     alt="stake coin icon"
                     width={ICON_WIDTH}
                     height={ICON_WIDTH}
-                    src={`/tokenIcons/${earn1}.png`}
+                    src={getTokenImg(earn1)}
                   />
                 </Box>
                 {earn2 && (
@@ -173,7 +225,7 @@ const LPList = ({
                       alt="stake coin icon"
                       width={ICON_WIDTH}
                       height={ICON_WIDTH}
-                      src={`/tokenIcons/${earn2}.png`}
+                      src={getTokenImg(earn2)}
                     />
                   </Box>
                 )}
@@ -181,8 +233,10 @@ const LPList = ({
             </Box>
             <PoolText
               header="Earn"
-              body={`${earn1.toUpperCase()} ${
-                earn2 !== undefined ? ` + ${earn2.toUpperCase()}` : ``
+              body={`${earn1Pretty.toUpperCase()} ${
+                earn2Pretty !== undefined
+                  ? ` + ${earn2Pretty?.toUpperCase()}`
+                  : ``
               }`}
             />
           </Grid>
@@ -196,9 +250,9 @@ const LPList = ({
                 Intl.NumberFormat("en-US", {
                   notation: isSmallScreen ? "compact" : "standard",
                   maximumSignificantDigits: isSmallScreen ? 4 : undefined,
-                }).format(tvl) +
+                }).format(toAU(tvl)) +
                 " " +
-                stake.toUpperCase()
+                stakePretty.toUpperCase()
               }
             />
           </Grid>
@@ -218,28 +272,24 @@ const LPList = ({
             alignItems: "center",
           }}
         >
-          {usrStake !== 0 ? (
+          {userState !== undefined ? (
             <>
               <Grid item xs={12} md={5.7}>
                 <PoolText
                   large
                   header="My Stake"
-                  body={usrStake}
-                  body2={stake.toUpperCase()}
+                  body={toAU(userState.total_stake)}
+                  body2={stakePretty.toUpperCase()}
                 />
               </Grid>
               <Grid item xs={12} md={3}>
                 <PoolText
                   large
-                  header="My Est. Daily Rewards"
-                  body={Math.round(earnAmt1 * 10000) / 10000}
-                  body2={earn1.toUpperCase()}
-                  body3={
-                    earnAmt2 !== undefined
-                      ? Math.round(earnAmt2 * 10000) / 10000
-                      : ""
-                  }
-                  body4={earn2 !== undefined ? earn2.toUpperCase() : ""}
+                  header="My Unclaimed Rewards"
+                  body={toAU(userState.primary_reward)}
+                  body2={earn1Pretty.toUpperCase()}
+                  body3={toAU(userState.secondary_reward)}
+                  body4={earn2Pretty?.toUpperCase() ?? ""}
                 />
               </Grid>
             </>
@@ -296,6 +346,7 @@ const LPList = ({
             >
               <MenuItem>Withdraw</MenuItem>
               <MenuItem>Claim withdrawal</MenuItem>
+              <MenuItem onClick={supplyRewards}>Supply Rewards</MenuItem>
             </Menu>
           </Grid>
           <Grid item xs={2} md={2} sx={{ paddingLeft: "0 !important" }}></Grid>
