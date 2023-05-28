@@ -47,18 +47,26 @@ const exchangeRates: Record<string, number> = {
 };
 
 const LPList = ({
-  address,
-  stake,
-  stakePretty,
-  earn1,
-  earn1Pretty,
-  earn2,
-  earn2Pretty,
-  apr,
-  distributionRatio,
-  tvl,
-  endTime,
-}: PoolList) => {
+  index,
+  poolList: {
+    address,
+    stake,
+    stakePretty,
+    earn1,
+    earn1Pretty,
+    earn2,
+    earn2Pretty,
+    apr,
+    distributionRatio,
+    tvl,
+    endTime,
+  },
+  onClickDeposit,
+}: {
+  index: number;
+  poolList: PoolList;
+  onClickDeposit: Function;
+}) => {
   const chain = useChain(chainName);
   const theme: Theme = useTheme();
 
@@ -311,7 +319,7 @@ const LPList = ({
               size="small"
               fullWidth
               sx={{ fontSize: "0.875rem", height: "auto" }}
-              // onClick={() => onEnterNowClick()}
+              onClick={() => onClickDeposit(index)}
             >
               Deposit
             </Button>

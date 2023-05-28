@@ -58,9 +58,9 @@ export const bigIntMax = (args: BigInt[]) =>
 
 export const getPrettyDenom = (denom: string) => {
   if (denom === seiTokenDenom) {
-    return "sei";
+    return "SEI";
   } else if (denom === senTokenDenom) {
-    return "sen";
+    return "SEN";
   } else {
     return denom;
   }

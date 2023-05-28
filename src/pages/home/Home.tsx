@@ -20,7 +20,7 @@ import ShineButton from "@/components/ShineButton/ShineButton";
 import CurrentDraws from "@/components/CurrentDraws/CurrentDraws";
 import { Draw, ModalDetails } from "@/types/customTypes";
 import WinnerHistory from "@/components/WinnerHistory/WinnerHistory";
-import TicketsModal from "@/components/Modals/TicketsModal";
+import TicketsModal from "@/components/Modals/NllTicketsModal";
 import CheckWinnerModal from "@/components/Modals/CheckWinnerModal";
 import ClaimWithdrawalModal from "@/components/Modals/ClaimWithdrawalModal";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";

@@ -11,5 +11,7 @@ export const gameDurationSecs = 604800;
 
 export const seiTokenDenom = "usei";
 
+export const feeDenom = "usei";
+
 export const senTokenDenom =
   "factory/sei1dreru8834gk69045rxha0rkfle5azrqdqr07md/SEN";

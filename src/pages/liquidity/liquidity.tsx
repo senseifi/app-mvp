@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import LPList from "@/components/LPList/LPList";
 import { PoolList } from "@/types/customTypes";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { rpcEndpoint } from "@/config/sei";
+import { chainName, rpcEndpoint } from "@/config/sei";
 import { SenseifiStakingPoolQueryClient } from "@/contract_clients/SenseifiStakingPool.client";
 import {
   seiStakingPoolContract,
@@ -17,18 +17,41 @@ import {
   Params,
 } from "@/contract_clients/SenseifiStakingPool.types";
 import { getPrettyDenom, nsToSecs } from "@/utils";
+import StakingDepositModal from "@/components/Modals/StakingDepositModal";
+import { useChain } from "@cosmos-kit/react";
 
 const Liquidity = ({
   stakingPools,
 }: {
   stakingPools: { address: String; params: Params; globalState: GlobalState }[];
 }) => {
+  const chain = useChain(chainName);
+
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
   const isMediumScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("md")
   );
+
+  const showNotif = (
+    message: string,
+    severity: "success" | "info" | "warning" | "error"
+  ) => {
+    setNotifMsg(message);
+    setNotifSev(severity);
+    setOpenNotif(true);
+  };
+
+  const onClickDeposit = (index: number) => {
+    if (!chain.isWalletConnected) {
+      showNotif("Please connect your wallet first :)", "info");
+      return;
+    }
+
+    setActivePoolIndex(index);
+    setDepositOpen(true);
+  };
 
   const poolList: PoolList[] = stakingPools.map((v) => ({
     address: v.address.valueOf(),
@@ -54,6 +77,9 @@ const Liquidity = ({
     "success" | "info" | "warning" | "error"
   >("info");
 
+  const [depositOpen, setDepositOpen] = useState(false);
+  const [activePoolIndex, setActivePoolIndex] = useState(0);
+
   const handleCloseNotif = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
@@ -65,6 +91,14 @@ const Liquidity = ({
 
   return (
     <>
+      {depositOpen && (
+        <StakingDepositModal
+          open={depositOpen}
+          setOpen={setDepositOpen}
+          poolList={poolList[activePoolIndex]}
+          showNotif={showNotif}
+        />
+      )}
       <Box>
         <Head>
           <title>Sensei Liquidity Pools</title>
@@ -92,7 +126,12 @@ const Liquidity = ({
         </main>
         <Box component="section">
           {poolList.map((pool, i) => (
-            <LPList key={i} {...pool} />
+            <LPList
+              key={i}
+              index={i}
+              poolList={pool}
+              onClickDeposit={onClickDeposit}
+            />
           ))}
         </Box>
       </Box>
