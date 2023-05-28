@@ -20,6 +20,7 @@ import { getPrettyDenom, nsToSecs } from "@/utils";
 import StakingDepositModal from "@/components/Modals/StakingDepositModal";
 import { useChain } from "@cosmos-kit/react";
 import StakingWithdrawModal from "@/components/Modals/StakingWithdrawModal";
+import ClaimRewardsModal from "@/components/Modals/ClaimRewardsModal";
 
 const Liquidity = ({
   stakingPools,
@@ -64,6 +65,16 @@ const Liquidity = ({
     setWithdrawOpen(true);
   };
 
+  const onClickClaim = (index: number) => {
+    if (!chain.isWalletConnected) {
+      showNotif("Please connect your wallet first :)", "info");
+      return;
+    }
+
+    setActivePoolIndex(index);
+    setClaimOpen(true);
+  };
+
   const poolList: PoolList[] = stakingPools.map((v) => ({
     address: v.address.valueOf(),
     stake: v.params.stake_denom,
@@ -90,6 +101,7 @@ const Liquidity = ({
 
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [claimOpen, setClaimOpen] = useState(false);
   const [activePoolIndex, setActivePoolIndex] = useState(0);
 
   const handleCloseNotif = (event?: React.SyntheticEvent, reason?: string) => {
@@ -115,6 +127,14 @@ const Liquidity = ({
         <StakingWithdrawModal
           open={withdrawOpen}
           setOpen={setWithdrawOpen}
+          poolList={poolList[activePoolIndex]}
+          showNotif={showNotif}
+        />
+      )}
+      {claimOpen && (
+        <ClaimRewardsModal
+          open={claimOpen}
+          setOpen={setClaimOpen}
           poolList={poolList[activePoolIndex]}
           showNotif={showNotif}
         />
@@ -152,6 +172,7 @@ const Liquidity = ({
               poolList={pool}
               onClickDeposit={onClickDeposit}
               onClickWithdraw={onClickWithdraw}
+              onClickClaim={onClickClaim}
             />
           ))}
         </Box>

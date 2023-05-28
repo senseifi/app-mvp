@@ -63,11 +63,13 @@ const LPList = ({
   },
   onClickDeposit,
   onClickWithdraw,
+  onClickClaim,
 }: {
   index: number;
   poolList: PoolList;
   onClickDeposit: Function;
   onClickWithdraw: Function;
+  onClickClaim: Function;
 }) => {
   const chain = useChain(chainName);
   const theme: Theme = useTheme();
@@ -349,7 +351,9 @@ const LPList = ({
               <MenuItem onClick={() => onClickWithdraw(index)}>
                 Withdraw
               </MenuItem>
-              <MenuItem>Claim withdrawal</MenuItem>
+              <MenuItem onClick={() => onClickClaim(index)}>
+                Claim Rewards
+              </MenuItem>
               <MenuItem onClick={supplyRewards}>Supply Rewards</MenuItem>
             </Menu>
           </Grid>
