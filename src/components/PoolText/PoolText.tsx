@@ -22,7 +22,7 @@ const renderBody = (value: number | string, isSmallScreen: Boolean) => (
       color: typeof value === "number" ? "gray" : "",
     }}
   >
-    {typeof value === "number" ? formatNumber(value) : value}
+    {value}
   </Typography>
 );
 

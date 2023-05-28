@@ -148,7 +148,6 @@ const LPList = ({
       };
       const funds = [coin("1200", "usei")];
       const res = await contract.supplyRewards(fee, undefined, funds);
-      console.log(res.transactionHash);
     } catch (e) {}
   };
 
@@ -256,14 +255,7 @@ const LPList = ({
           <Grid item md={2} p="0 !important">
             <PoolText
               header="TVL"
-              body={
-                Intl.NumberFormat("en-US", {
-                  notation: isSmallScreen ? "compact" : "standard",
-                  maximumSignificantDigits: isSmallScreen ? 4 : undefined,
-                }).format(toAU(tvl)) +
-                " " +
-                stakePretty.toUpperCase()
-              }
+              body={toAU(tvl) + " " + stakePretty.toUpperCase()}
             />
           </Grid>
           <Grid item md={1.2} p="0 !important">
