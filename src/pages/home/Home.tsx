@@ -20,7 +20,7 @@ import ShineButton from "@/components/ShineButton/ShineButton";
 import CurrentDraws from "@/components/CurrentDraws/CurrentDraws";
 import { Draw, ModalDetails } from "@/types/customTypes";
 import WinnerHistory from "@/components/WinnerHistory/WinnerHistory";
-import TicketsModal from "@/components/Modals/TicketsModal";
+import TicketsModal from "@/components/Modals/NllTicketsModal";
 import CheckWinnerModal from "@/components/Modals/CheckWinnerModal";
 import ClaimWithdrawalModal from "@/components/Modals/ClaimWithdrawalModal";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
@@ -33,10 +33,9 @@ import {
   GameState,
 } from "@/contract_clients/SenseifiStakingNll.types";
 import { nsToSecs, toAU, bigIntMax } from "@/utils";
-import Loader from "@/components/Loader/Loader";
+
 import Notification from "@/components/Notification/Notification";
 import { useChain } from "@cosmos-kit/react";
-import { useRouter } from "next/router";
 
 const Home = ({
   params,

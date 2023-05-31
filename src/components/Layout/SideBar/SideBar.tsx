@@ -44,7 +44,7 @@ const SideBar = () => {
     <Box
       onMouseEnter={() => collapseSidebar(false)}
       onMouseLeave={() => collapseSidebar(true)}
-      sx={{ display: "flex", position: "sticky", top: "0px" }}
+      sx={{ display: "flex", position: "sticky", top: "0px", zIndex: 998 }}
     >
       <Sidebar
         defaultCollapsed
