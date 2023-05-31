@@ -39,8 +39,9 @@ export const calculateTickets = (
 
   const validTotalTickets: BigInt = inRange ? totalTickets : BigInt(0);
 
-  const diff =
+  let diff =
     BigInt(currentTime.toString()) - BigInt(validLastUpdateTime.toString());
+  if (diff < 0) diff = BigInt(0);
 
   const additional = BigInt(totalStake.toString()) * BigInt(diff.toString());
 
