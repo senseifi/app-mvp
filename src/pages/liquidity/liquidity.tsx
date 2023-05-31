@@ -2,7 +2,7 @@ import Notification from "@/components/Notification/Notification";
 import { Box, Theme, Typography, useMediaQuery } from "@mui/material";
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import LPList from "@/components/LPList/LPList";
 import { PoolList } from "@/types/customTypes";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
@@ -15,6 +15,7 @@ import {
 import {
   GlobalState,
   Params,
+  UserState,
 } from "@/contract_clients/SenseifiStakingPool.types";
 import { getPrettyDenom, nsToSecs } from "@/utils";
 import StakingDepositModal from "@/components/Modals/StakingDepositModal";
@@ -75,22 +76,120 @@ const Liquidity = ({
     setClaimOpen(true);
   };
 
-  const poolList: PoolList[] = stakingPools.map((v) => ({
-    address: v.address.valueOf(),
-    stake: v.params.stake_denom,
-    stakePretty: getPrettyDenom(v.params.stake_denom),
-    earn1: v.params.primary_reward_denom,
-    earn1Pretty: getPrettyDenom(v.params.primary_reward_denom),
-    earn2: v.params.secondary_reward_denom,
-    earn2Pretty: getPrettyDenom(v.params.secondary_reward_denom),
-    apr: 69,
-    tvl: v.globalState.total_stake,
-    endTime:
-      nsToSecs(v.params.primary_finish_time) <
-      nsToSecs(v.params.secondary_finish_time)
-        ? nsToSecs(v.params.secondary_finish_time)
-        : nsToSecs(v.params.primary_finish_time),
-  }));
+  const [poolList, setPoolList] = useState<PoolList[]>([]);
+
+  useEffect(() => {
+    setPoolList(
+      stakingPools.map((v) => ({
+        address: v.address.valueOf(),
+        stake: v.params.stake_denom,
+        stakePretty: getPrettyDenom(v.params.stake_denom),
+        earn1: v.params.primary_reward_denom,
+        earn1Pretty: getPrettyDenom(v.params.primary_reward_denom),
+        earn2: v.params.secondary_reward_denom,
+        earn2Pretty: getPrettyDenom(v.params.secondary_reward_denom),
+        apr: 69,
+        tvl: v.globalState.total_stake,
+        endTime:
+          nsToSecs(v.params.primary_finish_time) <
+          nsToSecs(v.params.secondary_finish_time)
+            ? nsToSecs(v.params.secondary_finish_time)
+            : nsToSecs(v.params.primary_finish_time),
+        userState: undefined,
+      }))
+    );
+  }, [stakingPools]);
+
+  const fetchUserState = async (index: number) => {
+    try {
+      let userState: UserState | undefined;
+
+      if (chain.address === undefined) {
+        userState = undefined;
+      } else {
+        const client = await chain.getCosmWasmClient();
+        const contract = new SenseifiStakingPoolQueryClient(
+          client,
+          poolList[index].address
+        );
+        userState = await contract.getUserState({ user: chain.address });
+      }
+
+      setPoolList((v) => {
+        const temp = [...v];
+        const pool = temp[index];
+        pool.userState = userState;
+        temp[index] = pool;
+        return temp;
+      });
+    } catch (e) {
+      let errorMsg = "";
+      if (typeof e === "string") {
+        errorMsg = e.toUpperCase();
+      } else if (e instanceof Error) {
+        errorMsg = e.message;
+      }
+
+      showNotif(errorMsg, "error");
+    }
+  };
+
+  useEffect(() => {
+    poolList.forEach((v, i) => fetchUserState(i));
+  }, [chain.address]);
+
+  const fetchPoolData = async (index: number) => {
+    try {
+      const client = await chain.getCosmWasmClient();
+
+      const contract = new SenseifiStakingPoolQueryClient(
+        client,
+        poolList[index].address
+      );
+
+      const [params, globalState] = await Promise.all([
+        contract.getParams(),
+        contract.getGlobalState(),
+      ]);
+
+      const latestPoolData = {
+        address: poolList[index].address,
+        stake: params.stake_denom,
+        stakePretty: getPrettyDenom(params.stake_denom),
+        earn1: params.primary_reward_denom,
+        earn1Pretty: getPrettyDenom(params.primary_reward_denom),
+        earn2: params.secondary_reward_denom,
+        earn2Pretty: getPrettyDenom(params.secondary_reward_denom),
+        apr: 69,
+        tvl: globalState.total_stake,
+        endTime:
+          nsToSecs(params.primary_finish_time) <
+          nsToSecs(params.secondary_finish_time)
+            ? nsToSecs(params.secondary_finish_time)
+            : nsToSecs(params.primary_finish_time),
+        userState: poolList[index].userState,
+      };
+
+      setPoolList((v) => {
+        const temp = [...v];
+        temp[index] = latestPoolData;
+        return temp;
+      });
+    } catch (e) {
+      let errorMsg = "";
+      if (typeof e === "string") {
+        errorMsg = e.toUpperCase();
+      } else if (e instanceof Error) {
+        errorMsg = e.message;
+      }
+
+      showNotif(errorMsg, "error");
+    }
+  };
+
+  const updatePoolData = async (index: number) => {
+    return Promise.all([fetchPoolData(index), fetchUserState(index)]);
+  };
 
   //START- notification handlers
   const [openNotif, setOpenNotif] = useState(false);
@@ -121,6 +220,7 @@ const Liquidity = ({
           setOpen={setDepositOpen}
           poolList={poolList[activePoolIndex]}
           showNotif={showNotif}
+          updatePoolData={() => updatePoolData(activePoolIndex)}
         />
       )}
       {withdrawOpen && (
@@ -129,6 +229,7 @@ const Liquidity = ({
           setOpen={setWithdrawOpen}
           poolList={poolList[activePoolIndex]}
           showNotif={showNotif}
+          updatePoolData={() => updatePoolData(activePoolIndex)}
         />
       )}
       {claimOpen && (
@@ -137,6 +238,7 @@ const Liquidity = ({
           setOpen={setClaimOpen}
           poolList={poolList[activePoolIndex]}
           showNotif={showNotif}
+          updatePoolData={() => updatePoolData(activePoolIndex)}
         />
       )}
       <Box>

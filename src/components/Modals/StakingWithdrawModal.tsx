@@ -52,11 +52,13 @@ const StakingWithdrawModal = ({
   setOpen,
   poolList,
   showNotif,
+  updatePoolData,
 }: {
   open: boolean;
   setOpen: Function;
   poolList: PoolList;
   showNotif: Function;
+  updatePoolData: Function;
 }) => {
   const chain = useChain(chainName);
 
@@ -136,6 +138,8 @@ const StakingWithdrawModal = ({
       };
 
       await contract.unstake({ amount: toSU(otherValue) }, fee);
+
+      await updatePoolData();
 
       showNotif(
         `Successfully withdrew ${otherValue} ${poolList.stakePretty}`,
@@ -230,8 +234,8 @@ const StakingWithdrawModal = ({
               {/* TODO: error messages based on invalid inputs */}
 
               <Typography color="error" my={2} fontSize="small">
-                Once you click withdraw, your tokens will be avaiable to be
-                claimed in about 72Hrs
+                Once you click withdraw, your tokens will be transferred to your
+                wallet
               </Typography>
               <Button
                 variant="outlined"

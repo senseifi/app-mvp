@@ -60,6 +60,7 @@ const LPList = ({
     distributionRatio,
     tvl,
     endTime,
+    userState,
   },
   onClickDeposit,
   onClickWithdraw,
@@ -105,7 +106,7 @@ const LPList = ({
   // };
 
   // const { earnAmt1, earnAmt2 } = rewardsCalc();
-  const [userState, setUserState] = useState<UserState | undefined>(undefined);
+  // const [userState, setUserState] = useState<UserState | undefined>(undefined);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -115,22 +116,6 @@ const LPList = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const fetchSetUserState = async () => {
-    if (chain.address === undefined) {
-      setUserState(undefined);
-      return;
-    }
-
-    const client = await chain.getCosmWasmClient();
-    const contract = new SenseifiStakingPoolQueryClient(client, address);
-    const userState = await contract.getUserState({ user: chain.address });
-    setUserState(userState);
-  };
-
-  useEffect(() => {
-    fetchSetUserState();
-  }, [chain.address]);
 
   const supplyRewards = async () => {
     if (chain.address === undefined) return;

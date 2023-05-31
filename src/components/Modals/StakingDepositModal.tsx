@@ -51,11 +51,13 @@ const StakingDepositModal = ({
   setOpen,
   poolList,
   showNotif,
+  updatePoolData,
 }: {
   open: boolean;
   setOpen: Function;
   poolList: PoolList;
   showNotif: Function;
+  updatePoolData: Function;
 }) => {
   const chain = useChain(chainName);
 
@@ -122,6 +124,8 @@ const StakingDepositModal = ({
       };
       const funds = [coin(toSU(selectedValue), poolList.stake)];
       await contract.stake(fee, undefined, funds);
+
+      await updatePoolData();
 
       showNotif(
         `Successfully deposited ${selectedValue} ${poolList.stakePretty}`,

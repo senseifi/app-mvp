@@ -52,11 +52,13 @@ const ClaimRewardsModal = ({
   setOpen,
   poolList,
   showNotif,
+  updatePoolData,
 }: {
   open: boolean;
   setOpen: Function;
   poolList: PoolList;
   showNotif: Function;
+  updatePoolData: Function;
 }) => {
   const chain = useChain(chainName);
 
@@ -138,6 +140,7 @@ const ClaimRewardsModal = ({
       };
 
       await contract.claimRewards(fee, undefined, undefined);
+      await updatePoolData();
 
       showNotif(`Successfully claimed ${rewardString}`, "success");
       setOpen(false);
