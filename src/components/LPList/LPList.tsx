@@ -27,8 +27,7 @@ import {
   SenseifiStakingPoolQueryClient,
 } from "@/contract_clients/SenseifiStakingPool.client";
 import { StdFee, coin } from "@cosmjs/amino";
-import { getTokenImg, toAU } from "@/utils";
-import { UserState } from "@/contract_clients/SenseifiStakingPool.types";
+import { getTokenImg, toAU, toSU } from "@/utils";
 
 const ITEM_HEIGHT = 48;
 
@@ -60,6 +59,10 @@ const LPList = ({
     distributionRatio,
     tvl,
     endTime,
+    primaryEndTime,
+    secondaryEndTime,
+    primaryRewardRate,
+    secondaryRewardRate,
     userState,
   },
   onClickDeposit,
@@ -138,8 +141,38 @@ const LPList = ({
     } catch (e) {}
   };
 
-  //After clicking withdraw, once the amount is available
-  const [claimAvailable, setClaimAvailable] = useState(false);
+  const [dailyRewards, setDailyRewards] = useState({
+    primary: "",
+    secondary: "",
+  });
+
+  useEffect(() => {
+    const now = Math.floor(Date.now() / 1000);
+
+    let primary = BigInt(0);
+    if (now < primaryEndTime && tvl != "0") {
+      primary =
+        (BigInt(userState?.total_stake ?? 0) *
+          BigInt(primaryRewardRate) *
+          BigInt(86400)) /
+        BigInt(tvl);
+    }
+    console.log(primary);
+
+    let secondary = BigInt(0);
+    if (now < (secondaryEndTime ?? 0) && tvl != "0") {
+      secondary =
+        (BigInt(userState?.total_stake ?? 0) *
+          BigInt(secondaryRewardRate ?? 0) *
+          BigInt(86400)) /
+        BigInt(tvl);
+    }
+
+    setDailyRewards({
+      primary: primary.toString(),
+      secondary: secondary.toString(),
+    });
+  }, [userState, tvl, primaryEndTime, secondaryEndTime, primaryRewardRate]);
 
   return (
     <>
@@ -274,10 +307,10 @@ const LPList = ({
               <Grid item xs={12} md={3}>
                 <PoolText
                   large
-                  header="My Unclaimed Rewards"
-                  body={toAU(userState.primary_reward)}
+                  header="My Daily Rewards"
+                  body={toAU(dailyRewards.primary)}
                   body2={earn1Pretty.toUpperCase()}
-                  body3={toAU(userState.secondary_reward)}
+                  body3={toAU(dailyRewards.secondary)}
                   body4={earn2Pretty?.toUpperCase() ?? ""}
                 />
               </Grid>

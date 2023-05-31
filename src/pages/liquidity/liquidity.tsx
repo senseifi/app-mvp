@@ -95,6 +95,10 @@ const Liquidity = ({
           nsToSecs(v.params.secondary_finish_time)
             ? nsToSecs(v.params.secondary_finish_time)
             : nsToSecs(v.params.primary_finish_time),
+        primaryEndTime: nsToSecs(v.params.primary_finish_time),
+        secondaryEndTime: nsToSecs(v.params.secondary_finish_time),
+        primaryRewardRate: parseInt(v.params.primary_reward_rate),
+        secondaryRewardRate: parseInt(v.params.secondary_reward_rate),
         userState: undefined,
       }))
     );
@@ -167,6 +171,10 @@ const Liquidity = ({
           nsToSecs(params.secondary_finish_time)
             ? nsToSecs(params.secondary_finish_time)
             : nsToSecs(params.primary_finish_time),
+        primaryEndTime: nsToSecs(params.primary_finish_time),
+        secondaryEndTime: nsToSecs(params.secondary_finish_time),
+        primaryRewardRate: parseInt(params.primary_reward_rate),
+        secondaryRewardRate: parseInt(params.secondary_reward_rate),
         userState: poolList[index].userState,
       };
 

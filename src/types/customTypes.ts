@@ -41,5 +41,9 @@ export type PoolList = {
   distributionRatio?: PoolList["earn2"] extends undefined ? undefined : number; // distribution of earn1 amt(in USD):earn2 amt(in USD) if applicable. can only be defined if earn2 is also defined
   tvl: string;
   endTime: number;
+  primaryEndTime: number;
+  secondaryEndTime?: number;
+  primaryRewardRate: number;
+  secondaryRewardRate?: number;
   userState?: UserState;
 };
