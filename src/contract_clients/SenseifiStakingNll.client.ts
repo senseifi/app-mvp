@@ -22,6 +22,7 @@ import {
   GlobalState,
   Params,
   UserState,
+  ArrayOfAddr,
 } from "./SenseifiStakingNll.types";
 export interface SenseifiStakingNllReadOnlyInterface {
   contractAddress: string;
@@ -31,6 +32,20 @@ export interface SenseifiStakingNllReadOnlyInterface {
   getGameState: ({ gameId }: { gameId: Uint128 }) => Promise<GameState>;
   getUserState: ({ user }: { user: string }) => Promise<UserState>;
   getTotalRewards: () => Promise<Uint128>;
+  getUsersAsc: ({
+    limit,
+    startAfter,
+  }: {
+    limit?: number;
+    startAfter?: Addr;
+  }) => Promise<ArrayOfAddr>;
+  getUsersDesc: ({
+    limit,
+    startAfter,
+  }: {
+    limit?: number;
+    startAfter?: Addr;
+  }) => Promise<ArrayOfAddr>;
 }
 export class SenseifiStakingNllQueryClient
   implements SenseifiStakingNllReadOnlyInterface
@@ -47,6 +62,8 @@ export class SenseifiStakingNllQueryClient
     this.getGameState = this.getGameState.bind(this);
     this.getUserState = this.getUserState.bind(this);
     this.getTotalRewards = this.getTotalRewards.bind(this);
+    this.getUsersAsc = this.getUsersAsc.bind(this);
+    this.getUsersDesc = this.getUsersDesc.bind(this);
   }
 
   getAdmin = async (): Promise<Addr> => {
@@ -85,6 +102,34 @@ export class SenseifiStakingNllQueryClient
   getTotalRewards = async (): Promise<Uint128> => {
     return this.client.queryContractSmart(this.contractAddress, {
       get_total_rewards: {},
+    });
+  };
+  getUsersAsc = async ({
+    limit,
+    startAfter,
+  }: {
+    limit?: number;
+    startAfter?: Addr;
+  }): Promise<ArrayOfAddr> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      get_users_asc: {
+        limit,
+        start_after: startAfter,
+      },
+    });
+  };
+  getUsersDesc = async ({
+    limit,
+    startAfter,
+  }: {
+    limit?: number;
+    startAfter?: Addr;
+  }): Promise<ArrayOfAddr> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      get_users_desc: {
+        limit,
+        start_after: startAfter,
+      },
     });
   };
 }

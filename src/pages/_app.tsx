@@ -22,6 +22,7 @@ import { seiTestnet2AssetList, seiTestnet2Chain } from "@/config/sei";
 import { WalletErrorView } from "@/components/WalletModalViews/WalletErrorView";
 import { WalletConnectOptions } from "@cosmos-kit/core";
 import { WalletNotExistView } from "@/components/WalletModalViews/WalletNotExistView";
+import NextNProgress from "nextjs-progressbar";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState<PaletteMode>("light");
@@ -46,7 +47,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <ChainProvider
       chains={[...chains, seiTestnet2Chain]}
       assetLists={[...assets, seiTestnet2AssetList]}
-      wallets={[keplrWallets[0], leapWallets[0], ...coin98Wallets]}
+      wallets={[keplrWallets[0], ...leapWallets, ...coin98Wallets]}
       wrappedWithChakra={true}
       modalViews={{ Error: WalletErrorView, NotExist: WalletNotExistView }}
       includeAllWalletsOnMobile={true}
@@ -56,6 +57,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Layout>
+            <NextNProgress color="#FFDB2C" />
             <Component {...pageProps} />
           </Layout>
         </ThemeProvider>

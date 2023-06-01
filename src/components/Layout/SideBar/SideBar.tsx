@@ -44,7 +44,7 @@ const SideBar = () => {
     <Box
       onMouseEnter={() => collapseSidebar(false)}
       onMouseLeave={() => collapseSidebar(true)}
-      sx={{ display: "flex", position: "sticky", top: "0px" }}
+      sx={{ display: "flex", position: "sticky", top: "0px", zIndex: 998 }}
     >
       <Sidebar
         defaultCollapsed
@@ -113,6 +113,23 @@ const SideBar = () => {
             Home
           </MenuItem>
           <MenuItem
+            icon={<WaterDrop />}
+            component={<Link href="/liquidity" />}
+            rootStyles={
+              router.pathname == "/liquidity"
+                ? {
+                    borderRadius: "10px",
+                    backgroundColor: themePalette.secondary.main,
+                    "& span": {
+                      color: themePalette.primary.main,
+                    },
+                  }
+                : {}
+            }
+          >
+            Liquidity
+          </MenuItem>
+          <MenuItem
             icon={<AccountBalanceWallet />}
             // component={<Link href="/portfolio" />}
             // rootStyles={
@@ -134,32 +151,6 @@ const SideBar = () => {
               alignItems="center"
             >
               <Grid item>Portfolio</Grid>
-              <Grid
-                item
-                sx={{
-                  fontSize: "10px",
-                  px: 1,
-                  backgroundColor: "#ffdc2c6e",
-                  border: "1px solid #FFDB2C",
-                  borderRadius: "5px",
-                }}
-              >
-                SOON
-              </Grid>
-            </Grid>
-          </MenuItem>
-          <MenuItem
-            icon={<WaterDrop />}
-            // component={<Link to="liquidity" />}
-            // eslint-disable-next-line
-          >
-            <Grid
-              container
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Grid item>Liquidity</Grid>
               <Grid
                 item
                 sx={{

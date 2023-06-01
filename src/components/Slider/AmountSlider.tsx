@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Box, Grid, Typography, Slider } from "@mui/material";
-import SeiCoin from "../SeiCoin/SeiCoin";
+import { Box, Grid, Typography } from "@mui/material";
+import Image from "next/image";
 import CustomSlider from "../CustomSlider/CustomSlider";
-import { roundToDP } from "@/utils";
+import { getPrettyDenom, getTokenImg, roundToDP } from "@/utils";
 
 const marks = [
   {
@@ -28,12 +28,14 @@ function valueLabelFormat(value: number) {
 }
 const AmountSlider = ({
   usrTokens,
+  tokenDenom,
   title,
   setSelectedValue,
   dp,
 }: {
   usrTokens: number;
   title?: String;
+  tokenDenom: string;
   setSelectedValue: Function;
   dp: number;
 }) => {
@@ -55,7 +57,12 @@ const AmountSlider = ({
       <Grid container spacing={2} alignItems="center">
         <Grid item>
           <Box width={25}>
-            <SeiCoin />
+            <Image
+              alt="stake coin icon"
+              width={50}
+              height={50}
+              src={getTokenImg(tokenDenom)}
+            />
           </Box>
         </Grid>
         <Grid item xs my={1}>
@@ -73,7 +80,7 @@ const AmountSlider = ({
         </Grid>
         <Grid item width={100}>
           {roundToDP((usrTokens * value) / 100, dp) + " "}
-          Sei
+          {getPrettyDenom(tokenDenom)}
         </Grid>
       </Grid>
     </Box>

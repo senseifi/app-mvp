@@ -291,6 +291,7 @@ const TicketsModal = ({
                   <FormControl fullWidth sx={{ mt: 2 }}>
                     <AmountSlider
                       usrTokens={toAU(userBalance)}
+                      tokenDenom={params.denom}
                       title={"Deposit Amount"}
                       setSelectedValue={setSelectedValue}
                       dp={3}

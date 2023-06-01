@@ -20,7 +20,7 @@ import ShineButton from "@/components/ShineButton/ShineButton";
 import CurrentDraws from "@/components/CurrentDraws/CurrentDraws";
 import { Draw, ModalDetails } from "@/types/customTypes";
 import WinnerHistory from "@/components/WinnerHistory/WinnerHistory";
-import TicketsModal from "@/components/Modals/TicketsModal";
+import TicketsModal from "@/components/Modals/NllTicketsModal";
 import CheckWinnerModal from "@/components/Modals/CheckWinnerModal";
 import ClaimWithdrawalModal from "@/components/Modals/ClaimWithdrawalModal";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
@@ -33,7 +33,7 @@ import {
   GameState,
 } from "@/contract_clients/SenseifiStakingNll.types";
 import { nsToSecs, toAU, bigIntMax } from "@/utils";
-import Loader from "@/components/Loader/Loader";
+
 import Notification from "@/components/Notification/Notification";
 import { useChain } from "@cosmos-kit/react";
 
@@ -189,6 +189,15 @@ const Home = ({
           <title>Sensei App Homepage</title>
           <meta name="description" content="Gamified Defi on Sei network" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+          <meta property="og:title" content="SenSei Fi" />
+          <meta
+            property="og:description"
+            content="Gamified Defi on Sei network"
+          />
+          <meta property="og:image" content="/logo192.png" />
+          <meta property="og:url" content={process.env.NEXT_PUBLIC_BASE_URL} />
+          <meta property="og:type" content="website" />
 
           <link rel="icon" href="/favicon.ico" />
         </Head>
