@@ -31,6 +31,7 @@ export interface CustomModalProps extends ModalProps {
 
 export type PoolList = {
   address: string;
+  multiReward: boolean;
   stake: string;
   stakePretty: string;
   earn1: string;
@@ -45,5 +46,5 @@ export type PoolList = {
   secondaryEndTime?: number;
   primaryRewardRate: number;
   secondaryRewardRate?: number;
-  userState?: UserState;
+  userState?: { total_stake: string };
 };

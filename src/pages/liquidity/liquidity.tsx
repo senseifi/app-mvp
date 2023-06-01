@@ -8,10 +8,7 @@ import { PoolList } from "@/types/customTypes";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { chainName, rpcEndpoint } from "@/config/sei";
 import { SenseifiStakingPoolQueryClient } from "@/contract_clients/SenseifiStakingPool.client";
-import {
-  seiStakingPoolContract,
-  senStakingPoolContract,
-} from "@/config/contracts";
+import { stakingContracts } from "@/config/contracts";
 import {
   GlobalState,
   Params,
@@ -22,12 +19,9 @@ import StakingDepositModal from "@/components/Modals/StakingDepositModal";
 import { useChain } from "@cosmos-kit/react";
 import StakingWithdrawModal from "@/components/Modals/StakingWithdrawModal";
 import ClaimRewardsModal from "@/components/Modals/ClaimRewardsModal";
+import { SenseifiSingleRewardStakingPoolQueryClient } from "@/contract_clients/SenseifiSingleRewardStakingPool.client";
 
-const Liquidity = ({
-  stakingPools,
-}: {
-  stakingPools: { address: String; params: Params; globalState: GlobalState }[];
-}) => {
+const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
   const chain = useChain(chainName);
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -79,50 +73,49 @@ const Liquidity = ({
   const [poolList, setPoolList] = useState<PoolList[]>([]);
 
   useEffect(() => {
-    setPoolList(
-      stakingPools.map((v) => ({
-        address: v.address.valueOf(),
-        stake: v.params.stake_denom,
-        stakePretty: getPrettyDenom(v.params.stake_denom),
-        earn1: v.params.primary_reward_denom,
-        earn1Pretty: getPrettyDenom(v.params.primary_reward_denom),
-        earn2: v.params.secondary_reward_denom,
-        earn2Pretty: getPrettyDenom(v.params.secondary_reward_denom),
-        apr: 69,
-        tvl: v.globalState.total_stake,
-        endTime:
-          nsToSecs(v.params.primary_finish_time) <
-          nsToSecs(v.params.secondary_finish_time)
-            ? nsToSecs(v.params.secondary_finish_time)
-            : nsToSecs(v.params.primary_finish_time),
-        primaryEndTime: nsToSecs(v.params.primary_finish_time),
-        secondaryEndTime: nsToSecs(v.params.secondary_finish_time),
-        primaryRewardRate: parseInt(v.params.primary_reward_rate),
-        secondaryRewardRate: parseInt(v.params.secondary_reward_rate),
-        userState: undefined,
-      }))
-    );
+    setPoolList(stakingPools);
   }, [stakingPools]);
 
   const fetchUserState = async (index: number) => {
     try {
-      let userState: UserState | undefined;
+      let total_stake: string | undefined;
 
       if (chain.address === undefined) {
-        userState = undefined;
+        total_stake = undefined;
       } else {
         const client = await chain.getCosmWasmClient();
-        const contract = new SenseifiStakingPoolQueryClient(
-          client,
-          poolList[index].address
-        );
-        userState = await contract.getUserState({ user: chain.address });
+
+        if (!poolList[index].multiReward) {
+          const contract = new SenseifiSingleRewardStakingPoolQueryClient(
+            client,
+            poolList[index].address
+          );
+
+          const userState = await contract.getUserState({
+            user: chain.address,
+          });
+
+          total_stake = userState.total_stake;
+        } else {
+          const contract = new SenseifiStakingPoolQueryClient(
+            client,
+            poolList[index].address
+          );
+
+          const userState = await contract.getUserState({
+            user: chain.address,
+          });
+
+          total_stake = userState.total_stake;
+        }
       }
+
+      console.log(total_stake);
 
       setPoolList((v) => {
         const temp = [...v];
         const pool = temp[index];
-        pool.userState = userState;
+        pool.userState = total_stake != undefined ? { total_stake } : undefined;
         temp[index] = pool;
         return temp;
       });
@@ -145,42 +138,69 @@ const Liquidity = ({
   const fetchPoolData = async (index: number) => {
     try {
       const client = await chain.getCosmWasmClient();
+      let latestPool: PoolList;
 
-      const contract = new SenseifiStakingPoolQueryClient(
-        client,
-        poolList[index].address
-      );
+      if (!poolList[index].multiReward) {
+        const contract = new SenseifiSingleRewardStakingPoolQueryClient(
+          client,
+          poolList[index].address
+        );
 
-      const [params, globalState] = await Promise.all([
-        contract.getParams(),
-        contract.getGlobalState(),
-      ]);
+        const [params, globalState] = await Promise.all([
+          contract.getParams(),
+          contract.getGlobalState(),
+        ]);
 
-      const latestPoolData = {
-        address: poolList[index].address,
-        stake: params.stake_denom,
-        stakePretty: getPrettyDenom(params.stake_denom),
-        earn1: params.primary_reward_denom,
-        earn1Pretty: getPrettyDenom(params.primary_reward_denom),
-        earn2: params.secondary_reward_denom,
-        earn2Pretty: getPrettyDenom(params.secondary_reward_denom),
-        apr: 69,
-        tvl: globalState.total_stake,
-        endTime:
-          nsToSecs(params.primary_finish_time) <
-          nsToSecs(params.secondary_finish_time)
-            ? nsToSecs(params.secondary_finish_time)
-            : nsToSecs(params.primary_finish_time),
-        primaryEndTime: nsToSecs(params.primary_finish_time),
-        secondaryEndTime: nsToSecs(params.secondary_finish_time),
-        primaryRewardRate: parseInt(params.primary_reward_rate),
-        secondaryRewardRate: parseInt(params.secondary_reward_rate),
-        userState: poolList[index].userState,
-      };
+        latestPool = {
+          address: poolList[index].address,
+          multiReward: false,
+          stake: params.stake_denom,
+          stakePretty: getPrettyDenom(params.stake_denom),
+          earn1: params.reward_denom,
+          earn1Pretty: getPrettyDenom(params.reward_denom),
+          apr: 69,
+          tvl: globalState.total_stake,
+          endTime: nsToSecs(params.finish_time),
+          primaryEndTime: nsToSecs(params.finish_time),
+          primaryRewardRate: parseInt(params.reward_rate),
+        };
+      } else {
+        const contract = new SenseifiStakingPoolQueryClient(
+          client,
+          poolList[index].address
+        );
+
+        const [params, globalState] = await Promise.all([
+          contract.getParams(),
+          contract.getGlobalState(),
+        ]);
+
+        latestPool = {
+          address: poolList[index].address,
+          multiReward: true,
+          stake: params.stake_denom,
+          stakePretty: getPrettyDenom(params.stake_denom),
+          earn1: params.primary_reward_denom,
+          earn1Pretty: getPrettyDenom(params.primary_reward_denom),
+          earn2: params.secondary_reward_denom,
+          earn2Pretty: getPrettyDenom(params.secondary_reward_denom),
+          apr: 69,
+          tvl: globalState.total_stake,
+          endTime:
+            nsToSecs(params.primary_finish_time) <
+            nsToSecs(params.secondary_finish_time)
+              ? nsToSecs(params.secondary_finish_time)
+              : nsToSecs(params.primary_finish_time),
+          primaryEndTime: nsToSecs(params.primary_finish_time),
+          secondaryEndTime: nsToSecs(params.secondary_finish_time),
+          primaryRewardRate: parseInt(params.primary_reward_rate),
+          secondaryRewardRate: parseInt(params.secondary_reward_rate),
+        };
+      }
 
       setPoolList((v) => {
         const temp = [...v];
-        temp[index] = latestPoolData;
+        temp[index] = latestPool;
         return temp;
       });
     } catch (e) {
@@ -294,22 +314,72 @@ const Liquidity = ({
 export const getServerSideProps = async () => {
   const cosmWasmClient = await CosmWasmClient.connect(rpcEndpoint);
 
-  const stakingContracts = [seiStakingPoolContract, senStakingPoolContract];
-  const stakingPools: any[] = [];
+  const stakingPools: PoolList[] = [];
 
   for (let i in stakingContracts) {
-    const ctcAddr = stakingContracts[i];
-    const contract = new SenseifiStakingPoolQueryClient(
-      cosmWasmClient,
-      ctcAddr
-    );
+    const ctcAddr = stakingContracts[i].address;
+    const multiReward = stakingContracts[i].multiReward;
+    let poolList: PoolList;
 
-    const [params, globalState] = await Promise.all([
-      contract.getParams(),
-      contract.getGlobalState(),
-    ]);
+    if (!multiReward) {
+      const contract = new SenseifiSingleRewardStakingPoolQueryClient(
+        cosmWasmClient,
+        ctcAddr
+      );
 
-    stakingPools.push({ address: ctcAddr, params, globalState });
+      const [params, globalState] = await Promise.all([
+        contract.getParams(),
+        contract.getGlobalState(),
+      ]);
+
+      poolList = {
+        address: ctcAddr,
+        multiReward: false,
+        stake: params.stake_denom,
+        stakePretty: getPrettyDenom(params.stake_denom),
+        earn1: params.reward_denom,
+        earn1Pretty: getPrettyDenom(params.reward_denom),
+        apr: 69,
+        tvl: globalState.total_stake,
+        endTime: nsToSecs(params.finish_time),
+        primaryEndTime: nsToSecs(params.finish_time),
+        primaryRewardRate: parseInt(params.reward_rate),
+      };
+    } else {
+      const contract = new SenseifiStakingPoolQueryClient(
+        cosmWasmClient,
+        ctcAddr
+      );
+
+      const [params, globalState] = await Promise.all([
+        contract.getParams(),
+        contract.getGlobalState(),
+      ]);
+
+      poolList = {
+        address: ctcAddr,
+        multiReward: true,
+        stake: params.stake_denom,
+        stakePretty: getPrettyDenom(params.stake_denom),
+        earn1: params.primary_reward_denom,
+        earn1Pretty: getPrettyDenom(params.primary_reward_denom),
+        earn2: params.secondary_reward_denom,
+        earn2Pretty: getPrettyDenom(params.secondary_reward_denom),
+        apr: 69,
+        tvl: globalState.total_stake,
+        endTime:
+          nsToSecs(params.primary_finish_time) <
+          nsToSecs(params.secondary_finish_time)
+            ? nsToSecs(params.secondary_finish_time)
+            : nsToSecs(params.primary_finish_time),
+        primaryEndTime: nsToSecs(params.primary_finish_time),
+        secondaryEndTime: nsToSecs(params.secondary_finish_time),
+        primaryRewardRate: parseInt(params.primary_reward_rate),
+        secondaryRewardRate: parseInt(params.secondary_reward_rate),
+      };
+    }
+
+    stakingPools.push(poolList);
   }
 
   return {

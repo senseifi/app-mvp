@@ -35,6 +35,7 @@ import {
   SenseifiStakingPoolClient,
   SenseifiStakingPoolQueryClient,
 } from "@/contract_clients/SenseifiStakingPool.client";
+import { SenseifiSingleRewardStakingPoolQueryClient } from "@/contract_clients/SenseifiSingleRewardStakingPool.client";
 
 const style = {
   position: "absolute",
@@ -85,24 +86,40 @@ const ClaimRewardsModal = ({
         setIsLoading(true);
 
         const client = await chain.getCosmWasmClient();
+        let isDisabled = false;
+        let rewardStr = "";
 
-        const contract = new SenseifiStakingPoolQueryClient(
-          client,
-          poolList.address
-        );
+        if (!poolList.multiReward) {
+          const contract = new SenseifiSingleRewardStakingPoolQueryClient(
+            client,
+            poolList.address
+          );
 
-        const [stake] = await Promise.all([
-          contract.getUserState({ user: chain.address }),
-        ]);
+          const stake = await contract.getUserState({ user: chain.address });
 
-        const isDisabled =
-          toAU(stake.primary_reward) == 0 && toAU(stake.secondary_reward) == 0;
+          isDisabled = toAU(stake.reward) == 0;
+
+          rewardStr = `${toAU(stake.reward)} ${poolList.earn1Pretty}`;
+        } else {
+          const contract = new SenseifiStakingPoolQueryClient(
+            client,
+            poolList.address
+          );
+
+          const [stake] = await Promise.all([
+            contract.getUserState({ user: chain.address }),
+          ]);
+
+          isDisabled =
+            toAU(stake.primary_reward) == 0 &&
+            toAU(stake.secondary_reward) == 0;
+
+          rewardStr = `${toAU(stake.primary_reward)} ${
+            poolList.earn1Pretty
+          } and ${toAU(stake.secondary_reward)} ${poolList.earn2Pretty}`;
+        }
+
         setDisabled(isDisabled);
-
-        const rewardStr = `${toAU(stake.primary_reward)} ${
-          poolList.earn1Pretty
-        } and ${toAU(stake.secondary_reward)} ${poolList.earn2Pretty}`;
-
         setRewardString(rewardStr);
       } catch (e) {
         let errorMsg = "";
