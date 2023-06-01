@@ -141,9 +141,12 @@ const LPList = ({
     } catch (e) {}
   };
 
-  const [dailyRewards, setDailyRewards] = useState({
+  const [dailyRewards, setDailyRewards] = useState<{
+    primary: string;
+    secondary?: string;
+  }>({
     primary: "",
-    secondary: "",
+    secondary: undefined,
   });
 
   useEffect(() => {
@@ -157,20 +160,25 @@ const LPList = ({
           BigInt(86400)) /
         BigInt(tvl);
     }
-    console.log(primary);
 
-    let secondary = BigInt(0);
-    if (now < (secondaryEndTime ?? 0) && tvl != "0") {
-      secondary =
-        (BigInt(userState?.total_stake ?? 0) *
-          BigInt(secondaryRewardRate ?? 0) *
-          BigInt(86400)) /
-        BigInt(tvl);
+    let secondary: bigint | undefined;
+    if (secondaryEndTime) {
+      if (now < (secondaryEndTime ?? 0) && tvl != "0") {
+        secondary =
+          (BigInt(userState?.total_stake ?? 0) *
+            BigInt(secondaryRewardRate ?? 0) *
+            BigInt(86400)) /
+          BigInt(tvl);
+      } else {
+        secondary = BigInt(0);
+      }
+    } else {
+      secondary = undefined;
     }
 
     setDailyRewards({
       primary: primary.toString(),
-      secondary: secondary.toString(),
+      secondary: secondary?.toString(),
     });
   }, [userState, tvl, primaryEndTime, secondaryEndTime, primaryRewardRate]);
 
@@ -310,8 +318,12 @@ const LPList = ({
                   header="My Daily Rewards"
                   body={toAU(dailyRewards.primary)}
                   body2={earn1Pretty.toUpperCase()}
-                  body3={toAU(dailyRewards.secondary)}
-                  body4={earn2Pretty?.toUpperCase() ?? ""}
+                  body3={
+                    dailyRewards.secondary !== undefined
+                      ? toAU(dailyRewards.secondary)
+                      : undefined
+                  }
+                  body4={earn2Pretty?.toUpperCase() ?? undefined}
                 />
               </Grid>
             </>
