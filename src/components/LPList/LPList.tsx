@@ -387,7 +387,7 @@ const LPList = ({
               <MenuItem onClick={() => onClickClaim(index)}>
                 Claim Rewards
               </MenuItem>
-              <MenuItem onClick={supplyRewards}>Supply Rewards</MenuItem>
+              {/* <MenuItem onClick={supplyRewards}>Supply Rewards</MenuItem> */}
             </Menu>
           </Grid>
           <Grid item xs={2} md={2} sx={{ paddingLeft: "0 !important" }}></Grid>
