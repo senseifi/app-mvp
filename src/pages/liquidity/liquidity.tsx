@@ -339,7 +339,6 @@ export const getServerSideProps = async () => {
         stakePretty: getPrettyDenom(params.stake_denom),
         earn1: params.reward_denom,
         earn1Pretty: getPrettyDenom(params.reward_denom),
-        apr: 69,
         tvl: globalState.total_stake,
         endTime: nsToSecs(params.finish_time),
         primaryEndTime: nsToSecs(params.finish_time),
@@ -365,7 +364,6 @@ export const getServerSideProps = async () => {
         earn1Pretty: getPrettyDenom(params.primary_reward_denom),
         earn2: params.secondary_reward_denom,
         earn2Pretty: getPrettyDenom(params.secondary_reward_denom),
-        apr: 69,
         tvl: globalState.total_stake,
         endTime:
           nsToSecs(params.primary_finish_time) <

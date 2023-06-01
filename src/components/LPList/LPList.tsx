@@ -278,7 +278,10 @@ const LPList = ({
             />
           </Grid>
           <Grid item p="0 !important">
-            <PoolText header="Est. APR" body={`${apr}%`} />
+            {/* <PoolText
+              header="Est. APR"
+              body={apr != undefined ? `${apr}%` : "- %"}
+            /> */}
           </Grid>
           <Grid item md={2} p="0 !important">
             <PoolText

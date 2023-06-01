@@ -38,7 +38,7 @@ export type PoolList = {
   earn1Pretty: string;
   earn2?: string; //preferably the weaker token
   earn2Pretty?: string;
-  apr: number;
+  apr?: number;
   distributionRatio?: PoolList["earn2"] extends undefined ? undefined : number; // distribution of earn1 amt(in USD):earn2 amt(in USD) if applicable. can only be defined if earn2 is also defined
   tvl: string;
   endTime: number;
