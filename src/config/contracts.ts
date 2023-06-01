@@ -3,16 +3,8 @@ export const seiStakingNLLContract =
 
 export const stakingContracts = [
   {
-    address: "sei1lecz3vjsqq68zf8jz3glmy2pzjptt9vk5gus45vy3zhe57j3m90qcn6afn",
+    address: "sei1c35g2z6ldtjvw8l6aerzhzcx3wpc4jqg3mptkakr7jc3q54ceu7q6sl9fu",
     multiReward: true,
-  },
-  {
-    address: "sei1azk59ncc4p0985a9xd7d3r42xyaynml3qwjfmp3up2j9llqhjtvsewagtw",
-    multiReward: true,
-  },
-  {
-    address: "sei15usl4x5szagxtya6u3euqzy07njrn3ldnpntr2vktqcx0uacemmq0ehwr7",
-    multiReward: false,
   },
 ];
 
