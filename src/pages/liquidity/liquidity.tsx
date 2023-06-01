@@ -267,7 +267,7 @@ const Liquidity = ({
           <Typography
             variant="h1"
             sx={{
-              fontSize: isSmallScreen ? "4rem !important" : "",
+              // fontSize: isSmallScreen ? "4rem !important" : "",
               fontWeight: "medium",
             }}
           >
