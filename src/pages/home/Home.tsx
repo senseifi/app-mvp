@@ -36,6 +36,7 @@ import { nsToSecs, toAU, bigIntMax } from "@/utils";
 
 import Notification from "@/components/Notification/Notification";
 import { useChain } from "@cosmos-kit/react";
+import { intlFormatStyle } from "@/constants/modals";
 
 const Home = ({
   params,
@@ -235,17 +236,6 @@ const Home = ({
                       {isSmallScreen ? "Enter" : "Enter to Win"}
                     </Button>
                   </Grid>
-                  <Grid xs={12} md={6}>
-                    <Button
-                      variant="yellowBorder"
-                      size="large"
-                      fullWidth
-                      disabled={lastPastGameID === undefined}
-                      onClick={() => onCheckDrawClick(lastPastGameID)}
-                    >
-                      Check Draw
-                    </Button>
-                  </Grid>
                 </Grid>
               </Box>
               <CountdownDisplay
@@ -269,7 +259,12 @@ const Home = ({
               <Box textAlign="center" marginTop={5}>
                 <Box>
                   <Typography fontSize={20}>Grand Prize:</Typography>
-                  <ShineButton>{toAU(grandPrize)} Sei</ShineButton>
+                  <ShineButton>
+                    {Intl.NumberFormat("en-US", intlFormatStyle).format(
+                      toAU(grandPrize)
+                    )}{" "}
+                    Sei
+                  </ShineButton>
                 </Box>
 
                 <Grid
@@ -280,7 +275,10 @@ const Home = ({
                 >
                   <Typography fontSize={20}>Total Deposits:</Typography>
                   <Typography fontSize={30}>
-                    {toAU(globalState.total_stake)} Sei
+                    {Intl.NumberFormat("en-US", intlFormatStyle).format(
+                      toAU(globalState.total_stake)
+                    )}{" "}
+                    Sei
                   </Typography>
                 </Grid>
               </Box>

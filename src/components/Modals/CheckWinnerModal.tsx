@@ -230,11 +230,12 @@ const CheckWinnerModal = ({
           </Typography>
         )}
 
-        {loadingWinner ? (
+        {loadingWinner && (
           <Box width="50%" m="auto">
             <CoinFlipSVG />
           </Box>
-        ) : (
+        )}
+        {/* : (
           <>
             {usrIsWinner === "undefined" && (
               <Box display="flex" mt={3} sx={{ justifyContent: "center" }}>
@@ -242,7 +243,7 @@ const CheckWinnerModal = ({
               </Box>
             )}
           </>
-        )}
+        )} */}
 
         {timeToDraw == 0 ? (
           <>
