@@ -1,4 +1,5 @@
 import { PaletteMode, createTheme } from "@mui/material";
+import "@fontsource/work-sans";
 import "@fontsource/work-sans/500.css";
 import "@fontsource/work-sans/600.css";
 
@@ -155,6 +156,7 @@ const createAppTheme = (mode: PaletteMode) =>
           },
         ],
       },
+
       MuiTableCell: {
         styleOverrides: {
           root: {
@@ -190,6 +192,28 @@ const createAppTheme = (mode: PaletteMode) =>
           },
         },
       },
+
+      MuiSelect: {
+        styleOverrides: {
+          select: {
+            padding: "10px 16px",
+          },
+        },
+      },
+      MuiMenu: {
+        styleOverrides: {
+          list: {
+            "& .Mui-selected": {
+              backgroundColor: "rgba(7, 20, 40, 0.16)",
+            },
+          },
+          paper: {
+            boxShadow: "0 0 2px 0 black",
+            borderRadius: 8,
+          },
+        },
+      },
+
       MuiAlert: {
         styleOverrides: {
           root: {
