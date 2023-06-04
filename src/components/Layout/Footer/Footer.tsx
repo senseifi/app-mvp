@@ -10,6 +10,12 @@ import React from "react";
 
 const Footer = () => {
   const theme: Theme = useTheme();
+  const socialIconsStyle = {
+    width: 30,
+    opacity: 0.7,
+    filter: theme.palette.mode === "light" ? "" : "invert()",
+    ":hover": { opacity: 0.5 },
+  };
   return (
     <Box
       component="footer"
@@ -32,21 +38,21 @@ const Footer = () => {
         <Link
           href="https://t.me/SenSeiFi"
           target="_blank"
-          sx={{ width: 30, ":hover": { opacity: 0.5 } }}
+          sx={socialIconsStyle}
         >
           <Image src={telegram} alt="Telegram link" />
         </Link>
         <Link
           href="https://twitter.com/SenSei_DeFi"
           target="_blank"
-          sx={{ width: 30, ":hover": { opacity: 0.5 } }}
+          sx={socialIconsStyle}
         >
           <Image src={twitter} alt="Twitter link" />
         </Link>
         <Link
           href="https://discord.gg/b6h3paCYy4"
           target="_blank"
-          sx={{ width: 30, ":hover": { opacity: 0.5 } }}
+          sx={socialIconsStyle}
         >
           <Image src={discord} alt="Discord link" />
         </Link>

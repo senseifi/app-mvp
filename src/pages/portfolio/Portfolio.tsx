@@ -3,11 +3,13 @@ import styles from "@/styles/Home.module.css";
 import Notification from "@/components/Notification/Notification";
 import React, { useState } from "react";
 import { Box, Grid, Theme, Typography, useMediaQuery } from "@mui/material";
+
 import { useChain } from "@cosmos-kit/react";
 import { chainName, rpcEndpoint } from "@/config/sei";
 import Avatar from "boring-avatars";
 import "@fontsource/work-sans/300.css";
 import CurrencyConverter from "@/components/CurrencyConverter/CurrencyConverter";
+import GridWithLabel from "@/components/GridWithLabel/GridWithLabel";
 const Portfolio = () => {
   const chain = useChain(chainName);
 
@@ -56,7 +58,7 @@ const Portfolio = () => {
             fontWeight: "medium",
           }}
         >
-          Your Portfolio
+          Portfolio
         </Typography>
         <Grid
           container
@@ -180,6 +182,43 @@ const Portfolio = () => {
       </main>
       <Box component="section">
         <Typography variant="h2">Your Savings</Typography>
+        <div>
+          <GridWithLabel container label="Lossless Lottery">
+            {false ? (
+              <Typography>
+                You haven't participated in any lossless lotteries yet
+              </Typography>
+            ) : (
+              <>
+                <Grid container justifyContent="space-between">
+                  <Grid item>
+                    <Typography variant="h6">Draw</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="h6">Current status</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="h6">Action</Typography>
+                  </Grid>
+                </Grid>
+                <Grid container justifyContent="space-between">
+                  <Grid item>
+                    <Typography>Round #0</Typography>
+                  </Grid>
+                  <Grid item></Grid>
+                  <Grid item>
+                    <Typography>Action</Typography>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+          </GridWithLabel>
+          <GridWithLabel container label="Liquidity Pool">
+            <Typography>
+              You haven't participated in any liquidity pools yet
+            </Typography>
+          </GridWithLabel>
+        </div>
       </Box>
     </Box>
   );

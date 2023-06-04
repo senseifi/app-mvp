@@ -28,6 +28,7 @@ const CurrencyConverter = ({ value }: { value: number }) => {
     "EUR",
     "GBP",
     "KRW",
+    "IDR",
     "INR",
     "JPY",
     "VND",
@@ -102,7 +103,11 @@ const CurrencyConverter = ({ value }: { value: number }) => {
           ))}
         </Select>
       </FormControl>{" "}
-      <Typography sx={{ fontSize: 20 }}>{convertedValue || "-"}</Typography>
+      <Typography sx={{ fontSize: 20 }}>
+        {Intl.NumberFormat("en-US").format(
+          convertedValue !== null ? convertedValue : 0
+        ) || "-"}
+      </Typography>
     </Box>
   );
 };

@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import "@fontsource/work-sans/variable.css";
 import "@fontsource/work-sans/400.css";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
@@ -23,6 +23,8 @@ import { WalletErrorView } from "@/components/WalletModalViews/WalletErrorView";
 import { WalletConnectOptions } from "@cosmos-kit/core";
 import { WalletNotExistView } from "@/components/WalletModalViews/WalletNotExistView";
 import NextNProgress from "nextjs-progressbar";
+import PageLoadingAnim from "@/components/PageLoadingAnim";
+import { Router } from "next/router";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState<PaletteMode>("light");
@@ -42,26 +44,54 @@ export default function App({ Component, pageProps }: AppProps) {
   const wc: WalletConnectOptions = {
     signClient: { projectId: "4afa5ea436cd7a7f5995d0508c2f6a3b" },
   };
-
+  const [loading, setLoading] = useState(true);
+  // useEffect(() => {
+  //   const start = () => {
+  //     console.log("start");
+  //     setLoading(true);
+  //   };
+  //   const end = () => {
+  //     console.log("finished");
+  //     setLoading(false);
+  //   };
+  //   Router.events.on("routeChangeStart", start);
+  //   Router.events.on("routeChangeComplete", end);
+  //   Router.events.on("routeChangeError", end);
+  //   return () => {
+  //     Router.events.off("routeChangeStart", start);
+  //     Router.events.off("routeChangeComplete", end);
+  //     Router.events.off("routeChangeError", end);
+  //   };
+  // }, []);
+  useEffect(() => {
+    setLoading(false);
+  }, []);
   return (
-    <ChainProvider
-      chains={[...chains, seiTestnet2Chain]}
-      assetLists={[...assets, seiTestnet2AssetList]}
-      wallets={[keplrWallets[0], ...leapWallets, ...coin98Wallets]}
-      wrappedWithChakra={true}
-      modalViews={{ Error: WalletErrorView, NotExist: WalletNotExistView }}
-      includeAllWalletsOnMobile={true}
-      walletConnectOptions={wc}
-    >
-      <ColorModeContext.Provider value={colorMode}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Layout>
-            <NextNProgress color="#FFDB2C" />
-            <Component {...pageProps} />
-          </Layout>
-        </ThemeProvider>
-      </ColorModeContext.Provider>
-    </ChainProvider>
+    <>
+      {loading ? (
+        <PageLoadingAnim />
+      ) : (
+        <ChainProvider
+          chains={[...chains, seiTestnet2Chain]}
+          assetLists={[...assets, seiTestnet2AssetList]}
+          wallets={[keplrWallets[0], ...leapWallets, ...coin98Wallets]}
+          wrappedWithChakra={true}
+          modalViews={{ Error: WalletErrorView, NotExist: WalletNotExistView }}
+          includeAllWalletsOnMobile={true}
+          walletConnectOptions={wc}
+        >
+          <ColorModeContext.Provider value={colorMode}>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+
+              <Layout>
+                <NextNProgress color="#FFDB2C" />
+                <Component {...pageProps} />
+              </Layout>
+            </ThemeProvider>
+          </ColorModeContext.Provider>
+        </ChainProvider>
+      )}
+    </>
   );
 }
