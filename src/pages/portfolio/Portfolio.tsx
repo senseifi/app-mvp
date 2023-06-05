@@ -1,8 +1,15 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import Notification from "@/components/Notification/Notification";
-import React, { useState } from "react";
-import { Box, Grid, Theme, Typography, useMediaQuery } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  Grid,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 
 import { useChain } from "@cosmos-kit/react";
 import { chainName, rpcEndpoint } from "@/config/sei";
@@ -10,12 +17,94 @@ import Avatar from "boring-avatars";
 import "@fontsource/work-sans/300.css";
 import CurrencyConverter from "@/components/CurrencyConverter/CurrencyConverter";
 import GridWithLabel from "@/components/GridWithLabel/GridWithLabel";
+import senIcon from "@/assets/senIcon.png";
+import Image from "next/image";
+
+import Timeline from "@/components/Timeline/";
+
 const Portfolio = () => {
   const chain = useChain(chainName);
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+
+  const [userHasParticipated, setUserHasParticipated] = useState(true);
+  const [userInitWithdraw, setUserInitWithdraw] = useState(false);
+  const [claimAvailable, setClaimAvailable] = useState(false);
+  const [claimButtonText, setClaimButtonText] = useState("Claim Withdrawal");
+  const [userHasClaimed, setUserHasClaimed] = useState(false);
+  const [drawHasEnded, setDrawHasEnded] = useState(false);
+  const [LPoolHasEnded, setLPoolHasEnded] = useState(false);
+
+  const drawCases = {
+    case1: userHasParticipated && !drawHasEnded, //encourage more deposit
+    case2: userHasParticipated && drawHasEnded, //deposit carryforward
+  };
+
+  const drawMilestones = [
+    "Participated",
+    ...(userInitWithdraw ? ["Withdraw Initiated", "Claimed"] : ["Result"]),
+  ];
+
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timer;
+
+    if (userHasParticipated) {
+      setProgress(25); // Initial progress value
+
+      // Set up the timer to update progress every 6 hours
+      intervalId = setInterval(() => {
+        setProgress((prevProgress) => {
+          const increment = 75 / ((7 * 24) / 6); // Increment value based on 7 days and 6-hour intervals
+          const updatedProgress = prevProgress + increment;
+
+          // Stop the timer and stops progress when 7 days have passed
+          if (updatedProgress >= 75) {
+            clearInterval(intervalId);
+            return 100; // progress to 100
+          }
+
+          return updatedProgress;
+        });
+      }, 6 * 60 * 60 * 1000); // 6 hours in milliseconds
+      if (drawHasEnded) {
+        setProgress(100);
+      }
+    }
+
+    if (userInitWithdraw) {
+      setProgress(50);
+      intervalId = setInterval(() => {
+        setProgress((prevProgress) => {
+          const increment = 66.67 / ((3 * 24) / 6); // Increment value based on 3 days and 6-hour intervals
+          const updatedProgress = prevProgress + increment;
+
+          // Stop the timer and reset progress when 3 days have passed
+          if (updatedProgress >= 66.67) {
+            clearInterval(intervalId);
+            return 66.67;
+          }
+
+          return updatedProgress;
+        });
+      }, 6 * 60 * 60 * 1000); // 6 hours in milliseconds
+      if (userHasClaimed) {
+        setProgress(100);
+      }
+    }
+
+    return () => {
+      // Clean up the timer when the component unmounts or userHasParticipated changes to false
+      clearInterval(intervalId);
+    };
+  }, [userHasParticipated, userInitWithdraw, userHasClaimed, drawHasEnded]);
+
+  const handleOnClaim = () => {
+    setClaimButtonText("You've claimed your deposit");
+  };
 
   //START- notification handlers
   const [openNotif, setOpenNotif] = useState(false);
@@ -184,33 +273,131 @@ const Portfolio = () => {
         <Typography variant="h2">Your Savings</Typography>
         <div>
           <GridWithLabel container label="Lossless Lottery">
-            {false ? (
+            {userHasParticipated ? (
+              <>
+                {isSmallScreen ? (
+                  <></>
+                ) : (
+                  <Grid
+                    container
+                    justifyContent="space-between"
+                    sx={{
+                      borderBottom: 1,
+                      borderBottomColor: "darkgray",
+                      mb: 3,
+                    }}
+                  >
+                    <Grid item md={1.5}>
+                      <Typography variant="h6">Draw</Typography>
+                    </Grid>
+                    <Grid item md={4.5}>
+                      <Typography variant="h6">Current status</Typography>
+                    </Grid>
+                    <Grid item md={2.5}>
+                      <Typography variant="h6">Action</Typography>
+                      <Grid item></Grid>
+                    </Grid>
+                  </Grid>
+                )}
+                <Grid
+                  container
+                  justifyContent={isSmallScreen ? "" : "space-between"}
+                  sx={{ flexDirection: isSmallScreen ? "column" : "" }}
+                >
+                  <Grid item md={1.5}>
+                    <Box display="flex" sx={{ mt: isSmallScreen ? 2 : "" }}>
+                      <Image alt="sensei icon" src={senIcon} width={24} />
+                      <Typography
+                        sx={{
+                          fontSize: isSmallScreen ? 20 : "",
+                        }}
+                      >
+                        Round #0
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid
+                    item
+                    md={4.5}
+                    sx={{ textAlign: "center", my: isSmallScreen ? 2 : "" }}
+                  >
+                    <Timeline milestones={drawMilestones} progress={progress} />
+                  </Grid>
+                  <Grid item md={2.5}>
+                    <Grid display="flex">
+                      {!userInitWithdraw ? (
+                        drawCases.case1 ? (
+                          <Grid
+                            container
+                            gap={1}
+                            sx={{
+                              display: isSmallScreen ? "grid" : "",
+                              width: "100%",
+                            }}
+                          >
+                            <Button
+                              variant="yellowBorder"
+                              sx={{ fontSize: 12, p: 1 }}
+                            >
+                              Withdraw
+                            </Button>
+                            <Button
+                              variant="yellowFill"
+                              sx={{ fontSize: 12, p: 1 }}
+                            >
+                              Deposit More
+                            </Button>
+                          </Grid>
+                        ) : (
+                          <Typography sx={{ fontSize: 14, opacity: 0.75 }}>
+                            Your deposit has been carried&#8209;forward to the
+                            next round
+                          </Typography>
+                        )
+                      ) : (
+                        <>
+                          {!claimAvailable ? (
+                            <Typography sx={{ fontSize: 14, opacity: 0.75 }}>
+                              You'll be able to claim the withdrawal in about
+                              72hrs
+                            </Typography>
+                          ) : (
+                            <Button onClick={handleOnClaim}>
+                              {claimButtonText}
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </Grid>
+                  </Grid>
+
+                  {/* <Grid item md={4.5}>
+                    {drawCases.case2 ? (
+                      <Typography>The winner has been declared</Typography>
+                    ) : drawCases.case3 ? (
+                      <Typography>Participate to start winning</Typography>
+                    ) : (
+                      <Typography>You did not participate</Typography>
+                    )}
+                  </Grid>
+                  <Grid item md={2.5}>
+                    {drawCases.case2 ? (
+                      <Typography sx={{ fontSize: 14, opacity: 0.75 }}>
+                        Your deposit has been carried&#8209;forward to the next
+                        round
+                      </Typography>
+                    ) : drawCases.case3 ? (
+                      <Typography>Deposit</Typography>
+                    ) : (
+                      <></>
+                    )}
+                  </Grid> */}
+                </Grid>
+              </>
+            ) : (
               <Typography>
                 You haven't participated in any lossless lotteries yet
               </Typography>
-            ) : (
-              <>
-                <Grid container justifyContent="space-between">
-                  <Grid item>
-                    <Typography variant="h6">Draw</Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="h6">Current status</Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="h6">Action</Typography>
-                  </Grid>
-                </Grid>
-                <Grid container justifyContent="space-between">
-                  <Grid item>
-                    <Typography>Round #0</Typography>
-                  </Grid>
-                  <Grid item></Grid>
-                  <Grid item>
-                    <Typography>Action</Typography>
-                  </Grid>
-                </Grid>
-              </>
             )}
           </GridWithLabel>
           <GridWithLabel container label="Liquidity Pool">

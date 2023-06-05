@@ -45,24 +45,7 @@ export default function App({ Component, pageProps }: AppProps) {
     signClient: { projectId: "4afa5ea436cd7a7f5995d0508c2f6a3b" },
   };
   const [loading, setLoading] = useState(true);
-  // useEffect(() => {
-  //   const start = () => {
-  //     console.log("start");
-  //     setLoading(true);
-  //   };
-  //   const end = () => {
-  //     console.log("finished");
-  //     setLoading(false);
-  //   };
-  //   Router.events.on("routeChangeStart", start);
-  //   Router.events.on("routeChangeComplete", end);
-  //   Router.events.on("routeChangeError", end);
-  //   return () => {
-  //     Router.events.off("routeChangeStart", start);
-  //     Router.events.off("routeChangeComplete", end);
-  //     Router.events.off("routeChangeError", end);
-  //   };
-  // }, []);
+
   useEffect(() => {
     setLoading(false);
   }, []);
