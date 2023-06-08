@@ -39,6 +39,10 @@ export type QueryMsg = {
   get_user_state: {
     user: string;
   };
+} | {
+  get_latest_reward: {
+    user: string;
+  };
 };
 export type Addr = string;
 export type Timestamp = Uint64;
@@ -50,6 +54,7 @@ export interface GlobalState {
   secondary_reward_per_token_stored: Uint128;
   total_stake: Uint128;
 }
+export type TupleOfUint128AndUint128 = [Uint128, Uint128];
 export interface Params {
   primary_finish_time: Timestamp;
   primary_reward_denom: string;

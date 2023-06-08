@@ -107,16 +107,14 @@ const ClaimRewardsModal = ({
           );
 
           const [stake] = await Promise.all([
-            contract.getUserState({ user: chain.address }),
+            contract.getLatestReward({ user: chain.address }),
           ]);
 
-          isDisabled =
-            toAU(stake.primary_reward) == 0 &&
-            toAU(stake.secondary_reward) == 0;
+          isDisabled = toAU(stake[0]) == 0 && toAU(stake[1]) == 0;
 
-          rewardStr = `${toAU(stake.primary_reward)} ${
-            poolList.earn1Pretty
-          } and ${toAU(stake.secondary_reward)} ${poolList.earn2Pretty}`;
+          rewardStr = `${toAU(stake[0])} ${poolList.earn1Pretty} and ${toAU(
+            stake[1]
+          )} ${poolList.earn2Pretty}`;
         }
 
         setDisabled(isDisabled);
