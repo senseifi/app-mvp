@@ -23,6 +23,7 @@ import { seiTestnet2AssetList, seiTestnet2Chain } from "@/config/sei";
 import { WalletErrorView } from "@/components/WalletModalViews/WalletErrorView";
 import { WalletConnectOptions } from "@cosmos-kit/core";
 import { WalletNotExistView } from "@/components/WalletModalViews/WalletNotExistView";
+import { wallets as finWallets } from "../FinWallet/index";
 import NextNProgress from "nextjs-progressbar";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -53,6 +54,7 @@ export default function App({ Component, pageProps }: AppProps) {
         ...leapWallets,
         ...coin98Wallets,
         ...compassWallets,
+        ...finWallets,
       ]}
       wrappedWithChakra={true}
       modalViews={{ Error: WalletErrorView, NotExist: WalletNotExistView }}
