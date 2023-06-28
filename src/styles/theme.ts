@@ -155,6 +155,7 @@ const createAppTheme = (mode: PaletteMode) =>
           },
         ],
       },
+
       MuiTableCell: {
         styleOverrides: {
           root: {

@@ -211,3 +211,7 @@ svg.coin-flip {
   border-radius: 0.75rem !important;
   background-color: #071428 !important;
 }
+
+#squid-widget > div {
+  margin: 2rem auto;
+}
