@@ -18,6 +18,7 @@ import { useProSidebar } from "react-pro-sidebar";
 import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import { truncateAddress } from "@/utils";
+import WormholeIcon from "@/components/WormholeIcon/WormholeIcon";
 
 const NavBar = () => {
   const chain = useChain(chainName);
@@ -53,7 +54,7 @@ const NavBar = () => {
       ) : (
         ""
       )}
-      <Link href="/home" width={"100%"}>
+      <Link href="/home" style={{ width: "min-width" }}>
         <Image
           alt="SenSei Finance Logo"
           src={logoLight}
@@ -63,7 +64,20 @@ const NavBar = () => {
           }}
         />
       </Link>
-      <Box display="flex" gap="1rem">
+      <Box sx={{ display: "flex", gap: "1rem" }}>
+        <Link href="/wormhole">
+          <IconButton
+            aria-label="wormhole"
+            sx={{
+              color: "#FFF",
+              transform: "rotate(90deg)",
+              maxHeight: "40px",
+              margin: "auto",
+            }}
+          >
+            <WormholeIcon />
+          </IconButton>
+        </Link>
         <Link href="/swap">
           <IconButton
             aria-label="swap"
