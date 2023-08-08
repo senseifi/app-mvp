@@ -60,7 +60,7 @@ const WinnerHistory = () => {
                   <StyledTableCell>Transaction ID</StyledTableCell>
                   <StyledTableCell>Date/Time</StyledTableCell>
                   <StyledTableCell>Winner</StyledTableCell>
-                  <StyledTableCell>Prize ID</StyledTableCell>
+                  <StyledTableCell>Round</StyledTableCell>
                 </TableRow>
               </TableHead>
 
@@ -84,7 +84,7 @@ const WinnerHistory = () => {
                         {winner.account.substring(0, 4)}...
                         {winner.account.substring(winner.account.length - 4)}
                       </TableCell>
-                      <TableCell>{winner.prize_id}</TableCell>
+                      <TableCell>{winner.game_id}</TableCell>
                     </StyledTableRow>
                   ))
                 }
@@ -99,7 +99,7 @@ const WinnerHistory = () => {
                   <StyledTableCell>Tx ID</StyledTableCell>
                   <StyledTableCell>Date</StyledTableCell>
                   <StyledTableCell>Winner</StyledTableCell>
-                  <StyledTableCell>Prizes</StyledTableCell>
+                  <StyledTableCell>Round</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -120,7 +120,7 @@ const WinnerHistory = () => {
                     </TableCell>
                     {/* first 4 and last 4 characters of account address */}
                     <TableCell>{winner.account.substring(0, 4)}...</TableCell>
-                    <TableCell>{winner.prize_id.substring(0, 4)}...</TableCell>
+                    <TableCell>{winner.game_id}</TableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -136,9 +136,17 @@ type Winner = {
   transaction_id: String;
   timestamp: String;
   account: String;
-  prize_id: String;
+  game_id: String;
 };
 
-const winners: Winner[] = [];
+const winners: Winner[] = [
+  {
+    transaction_id:
+      "633802AE295E5DB38ECC516744BFB0858585D543850FC31C95DA03E7F7CFC1E3",
+    timestamp: "1684926120",
+    account: "sei1tzwc7x0yj4ygchfedz3x9xnjnts47p4rwhvxn6",
+    game_id: "0",
+  },
+];
 
 export default WinnerHistory;

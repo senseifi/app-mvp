@@ -12,12 +12,13 @@ import Image from "next/image";
 import React from "react";
 import logoLight from "../../../assets/logo-light.png";
 import logoDark from "../../../assets/logo-dark.png";
-import { AccountBalanceWallet, Menu } from "@mui/icons-material";
+import { AccountBalanceWallet, Menu, SwapCalls } from "@mui/icons-material";
 import { useProSidebar } from "react-pro-sidebar";
 
 import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import { truncateAddress } from "@/utils";
+import WormholeIcon from "@/components/WormholeIcon/WormholeIcon";
 
 const NavBar = () => {
   const chain = useChain(chainName);
@@ -53,7 +54,7 @@ const NavBar = () => {
       ) : (
         ""
       )}
-      <Link href="/home" width={"100%"}>
+      <Link href="/home" style={{ width: "min-width" }}>
         <Image
           alt="SenSei Finance Logo"
           src={logoLight}
@@ -63,30 +64,58 @@ const NavBar = () => {
           }}
         />
       </Link>
-      <Button
-        onClick={chain.openView}
-        variant="contained"
-        color={theme.palette.mode === "dark" ? "secondary" : "primary"} //workaround
-        disableElevation
-        startIcon={<AccountBalanceWallet sx={{ ml: 1 }} />}
-        size="large"
-        sx={{
-          backgroundColor: isSmallScreen ? "transparent" : "#FFF",
-          color: isSmallScreen ? "#FFF" : "#071428",
-          "& span": { margin: isSmallScreen ? 0 : "" },
-          "&:hover": {
-            backgroundColor: isSmallScreen ? "#ffffff3d" : "",
-          },
-        }}
-      >
-        {isSmallScreen ? (
-          ""
-        ) : chain.isWalletConnected ? (
-          truncateAddress(chain.address)
-        ) : (
-          <span style={{ marginRight: "0.5rem" }}>Connect&nbsp;Wallet</span>
-        )}
-      </Button>
+      <Box sx={{ display: "flex", gap: "1rem" }}>
+        <Link href="/wormhole">
+          <IconButton
+            aria-label="wormhole"
+            sx={{
+              color: "#FFF",
+              transform: "rotate(90deg)",
+              maxHeight: "40px",
+              margin: "auto",
+            }}
+          >
+            <WormholeIcon />
+          </IconButton>
+        </Link>
+        <Link href="/swap">
+          <IconButton
+            aria-label="swap"
+            sx={{
+              color: "#FFF",
+              transform: "rotate(90deg)",
+              maxHeight: "40px",
+              margin: "auto",
+            }}
+          >
+            <SwapCalls />
+          </IconButton>
+        </Link>
+        <Button
+          onClick={chain.openView}
+          variant="contained"
+          color={theme.palette.mode === "dark" ? "secondary" : "primary"} //workaround
+          disableElevation
+          startIcon={<AccountBalanceWallet sx={{ ml: 1 }} />}
+          size="large"
+          sx={{
+            backgroundColor: isSmallScreen ? "transparent" : "#FFF",
+            color: isSmallScreen ? "#FFF" : "#071428",
+            "& span": { margin: isSmallScreen ? 0 : "" },
+            "&:hover": {
+              backgroundColor: isSmallScreen ? "#ffffff3d" : "",
+            },
+          }}
+        >
+          {isSmallScreen ? (
+            ""
+          ) : chain.isWalletConnected ? (
+            truncateAddress(chain.address)
+          ) : (
+            <span style={{ marginRight: "0.5rem" }}>Connect&nbsp;Wallet</span>
+          )}
+        </Button>
+      </Box>
     </Box>
   );
 };

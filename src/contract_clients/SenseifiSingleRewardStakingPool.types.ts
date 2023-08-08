@@ -7,10 +7,8 @@
 export type Uint128 = string;
 export interface InstantiateMsg {
   admin: string;
-  primary_reward_denom: string;
-  primary_reward_rate: Uint128;
-  secondary_reward_denom: string;
-  secondary_reward_rate: Uint128;
+  reward_denom: string;
+  reward_rate: Uint128;
   stake_denom: string;
 }
 export type ExecuteMsg = {
@@ -25,8 +23,7 @@ export type ExecuteMsg = {
   supply_rewards: {};
 } | {
   set_reward_rate: {
-    primary_reward_rate: Uint128;
-    secondary_reward_rate: Uint128;
+    reward_rate: Uint128;
   };
 };
 export type QueryMsg = {
@@ -39,10 +36,6 @@ export type QueryMsg = {
   get_user_state: {
     user: string;
   };
-} | {
-  get_latest_reward: {
-    user: string;
-  };
 };
 export type Addr = string;
 export type Timestamp = Uint64;
@@ -50,24 +43,17 @@ export type Uint64 = string;
 export interface GlobalState {
   last_update_time: Timestamp;
   num_stakers: Uint128;
-  primary_reward_per_token_stored: Uint128;
-  secondary_reward_per_token_stored: Uint128;
+  reward_per_token_stored: Uint128;
   total_stake: Uint128;
 }
-export type TupleOfUint128AndUint128 = [Uint128, Uint128];
 export interface Params {
-  primary_finish_time: Timestamp;
-  primary_reward_denom: string;
-  primary_reward_rate: Uint128;
-  secondary_finish_time: Timestamp;
-  secondary_reward_denom: string;
-  secondary_reward_rate: Uint128;
+  finish_time: Timestamp;
+  reward_denom: string;
+  reward_rate: Uint128;
   stake_denom: string;
 }
 export interface UserState {
-  primary_reward: Uint128;
-  primary_reward_per_token_paid: Uint128;
-  secondary_reward: Uint128;
-  secondary_reward_per_token_paid: Uint128;
+  reward: Uint128;
+  reward_per_token_paid: Uint128;
   total_stake: Uint128;
 }

@@ -6,8 +6,8 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, ExecuteMsg, QueryMsg, Addr, Timestamp, Uint64, GlobalState, TupleOfUint128AndUint128, Params, UserState } from "./SenseifiStakingPool.types";
-export interface SenseifiStakingPoolReadOnlyInterface {
+import { Uint128, InstantiateMsg, ExecuteMsg, QueryMsg, Addr, Timestamp, Uint64, GlobalState, Params, UserState } from "./SenseifiSingleRewardStakingPool.types";
+export interface SenseifiSingleRewardStakingPoolReadOnlyInterface {
   contractAddress: string;
   getAdmin: () => Promise<Addr>;
   getParams: () => Promise<Params>;
@@ -17,13 +17,8 @@ export interface SenseifiStakingPoolReadOnlyInterface {
   }: {
     user: string;
   }) => Promise<UserState>;
-  getLatestReward: ({
-    user
-  }: {
-    user: string;
-  }) => Promise<TupleOfUint128AndUint128>;
 }
-export class SenseifiStakingPoolQueryClient implements SenseifiStakingPoolReadOnlyInterface {
+export class SenseifiSingleRewardStakingPoolQueryClient implements SenseifiSingleRewardStakingPoolReadOnlyInterface {
   client: CosmWasmClient;
   contractAddress: string;
 
@@ -34,7 +29,6 @@ export class SenseifiStakingPoolQueryClient implements SenseifiStakingPoolReadOn
     this.getParams = this.getParams.bind(this);
     this.getGlobalState = this.getGlobalState.bind(this);
     this.getUserState = this.getUserState.bind(this);
-    this.getLatestReward = this.getLatestReward.bind(this);
   }
 
   getAdmin = async (): Promise<Addr> => {
@@ -63,19 +57,8 @@ export class SenseifiStakingPoolQueryClient implements SenseifiStakingPoolReadOn
       }
     });
   };
-  getLatestReward = async ({
-    user
-  }: {
-    user: string;
-  }): Promise<TupleOfUint128AndUint128> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      get_latest_reward: {
-        user
-      }
-    });
-  };
 }
-export interface SenseifiStakingPoolInterface extends SenseifiStakingPoolReadOnlyInterface {
+export interface SenseifiSingleRewardStakingPoolInterface extends SenseifiSingleRewardStakingPoolReadOnlyInterface {
   contractAddress: string;
   sender: string;
   stake: (fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
@@ -87,14 +70,12 @@ export interface SenseifiStakingPoolInterface extends SenseifiStakingPoolReadOnl
   claimRewards: (fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
   supplyRewards: (fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
   setRewardRate: ({
-    primaryRewardRate,
-    secondaryRewardRate
+    rewardRate
   }: {
-    primaryRewardRate: Uint128;
-    secondaryRewardRate: Uint128;
+    rewardRate: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
 }
-export class SenseifiStakingPoolClient extends SenseifiStakingPoolQueryClient implements SenseifiStakingPoolInterface {
+export class SenseifiSingleRewardStakingPoolClient extends SenseifiSingleRewardStakingPoolQueryClient implements SenseifiSingleRewardStakingPoolInterface {
   client: SigningCosmWasmClient;
   sender: string;
   contractAddress: string;
@@ -138,16 +119,13 @@ export class SenseifiStakingPoolClient extends SenseifiStakingPoolQueryClient im
     }, fee, memo, funds);
   };
   setRewardRate = async ({
-    primaryRewardRate,
-    secondaryRewardRate
+    rewardRate
   }: {
-    primaryRewardRate: Uint128;
-    secondaryRewardRate: Uint128;
+    rewardRate: Uint128;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       set_reward_rate: {
-        primary_reward_rate: primaryRewardRate,
-        secondary_reward_rate: secondaryRewardRate
+        reward_rate: rewardRate
       }
     }, fee, memo, funds);
   };

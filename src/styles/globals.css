@@ -230,3 +230,49 @@ svg.coin-flip {
   width: 250px;
   height: auto;
 }
+#squid-widget > div {
+  margin: 2rem auto;
+}
+
+#wormhole-connect [class*="-appContent"] {
+  color: #fff;
+  background-color: #071428;
+  border-radius: 10px;
+}
+
+/* #wormhole-connect
+  [class*="-appContent"]
+  [class*="-bridgeContent"]
+  [class*="-header"] {
+  color: #fff;
+}
+
+#wormhole-connect [class*="-appContent"] [class*="-header"] {
+  color: #071428;
+} */
+
+#wormhole-connect
+  [class*="-appContent"]
+  [class*="-bridgeContent"]
+  > :nth-child(-n + 3)
+  [class*="-header"] {
+  color: #fff;
+}
+
+#wormhole-connect [class*="-appContent"] [class*="-header"] {
+  color: #071428;
+}
+
+#wormhole-connect [class*="-appContent"] [class*="-connectWallet"] {
+  color: #071428;
+}
+
+#wormhole-connect [class*="-appContent"] svg path {
+  fill: #fff;
+}
+
+#wormhole-connect > div > div > div > div > div > [class*="-input"] {
+  color: #071428;
+  border: 1px solid;
+  border-radius: 10px;
+}

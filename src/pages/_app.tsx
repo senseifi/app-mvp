@@ -18,10 +18,12 @@ import { chains, assets } from "chain-registry";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as coin98Wallets } from "@cosmos-kit/coin98-extension";
+import { wallets as compassWallets } from "@cosmos-kit/compass";
 import { seiTestnet2AssetList, seiTestnet2Chain } from "@/config/sei";
 import { WalletErrorView } from "@/components/WalletModalViews/WalletErrorView";
 import { WalletConnectOptions } from "@cosmos-kit/core";
 import { WalletNotExistView } from "@/components/WalletModalViews/WalletNotExistView";
+import { wallets as finWallets } from "../FinWallet/index";
 import NextNProgress from "nextjs-progressbar";
 import PageLoadingAnim from "@/components/PageLoadingAnim";
 import { Router } from "next/router";
@@ -44,37 +46,32 @@ export default function App({ Component, pageProps }: AppProps) {
   const wc: WalletConnectOptions = {
     signClient: { projectId: "4afa5ea436cd7a7f5995d0508c2f6a3b" },
   };
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(false);
-  }, []);
   return (
-    <>
-      {loading ? (
-        <PageLoadingAnim />
-      ) : (
-        <ChainProvider
-          chains={[...chains, seiTestnet2Chain]}
-          assetLists={[...assets, seiTestnet2AssetList]}
-          wallets={[keplrWallets[0], ...leapWallets, ...coin98Wallets]}
-          wrappedWithChakra={true}
-          modalViews={{ Error: WalletErrorView, NotExist: WalletNotExistView }}
-          includeAllWalletsOnMobile={true}
-          walletConnectOptions={wc}
-        >
-          <ColorModeContext.Provider value={colorMode}>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-
-              <Layout>
-                <NextNProgress color="#FFDB2C" />
-                <Component {...pageProps} />
-              </Layout>
-            </ThemeProvider>
-          </ColorModeContext.Provider>
-        </ChainProvider>
-      )}
-    </>
+    <ChainProvider
+      chains={[...chains, seiTestnet2Chain]}
+      assetLists={[...assets, seiTestnet2AssetList]}
+      wallets={[
+        keplrWallets[0],
+        ...leapWallets,
+        ...coin98Wallets,
+        ...compassWallets,
+        ...finWallets,
+      ]}
+      wrappedWithChakra={true}
+      modalViews={{ Error: WalletErrorView, NotExist: WalletNotExistView }}
+      includeAllWalletsOnMobile={true}
+      walletConnectOptions={wc}
+    >
+      <ColorModeContext.Provider value={colorMode}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Layout>
+            <NextNProgress color="#FFDB2C" />
+            <Component {...pageProps} />
+          </Layout>
+        </ThemeProvider>
+      </ColorModeContext.Provider>
+    </ChainProvider>
   );
 }

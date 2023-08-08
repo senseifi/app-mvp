@@ -215,11 +215,11 @@ const StakingWithdrawModal = ({
               >
                 You have{" "}
                 <span style={{ fontWeight: "bold" }}>{toAU(stakedAmount)}</span>{" "}
-                Sei deposited in this pool
+                {poolList.stakePretty} deposited in this pool
               </Typography>
               <TextField
                 type="number"
-                label="Sei Amount"
+                label="Amount"
                 variant="outlined"
                 color="secondary"
                 margin="dense"
