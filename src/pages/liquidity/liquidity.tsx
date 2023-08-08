@@ -288,7 +288,6 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
           <Typography
             variant="h1"
             sx={{
-              fontSize: isSmallScreen ? "4rem !important" : "2rem",
               fontWeight: "medium",
             }}
           >
