@@ -65,7 +65,7 @@ const NavBar = () => {
         />
       </Link>
       <Box sx={{ display: "flex", gap: "1rem" }}>
-        <Link href="/wormhole">
+        {/* <Link href="/wormhole">
           <IconButton
             aria-label="wormhole"
             sx={{
@@ -77,8 +77,8 @@ const NavBar = () => {
           >
             <WormholeIcon />
           </IconButton>
-        </Link>
-        <Link href="/swap">
+        </Link> */}
+        {/* <Link href="/swap">
           <IconButton
             aria-label="swap"
             sx={{
@@ -90,7 +90,7 @@ const NavBar = () => {
           >
             <SwapCalls />
           </IconButton>
-        </Link>
+        </Link> */}
         <Button
           onClick={chain.openView}
           variant="contained"
