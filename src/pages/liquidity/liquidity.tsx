@@ -269,6 +269,7 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
           updatePoolData={() => updatePoolData(activePoolIndex)}
         />
       )}
+
       <Box>
         <Head>
           <title>Sensei Liquidity Pools</title>

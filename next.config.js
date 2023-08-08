@@ -11,6 +11,7 @@ const nextConfig = {
     ];
   },
 
+  transpilePackages: ["@0xsquid/widget"],
   reactStrictMode: true,
 };
 
