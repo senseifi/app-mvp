@@ -19,15 +19,42 @@ import CurrencyConverter from "@/components/CurrencyConverter/CurrencyConverter"
 import GridWithLabel from "@/components/GridWithLabel/GridWithLabel";
 import senIcon from "@/assets/senIcon.png";
 import Image from "next/image";
-
+import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
 import Timeline from "@/components/Timeline/";
+import {
+  GameState,
+  GlobalState,
+  Params,
+} from "@/contract_clients/SenseifiStakingNll.types";
+import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { roundToDP, toAU } from "@/utils";
 
-const Portfolio = () => {
+const Portfolio = ({
+  params,
+  globalState,
+  totalRewards,
+  pastGamesStates,
+}: {
+  params: Params;
+  globalState: GlobalState;
+  totalRewards: string;
+  pastGamesStates: GameState[];
+}) => {
   const chain = useChain(chainName);
-
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+  const showNotif = (
+    message: string,
+    severity: "success" | "info" | "warning" | "error"
+  ) => {
+    setNotifMsg(message);
+    setNotifSev(severity);
+    setOpenNotif(true);
+  };
+  const [userBalance, setUserBalance] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const [userHasParticipated, setUserHasParticipated] = useState(true);
   const [userInitWithdraw, setUserInitWithdraw] = useState(false);
@@ -36,6 +63,41 @@ const Portfolio = () => {
   const [userHasClaimed, setUserHasClaimed] = useState(false);
   const [drawHasEnded, setDrawHasEnded] = useState(false);
   const [LPoolHasEnded, setLPoolHasEnded] = useState(false);
+
+  useEffect(() => {
+    (async function () {
+      if (chain.address === undefined) return;
+
+      try {
+        setIsLoading(true);
+
+        const client = await chain.getCosmWasmClient();
+
+        const contract = new SenseifiStakingNllQueryClient(
+          client,
+          seiStakingNLLContract
+        );
+
+        const [balance, stake] = await Promise.all([
+          client.getBalance(chain.address, params.denom),
+          contract.getUserState({ user: chain.address }),
+        ]);
+
+        setUserBalance(balance.amount);
+      } catch (e) {
+        let errorMsg = "";
+        if (typeof e === "string") {
+          errorMsg = e.toUpperCase();
+        } else if (e instanceof Error) {
+          errorMsg = e.message;
+        }
+
+        showNotif(errorMsg, "error");
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [chain.address, globalState.game_start_time, params.denom]);
 
   const drawCases = {
     case1: userHasParticipated && !drawHasEnded, //encourage more deposit
@@ -176,77 +238,89 @@ const Portfolio = () => {
               colors={["#071428", "#FFAB03", "#FFDB2C", "#FC3903", "#00A8C6"]}
             />
           </Grid>
-          <Grid
-            item
-            xs={12}
-            md={9}
-            sx={{
-              mx: 3,
-              width: "inherit",
-              display: "flex",
-              flexWrap: isSmallScreen ? "wrap" : "",
-              justifyContent: "space-between",
-            }}
-          >
+          {!chain.isWalletConnected ? (
+            <Typography
+              onClick={chain.openView}
+              sx={{
+                fontSize: 24,
+                fontWeight: 300,
+                lineHeight: 1.2,
+                m: "auto",
+                cursor: "pointer",
+              }}
+            >
+              Connect Wallet to view details
+            </Typography>
+          ) : (
             <Grid
               item
+              xs={12}
+              md={9}
               sx={{
+                mx: 3,
+                width: "inherit",
                 display: "flex",
                 flexWrap: isSmallScreen ? "wrap" : "",
-                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
               <Grid
                 item
-                xs={12}
                 sx={{
-                  display: isSmallScreen ? "flex" : "",
-                  justifyContent: "center",
+                  display: "flex",
+                  flexWrap: isSmallScreen ? "wrap" : "",
+                  alignItems: "center",
                 }}
               >
-                <Typography
-                  sx={{ fontSize: 24, fontWeight: 300, lineHeight: 1.2 }}
-                >
-                  Sei&nbsp;
-                </Typography>
-                <Typography sx={{ fontSize: 20 }}>
-                  {Intl.NumberFormat("en-US").format(24673234)}
-                </Typography>
-              </Grid>
-              {!isSmallScreen && (
                 <Grid
                   item
+                  xs={12}
                   sx={{
-                    border: "0.5px solid darkgray",
-                    mx: 2,
-                    alignSelf: "stretch",
+                    display: isSmallScreen ? "flex" : "",
+                    justifyContent: "center",
                   }}
+                >
+                  <Typography
+                    sx={{ fontSize: 24, fontWeight: 300, lineHeight: 1.2 }}
+                  >
+                    Sei&nbsp;
+                  </Typography>
+                  <Typography sx={{ fontSize: 20 }}>
+                    {roundToDP(toAU(userBalance), 3)}
+                  </Typography>
+                </Grid>
+                {!isSmallScreen && (
+                  <Grid
+                    item
+                    sx={{
+                      border: "0.5px solid darkgray",
+                      mx: 2,
+                      alignSelf: "stretch",
+                    }}
+                  />
+                )}
+                <Grid
+                  item
+                  xs={12}
+                  sx={{
+                    display: isSmallScreen ? "flex" : "",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography
+                    sx={{ fontSize: 24, fontWeight: 300, lineHeight: 1.2 }}
+                  >
+                    Address&nbsp;
+                  </Typography>
+                  <Typography sx={{ fontSize: 20 }}>{chain.address}</Typography>
+                </Grid>
+              </Grid>
+              {isSmallScreen && (
+                <Box
+                  sx={{ border: "0.5px solid darkgray", width: "100%", mt: 2 }}
                 />
               )}
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  display: isSmallScreen ? "flex" : "",
-                  justifyContent: "center",
-                }}
-              >
-                <Typography
-                  sx={{ fontSize: 24, fontWeight: 300, lineHeight: 1.2 }}
-                >
-                  Sen&nbsp;
-                </Typography>
-                <Typography sx={{ fontSize: 20 }}>
-                  {Intl.NumberFormat("en-US").format(24673234)}
-                </Typography>
-              </Grid>
-            </Grid>
-            {isSmallScreen && (
-              <Box
-                sx={{ border: "0.5px solid darkgray", width: "100%", mt: 2 }}
-              />
-            )}
-            <Grid
+              {/* <Grid
               item
               xs={12}
               sx={{
@@ -265,8 +339,9 @@ const Portfolio = () => {
                 Portfolio Value
                 <CurrencyConverter value={200} />
               </Typography>
+            </Grid> */}
             </Grid>
-          </Grid>
+          )}
         </Grid>
       </main>
       <Box component="section">
@@ -409,6 +484,30 @@ const Portfolio = () => {
       </Box>
     </Box>
   );
+};
+
+export const getServerSideProps = async () => {
+  const cosmWasmClient = await CosmWasmClient.connect(rpcEndpoint);
+
+  const contract = new SenseifiStakingNllQueryClient(
+    cosmWasmClient,
+    seiStakingNLLContract
+  );
+
+  const [params, globalState, totalRewards] = await Promise.all([
+    contract.getParams(),
+    contract.getGlobalState(),
+    contract.getTotalRewards(),
+  ]);
+
+  const pastGamesStates: GameState[] = [];
+  const numPastGames = BigInt(globalState.game_counter) - BigInt(1);
+
+  for (let i = BigInt(0); i < numPastGames; i++) {
+    pastGamesStates.push(await contract.getGameState({ gameId: i.toString() }));
+  }
+
+  return { props: { params, globalState, totalRewards, pastGamesStates } };
 };
 
 export default Portfolio;
