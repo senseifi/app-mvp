@@ -147,10 +147,11 @@ const createAppTheme = (mode: PaletteMode) =>
               textTransform: "uppercase",
               backgroundColor: yellow,
               color: navyBlue,
-
+              border: `2px solid ${yellow}`,
               "&:hover": {
                 color: mode === "light" ? navyBlue : yellow,
                 backgroundColor: "rgba(255, 219, 44, 0.2)",
+                borderColor: "transparent",
               },
             },
           },

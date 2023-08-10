@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Theme, Typography, useTheme } from "@mui/material";
 
 interface GridWithLabelProps {
   label: string;
@@ -12,6 +12,8 @@ const GridWithLabel: React.FC<GridWithLabelProps> = ({
   children,
   ...rest
 }) => {
+  const theme: Theme = useTheme();
+
   return (
     <div>
       <Grid
@@ -29,12 +31,18 @@ const GridWithLabel: React.FC<GridWithLabelProps> = ({
         {...rest}
       >
         <Typography
-          variant="yellowText"
+          variant={theme.palette.mode === "dark" ? "yellowText" : "inherit"}
           sx={{
             position: "absolute",
             top: -12,
             px: 1,
-            backgroundColor: "primary.main",
+            backgroundColor:
+              theme.palette.mode === "dark" ? "primary.main" : "#FFF8D5",
+            border: `1px solid ${
+              theme.palette.mode === "dark"
+                ? "initial"
+                : theme.palette.tertiary.main
+            }`,
             borderRadius: 2,
           }}
         >

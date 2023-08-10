@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { PoolStats, showNotiFunction } from "@/types/customTypes";
 import { calculateTickets, nsToSecs, toAU } from "@/utils";
-import { useChain } from "@cosmos-kit/react";
-import { chainName } from "@/config/sei";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
 import { ChainContext } from "@cosmos-kit/core";

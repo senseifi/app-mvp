@@ -7,6 +7,7 @@ import {
   Button,
   Grid,
   Theme,
+  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -29,7 +30,10 @@ import {
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { roundToDP, toAU } from "@/utils";
-import { Draw } from "@/types/customTypes";
+import { Draw, PoolStats } from "@/types/customTypes";
+import { fetchStats } from "../api/stats";
+import { intlFormatStyle } from "@/constants/modals";
+import { useRouter } from "next/router";
 
 const Portfolio = ({
   params,
@@ -43,6 +47,8 @@ const Portfolio = ({
   pastGamesStates: GameState[];
 }) => {
   const chain = useChain(chainName);
+  const router = useRouter();
+
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -59,65 +65,33 @@ const Portfolio = ({
 
   const [userHasParticipated, setUserHasParticipated] = useState(true);
   const [userInitWithdraw, setUserInitWithdraw] = useState(false);
-  const [claimAvailable, setClaimAvailable] = useState(false);
   const [claimButtonText, setClaimButtonText] = useState("Claim Withdrawal");
-  const [userHasClaimed, setUserHasClaimed] = useState(false);
+
   const [drawHasEnded, setDrawHasEnded] = useState(false);
-  const [LPoolHasEnded, setLPoolHasEnded] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+
+  const [stats, setStats] = useState<PoolStats>({
+    totalDeposit: "",
+    totalTickets: "",
+    numDepositors: "",
+    userDeposit: undefined,
+    userTickets: undefined,
+  });
+
+  const handleFetchStats = () => {
+    fetchStats(showNotif, setIsLoading, setStats, setShowDetails, chain);
+  };
 
   useEffect(() => {
     (async function () {
       if (chain.address === undefined) return;
 
-      try {
-        setIsLoading(true);
-
-        const client = await chain.getCosmWasmClient();
-
-        const contract = new SenseifiStakingNllQueryClient(
-          client,
-          seiStakingNLLContract
-        );
-
-        const [balance, stake] = await Promise.all([
-          client.getBalance(chain.address, params.denom),
-          contract.getUserState({ user: chain.address }),
-        ]);
-
-        setUserBalance(balance.amount);
-        const usersAsc = await contract.getUsersAsc({});
-        const userState = await contract.getUserState({ user: chain.address });
-        console.log(userState);
-        console.log(contract);
-        console.log(globalState);
-        console.log(usersAsc);
-      } catch (e) {
-        let errorMsg = "";
-        if (typeof e === "string") {
-          errorMsg = e.toUpperCase();
-        } else if (e instanceof Error) {
-          errorMsg = e.message;
-        }
-
-        showNotif(errorMsg, "error");
-      } finally {
-        setIsLoading(false);
-      }
+      handleFetchStats();
+      const client = await chain.getCosmWasmClient();
+      const userBalance = await client.getBalance(chain.address, params.denom);
+      setUserBalance(userBalance.amount);
     })();
-  }, [chain.address, globalState.game_start_time, params.denom]);
-
-  const currentDraws = pastGamesStates.map((v) => {
-    let draw: Draw = {
-      id: v.game_id,
-      active: false,
-      prize: v.total_prize,
-      winner: v.winner,
-      prizeClaimed: v.prize_claimed,
-    };
-    return draw;
-  });
-
-  console.log(currentDraws);
+  }, [chain.address, params.denom]);
 
   const drawCases = {
     case1: userHasParticipated && !drawHasEnded, //encourage more deposit
@@ -130,59 +104,6 @@ const Portfolio = ({
   ];
 
   const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    let intervalId: NodeJS.Timer;
-
-    if (userHasParticipated) {
-      setProgress(25); // Initial progress value
-
-      // Set up the timer to update progress every 6 hours
-      intervalId = setInterval(() => {
-        setProgress((prevProgress) => {
-          const increment = 75 / ((7 * 24) / 6); // Increment value based on 7 days and 6-hour intervals
-          const updatedProgress = prevProgress + increment;
-
-          // Stop the timer and stops progress when 7 days have passed
-          if (updatedProgress >= 75) {
-            clearInterval(intervalId);
-            return 100; // progress to 100
-          }
-
-          return updatedProgress;
-        });
-      }, 6 * 60 * 60 * 1000); // 6 hours in milliseconds
-      if (drawHasEnded) {
-        setProgress(100);
-      }
-    }
-
-    if (userInitWithdraw) {
-      setProgress(50);
-      intervalId = setInterval(() => {
-        setProgress((prevProgress) => {
-          const increment = 66.67 / ((3 * 24) / 6); // Increment value based on 3 days and 6-hour intervals
-          const updatedProgress = prevProgress + increment;
-
-          // Stop the timer and reset progress when 3 days have passed
-          if (updatedProgress >= 66.67) {
-            clearInterval(intervalId);
-            return 66.67;
-          }
-
-          return updatedProgress;
-        });
-      }, 6 * 60 * 60 * 1000); // 6 hours in milliseconds
-      if (userHasClaimed) {
-        setProgress(100);
-      }
-    }
-
-    return () => {
-      // Clean up the timer when the component unmounts or userHasParticipated changes to false
-      clearInterval(intervalId);
-    };
-  }, [userHasParticipated, userInitWithdraw, userHasClaimed, drawHasEnded]);
 
   const handleOnClaim = () => {
     setClaimButtonText("You've claimed your deposit");
@@ -321,9 +242,10 @@ const Portfolio = ({
                   <Grid
                     item
                     sx={{
+                      height: "130%",
                       border: "0.5px solid darkgray",
                       mx: 2,
-                      alignSelf: "stretch",
+                      alignSelf: "center",
                     }}
                   />
                 )}
@@ -383,116 +305,62 @@ const Portfolio = ({
                     container
                     justifyContent="space-between"
                     sx={{
-                      borderBottom: 1,
-                      borderBottomColor: "darkgray",
-                      mb: 3,
+                      my: 1,
                     }}
                   >
                     <Grid item md={1.5}>
                       <Typography variant="h6">Tickets</Typography>
                     </Grid>
-                    <Grid item md={4.5}>
-                      <Typography variant="h6">Amount</Typography>
+                    <Grid item md={5}>
+                      <Typography variant="h6">Deposit Amount</Typography>
                     </Grid>
-                    <Grid item md={2.5}>
-                      <Typography variant="h6">Action</Typography>
-                      <Grid item></Grid>
-                    </Grid>
+                    <Grid item md={2}></Grid>
                   </Grid>
                 )}
                 <Grid
                   container
-                  justifyContent={isSmallScreen ? "" : "space-between"}
-                  sx={{ flexDirection: isSmallScreen ? "column" : "" }}
+                  sx={{
+                    justifyContent: isSmallScreen ? "" : "space-between",
+                    flexDirection: isSmallScreen ? "column" : "",
+                    alignItems: "center",
+                  }}
                 >
                   <Grid item md={1.5}>
                     <Box display="flex" sx={{ mt: isSmallScreen ? 2 : "" }}>
                       <Image alt="sensei icon" src={senIcon} width={24} />
-                      <Typography
-                        sx={{
-                          fontSize: isSmallScreen ? 20 : "",
-                        }}
-                      >
-                        Round #0
+                      <Typography>
+                        {stats.userTickets !== undefined
+                          ? Intl.NumberFormat("en-US").format(
+                              toAU(stats.userTickets)
+                            )
+                          : "-"}
                       </Typography>
                     </Box>
                   </Grid>
-                  <Grid
-                    item
-                    md={4.5}
-                    sx={{ textAlign: "center", my: isSmallScreen ? 2 : "" }}
-                  >
-                    <Timeline milestones={drawMilestones} progress={progress} />
+                  <Grid item md={5} sx={{ my: isSmallScreen ? 2 : "" }}>
+                    <Typography>
+                      {stats.userDeposit !== undefined
+                        ? Intl.NumberFormat("en-US").format(
+                            toAU(stats.userDeposit)
+                          )
+                        : "-"}{" "}
+                      Sei
+                    </Typography>
                   </Grid>
-                  <Grid item md={2.5}>
-                    <Grid display="flex">
-                      {!userInitWithdraw ? (
-                        drawCases.case1 ? (
-                          <Grid
-                            container
-                            gap={1}
-                            sx={{
-                              display: isSmallScreen ? "grid" : "",
-                              width: "100%",
-                            }}
-                          >
-                            <Button
-                              variant="yellowBorder"
-                              sx={{ fontSize: 12, p: 1 }}
-                            >
-                              Withdraw
-                            </Button>
-                            <Button
-                              variant="yellowFill"
-                              sx={{ fontSize: 12, p: 1 }}
-                            >
-                              Deposit More
-                            </Button>
-                          </Grid>
-                        ) : (
-                          <Typography sx={{ fontSize: 14, opacity: 0.75 }}>
-                            Your deposit has been carried&#8209;forward to the
-                            next round
-                          </Typography>
-                        )
-                      ) : (
-                        <>
-                          {!claimAvailable ? (
-                            <Typography sx={{ fontSize: 14, opacity: 0.75 }}>
-                              You'll be able to claim the withdrawal in about
-                              72hrs
-                            </Typography>
-                          ) : (
-                            <Button onClick={handleOnClaim}>
-                              {claimButtonText}
-                            </Button>
-                          )}
-                        </>
-                      )}
+                  <Grid item md={2}>
+                    <Grid container gap={1}>
+                      <Tooltip title="Takes to Home page">
+                        <Button
+                          onClick={() => router.push("/home")}
+                          variant="yellowBorder"
+                          fullWidth
+                          sx={{ fontSize: 12, p: 1 }}
+                        >
+                          Manage
+                        </Button>
+                      </Tooltip>
                     </Grid>
                   </Grid>
-
-                  {/* <Grid item md={4.5}>
-                    {drawCases.case2 ? (
-                      <Typography>The winner has been declared</Typography>
-                    ) : drawCases.case3 ? (
-                      <Typography>Participate to start winning</Typography>
-                    ) : (
-                      <Typography>You did not participate</Typography>
-                    )}
-                  </Grid>
-                  <Grid item md={2.5}>
-                    {drawCases.case2 ? (
-                      <Typography sx={{ fontSize: 14, opacity: 0.75 }}>
-                        Your deposit has been carried&#8209;forward to the next
-                        round
-                      </Typography>
-                    ) : drawCases.case3 ? (
-                      <Typography>Deposit</Typography>
-                    ) : (
-                      <></>
-                    )}
-                  </Grid> */}
                 </Grid>
               </>
             ) : (
@@ -502,9 +370,89 @@ const Portfolio = ({
             )}
           </GridWithLabel>
           <GridWithLabel container label="Liquidity Pool">
-            <Typography>
-              You haven't participated in any liquidity pools yet
-            </Typography>
+            {userHasParticipated ? (
+              <>
+                {isSmallScreen ? null : (
+                  <Grid
+                    container
+                    justifyContent="space-between"
+                    sx={{
+                      my: 1,
+                    }}
+                  >
+                    <Grid item md={1.5}>
+                      <Typography variant="h6">Pool</Typography>
+                    </Grid>
+                    <Grid item md={2.5}>
+                      <Typography variant="h6">Deposit Amount</Typography>
+                    </Grid>
+                    <Grid item md={2.5}>
+                      <Typography variant="h6">Rewards</Typography>
+                    </Grid>
+                    <Grid item md={2}></Grid>
+                  </Grid>
+                )}
+                <Grid
+                  container
+                  sx={{
+                    justifyContent: isSmallScreen ? "" : "space-between",
+                    flexDirection: isSmallScreen ? "column" : "",
+                    alignItems: "center",
+                  }}
+                >
+                  <Grid item md={1.5}>
+                    <Box display="flex" sx={{ mt: isSmallScreen ? 2 : "" }}>
+                      <Image alt="sensei icon" src={senIcon} width={24} />
+                      <Typography>
+                        {stats.userTickets !== undefined
+                          ? Intl.NumberFormat("en-US").format(
+                              toAU(stats.userTickets)
+                            )
+                          : "-"}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item md={2.5} sx={{ my: isSmallScreen ? 2 : "" }}>
+                    <Typography>
+                      {stats.userDeposit !== undefined
+                        ? Intl.NumberFormat("en-US").format(
+                            toAU(stats.userDeposit)
+                          )
+                        : "-"}{" "}
+                      Sei
+                    </Typography>
+                  </Grid>
+                  <Grid item md={2.5} sx={{ my: isSmallScreen ? 2 : "" }}>
+                    <Typography>
+                      {stats.userDeposit !== undefined
+                        ? Intl.NumberFormat("en-US").format(
+                            toAU(stats.userDeposit)
+                          )
+                        : "-"}{" "}
+                      Sei
+                    </Typography>
+                  </Grid>
+                  <Grid item md={2}>
+                    <Grid container gap={1}>
+                      <Tooltip title="Takes to Liquidity page">
+                        <Button
+                          onClick={() => router.push("/liquidity")}
+                          variant="yellowBorder"
+                          fullWidth
+                          sx={{ fontSize: 12, p: 1 }}
+                        >
+                          Manage
+                        </Button>
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            ) : (
+              <Typography>
+                You haven't participated in any liquidity pools yet
+              </Typography>
+            )}
           </GridWithLabel>
         </div>
       </Box>
