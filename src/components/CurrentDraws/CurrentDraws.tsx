@@ -17,7 +17,7 @@ import seiCoin from "../../assets/sei-coin.png";
 import Image from "next/image";
 import { grey } from "@mui/material/colors";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Draw } from "@/types/customTypes";
+import { Draw, PoolStats, showNotiFunction } from "@/types/customTypes";
 import FlipClockCountdown from "@leenguyen/react-flip-clock-countdown";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import { Info, Person, Undo } from "@mui/icons-material";
@@ -28,6 +28,7 @@ import { chainName } from "@/config/sei";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
 import Loader from "../Loader/Loader";
+import { fetchStats } from "@/pages/api/stats";
 
 const ITEM_HEIGHT = 48;
 
@@ -50,7 +51,7 @@ const CurrentDraws = ({
   onWithdrawClick: Function;
   onCheckDrawClick: Function;
   onClaimWithdrawalClick: Function;
-  showNotif: Function;
+  showNotif: showNotiFunction;
 }) => {
   const chain = useChain(chainName);
 
@@ -76,13 +77,7 @@ const CurrentDraws = ({
   //After clicking withdraw, once the amount is available
   const [claimAvailable, setClaimAvailable] = useState(false);
 
-  const [stats, setStats] = useState<{
-    totalDeposit: string;
-    totalTickets: string;
-    numDepositors: string;
-    userDeposit: undefined | string;
-    userTickets: undefined | string;
-  }>({
+  const [stats, setStats] = useState<PoolStats>({
     totalDeposit: "",
     totalTickets: "",
     numDepositors: "",
@@ -90,78 +85,8 @@ const CurrentDraws = ({
     userTickets: undefined,
   });
 
-  const fetchStats = async () => {
-    try {
-      setIsLoading(true);
-
-      const client = await chain.getCosmWasmClient();
-
-      const contract = new SenseifiStakingNllQueryClient(
-        client,
-        seiStakingNLLContract
-      );
-
-      const [params, globalState] = await Promise.all([
-        contract.getParams(),
-        contract.getGlobalState(),
-      ]);
-
-      const totalTickets = BigInt(globalState.total_tickets);
-      const totalStake = BigInt(globalState.total_stake);
-      const numDepositors = globalState.num_stakers;
-      const lastUpdateTime = BigInt(nsToSecs(globalState.last_update_time));
-      const gameStartTime = BigInt(nsToSecs(globalState.game_start_time));
-      const currentTime = BigInt(Math.floor(Date.now() / 1000));
-
-      const newTotalTickets = calculateTickets(
-        totalTickets,
-        totalStake,
-        lastUpdateTime,
-        gameStartTime,
-        gameStartTime + BigInt(gameDurationSecs)
-      );
-
-      let newUserTickets: BigInt | undefined = undefined;
-      let userStake: BigInt | undefined = undefined;
-
-      if (chain.address) {
-        const userState = await contract.getUserState({ user: chain.address });
-
-        const totalTickets = BigInt(userState.total_tickets);
-        const totalStake = BigInt(userState.total_stake);
-        const lastUpdateTime = BigInt(nsToSecs(userState.last_update_time));
-
-        userStake = totalStake;
-        newUserTickets = calculateTickets(
-          totalTickets,
-          totalStake,
-          lastUpdateTime,
-          gameStartTime,
-          gameStartTime + BigInt(gameDurationSecs)
-        );
-      }
-
-      setStats({
-        totalDeposit: totalStake.toString(),
-        totalTickets: newTotalTickets.toString(),
-        numDepositors: numDepositors,
-        userDeposit: userStake?.toString(),
-        userTickets: newUserTickets?.toString(),
-      });
-
-      setShowDetails(true);
-    } catch (e) {
-      let errorMsg = "";
-      if (typeof e === "string") {
-        errorMsg = e.toUpperCase();
-      } else if (e instanceof Error) {
-        errorMsg = e.message;
-      }
-
-      showNotif(errorMsg, "error");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleFetchStats = () => {
+    fetchStats(showNotif, setIsLoading, setStats, setShowDetails, chain);
   };
 
   if (!notActive) {
@@ -183,9 +108,8 @@ const CurrentDraws = ({
           {isLoading && <Loader />}
           {draw?.active ? (
             <>
-              {" "}
               <Box
-                onClick={fetchStats}
+                onClick={handleFetchStats}
                 textAlign="end"
                 sx={{
                   position: "absolute",
@@ -208,7 +132,7 @@ const CurrentDraws = ({
                 </IconButton> */}
               </Box>
               <Box
-                onClick={fetchStats}
+                onClick={handleFetchStats}
                 textAlign="end"
                 sx={{
                   position: "absolute",

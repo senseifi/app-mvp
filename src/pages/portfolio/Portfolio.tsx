@@ -29,6 +29,7 @@ import {
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { roundToDP, toAU } from "@/utils";
+import { Draw } from "@/types/customTypes";
 
 const Portfolio = ({
   params,
@@ -84,6 +85,12 @@ const Portfolio = ({
         ]);
 
         setUserBalance(balance.amount);
+        const usersAsc = await contract.getUsersAsc({});
+        const userState = await contract.getUserState({ user: chain.address });
+        console.log(userState);
+        console.log(contract);
+        console.log(globalState);
+        console.log(usersAsc);
       } catch (e) {
         let errorMsg = "";
         if (typeof e === "string") {
@@ -98,6 +105,19 @@ const Portfolio = ({
       }
     })();
   }, [chain.address, globalState.game_start_time, params.denom]);
+
+  const currentDraws = pastGamesStates.map((v) => {
+    let draw: Draw = {
+      id: v.game_id,
+      active: false,
+      prize: v.total_prize,
+      winner: v.winner,
+      prizeClaimed: v.prize_claimed,
+    };
+    return draw;
+  });
+
+  console.log(currentDraws);
 
   const drawCases = {
     case1: userHasParticipated && !drawHasEnded, //encourage more deposit
@@ -228,14 +248,22 @@ const Portfolio = ({
             item
             xs={12}
             md={2}
-            sx={{ "& svg": { my: isSmallScreen ? 3 : 2, mx: "auto" } }}
+            sx={{
+              "& svg": {
+                borderRadius: 2,
+                my: isSmallScreen ? 3 : 2,
+                mx: "auto",
+              },
+            }}
           >
             <Avatar
               size={isSmallScreen ? "75%" : "120"}
               square
-              name="sei it with me"
+              name={
+                !chain.isWalletConnected ? "sei1" : chain.address?.slice(4, 20)
+              }
               variant="beam"
-              colors={["#071428", "#FFAB03", "#FFDB2C", "#FC3903", "#00A8C6"]}
+              colors={["#00255d", "#FFAB03", "#FFDB2C", "#FC3903", "#00A8C6"]}
             />
           </Grid>
           {!chain.isWalletConnected ? (
@@ -345,14 +373,12 @@ const Portfolio = ({
         </Grid>
       </main>
       <Box component="section">
-        <Typography variant="h2">Your Savings</Typography>
+        <Typography variant="h2">Your Total Savings: </Typography>
         <div>
           <GridWithLabel container label="Lossless Lottery">
             {userHasParticipated ? (
               <>
-                {isSmallScreen ? (
-                  <></>
-                ) : (
+                {isSmallScreen ? null : (
                   <Grid
                     container
                     justifyContent="space-between"
@@ -363,10 +389,10 @@ const Portfolio = ({
                     }}
                   >
                     <Grid item md={1.5}>
-                      <Typography variant="h6">Draw</Typography>
+                      <Typography variant="h6">Tickets</Typography>
                     </Grid>
                     <Grid item md={4.5}>
-                      <Typography variant="h6">Current status</Typography>
+                      <Typography variant="h6">Amount</Typography>
                     </Grid>
                     <Grid item md={2.5}>
                       <Typography variant="h6">Action</Typography>

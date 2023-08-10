@@ -48,3 +48,16 @@ export type PoolList = {
   secondaryRewardRate?: number;
   userState?: { total_stake: string };
 };
+
+export type PoolStats = {
+  totalDeposit: string;
+  totalTickets: string;
+  numDepositors: string;
+  userDeposit: undefined | string;
+  userTickets: undefined | string;
+};
+
+export type showNotiFunction = (
+  message: string,
+  severity: "success" | "info" | "warning" | "error"
+) => void;
