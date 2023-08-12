@@ -16,35 +16,35 @@ import { useChain } from "@cosmos-kit/react";
 import { chainName, rpcEndpoint } from "@/config/sei";
 import Avatar from "boring-avatars";
 import "@fontsource/work-sans/300.css";
-import CurrencyConverter from "@/components/CurrencyConverter/CurrencyConverter";
+
 import GridWithLabel from "@/components/GridWithLabel/GridWithLabel";
 import senIcon from "@/assets/senIcon.png";
 import Image from "next/image";
-import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
-import Timeline from "@/components/Timeline/";
+
 import {
   GameState,
   GlobalState,
   Params,
 } from "@/contract_clients/SenseifiStakingNll.types";
-import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
+
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { roundToDP, toAU } from "@/utils";
-import { Draw, PoolStats } from "@/types/customTypes";
-import { fetchStats } from "../api/stats";
-import { intlFormatStyle } from "@/constants/modals";
+import { getTokenImg, roundToDP, toAU } from "@/utils";
+import { Draw, PoolList, PoolStats } from "@/types/customTypes";
+import { fetchStats } from "../api/nllStats";
+
 import { useRouter } from "next/router";
+import { fetchStakingPools } from "../api/fetchStakingPools";
+import { fetchUserStateForPool } from "../api/userStatePool";
+import LPListForProfile from "@/components/LPList/LPListForProfile";
+
+import { fetchNllState } from "../api/fetchNllState";
 
 const Portfolio = ({
   params,
-  globalState,
-  totalRewards,
-  pastGamesStates,
+  stakingPools,
 }: {
   params: Params;
-  globalState: GlobalState;
-  totalRewards: string;
-  pastGamesStates: GameState[];
+  stakingPools: PoolList[];
 }) => {
   const chain = useChain(chainName);
   const router = useRouter();
@@ -64,10 +64,7 @@ const Portfolio = ({
   const [isLoading, setIsLoading] = useState(true);
 
   const [userHasParticipated, setUserHasParticipated] = useState(true);
-  const [userInitWithdraw, setUserInitWithdraw] = useState(false);
-  const [claimButtonText, setClaimButtonText] = useState("Claim Withdrawal");
 
-  const [drawHasEnded, setDrawHasEnded] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
   const [stats, setStats] = useState<PoolStats>({
@@ -82,6 +79,12 @@ const Portfolio = ({
     fetchStats(showNotif, setIsLoading, setStats, setShowDetails, chain);
   };
 
+  const [poolList, setPoolList] = useState<PoolList[]>([]);
+
+  useEffect(() => {
+    setPoolList(stakingPools);
+  }, [stakingPools]);
+
   useEffect(() => {
     (async function () {
       if (chain.address === undefined) return;
@@ -90,24 +93,12 @@ const Portfolio = ({
       const client = await chain.getCosmWasmClient();
       const userBalance = await client.getBalance(chain.address, params.denom);
       setUserBalance(userBalance.amount);
+
+      poolList.forEach((v, i) =>
+        fetchUserStateForPool(chain, i, poolList, setPoolList, showNotif)
+      );
     })();
   }, [chain.address, params.denom]);
-
-  const drawCases = {
-    case1: userHasParticipated && !drawHasEnded, //encourage more deposit
-    case2: userHasParticipated && drawHasEnded, //deposit carryforward
-  };
-
-  const drawMilestones = [
-    "Participated",
-    ...(userInitWithdraw ? ["Withdraw Initiated", "Claimed"] : ["Result"]),
-  ];
-
-  const [progress, setProgress] = useState(0);
-
-  const handleOnClaim = () => {
-    setClaimButtonText("You've claimed your deposit");
-  };
 
   //START- notification handlers
   const [openNotif, setOpenNotif] = useState(false);
@@ -115,10 +106,6 @@ const Portfolio = ({
   const [notifSev, setNotifSev] = useState<
     "success" | "info" | "warning" | "error"
   >("info");
-  const [depositOpen, setDepositOpen] = useState(false);
-  const [withdrawOpen, setWithdrawOpen] = useState(false);
-  const [claimOpen, setClaimOpen] = useState(false);
-  const [activePoolIndex, setActivePoolIndex] = useState(0);
 
   const handleCloseNotif = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
@@ -298,7 +285,11 @@ const Portfolio = ({
         <Typography variant="h2">Your Total Savings: </Typography>
         <div>
           <GridWithLabel container label="Lossless Lottery">
-            {userHasParticipated ? (
+            {!chain.isWalletConnected ? (
+              <Typography sx={{ opacity: 0.6, py: 1 }}>
+                wallet not connected
+              </Typography>
+            ) : userHasParticipated ? (
               <>
                 {isSmallScreen ? null : (
                   <Grid
@@ -349,7 +340,7 @@ const Portfolio = ({
                   </Grid>
                   <Grid item md={2}>
                     <Grid container gap={1}>
-                      <Tooltip title="Takes to Home page">
+                      <Tooltip title="Go to Home page">
                         <Button
                           onClick={() => router.push("/home")}
                           variant="yellowBorder"
@@ -369,8 +360,12 @@ const Portfolio = ({
               </Typography>
             )}
           </GridWithLabel>
-          <GridWithLabel container label="Liquidity Pool">
-            {userHasParticipated ? (
+          <GridWithLabel container label="Liquidity Pools">
+            {!chain.isWalletConnected ? (
+              <Typography sx={{ opacity: 0.6, py: 1 }}>
+                wallet not connected
+              </Typography>
+            ) : userHasParticipated ? (
               <>
                 {isSmallScreen ? null : (
                   <Grid
@@ -380,7 +375,7 @@ const Portfolio = ({
                       my: 1,
                     }}
                   >
-                    <Grid item md={1.5}>
+                    <Grid item md={2.5}>
                       <Typography variant="h6">Pool</Typography>
                     </Grid>
                     <Grid item md={2.5}>
@@ -400,52 +395,13 @@ const Portfolio = ({
                     alignItems: "center",
                   }}
                 >
-                  <Grid item md={1.5}>
-                    <Box display="flex" sx={{ mt: isSmallScreen ? 2 : "" }}>
-                      <Image alt="sensei icon" src={senIcon} width={24} />
-                      <Typography>
-                        {stats.userTickets !== undefined
-                          ? Intl.NumberFormat("en-US").format(
-                              toAU(stats.userTickets)
-                            )
-                          : "-"}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item md={2.5} sx={{ my: isSmallScreen ? 2 : "" }}>
-                    <Typography>
-                      {stats.userDeposit !== undefined
-                        ? Intl.NumberFormat("en-US").format(
-                            toAU(stats.userDeposit)
-                          )
-                        : "-"}{" "}
-                      Sei
-                    </Typography>
-                  </Grid>
-                  <Grid item md={2.5} sx={{ my: isSmallScreen ? 2 : "" }}>
-                    <Typography>
-                      {stats.userDeposit !== undefined
-                        ? Intl.NumberFormat("en-US").format(
-                            toAU(stats.userDeposit)
-                          )
-                        : "-"}{" "}
-                      Sei
-                    </Typography>
-                  </Grid>
-                  <Grid item md={2}>
-                    <Grid container gap={1}>
-                      <Tooltip title="Takes to Liquidity page">
-                        <Button
-                          onClick={() => router.push("/liquidity")}
-                          variant="yellowBorder"
-                          fullWidth
-                          sx={{ fontSize: 12, p: 1 }}
-                        >
-                          Manage
-                        </Button>
-                      </Tooltip>
-                    </Grid>
-                  </Grid>
+                  {poolList.map((pool, i) =>
+                    pool.userState !== undefined ? (
+                      <LPListForProfile key={i} index={i} poolList={pool} />
+                    ) : null
+                  )}
+
+                  <Grid item md={1.5}></Grid>
                 </Grid>
               </>
             ) : (
@@ -463,25 +419,18 @@ const Portfolio = ({
 export const getServerSideProps = async () => {
   const cosmWasmClient = await CosmWasmClient.connect(rpcEndpoint);
 
-  const contract = new SenseifiStakingNllQueryClient(
-    cosmWasmClient,
-    seiStakingNLLContract
-  );
+  const { params } = await fetchNllState(cosmWasmClient);
 
-  const [params, globalState, totalRewards] = await Promise.all([
-    contract.getParams(),
-    contract.getGlobalState(),
-    contract.getTotalRewards(),
-  ]);
+  const stakingPools = await fetchStakingPools(cosmWasmClient);
 
-  const pastGamesStates: GameState[] = [];
-  const numPastGames = BigInt(globalState.game_counter) - BigInt(1);
-
-  for (let i = BigInt(0); i < numPastGames; i++) {
-    pastGamesStates.push(await contract.getGameState({ gameId: i.toString() }));
-  }
-
-  return { props: { params, globalState, totalRewards, pastGamesStates } };
+  return {
+    props: {
+      params,
+      stakingPools: stakingPools,
+    },
+  };
 };
 
 export default Portfolio;
+
+//TODO: loading states for data

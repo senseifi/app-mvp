@@ -28,7 +28,7 @@ import { chainName } from "@/config/sei";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
 import Loader from "../Loader/Loader";
-import { fetchStats } from "@/pages/api/stats";
+import { fetchStats } from "@/pages/api/nllStats";
 
 const ITEM_HEIGHT = 48;
 

@@ -37,6 +37,7 @@ import { nsToSecs, toAU, bigIntMax } from "@/utils";
 import Notification from "@/components/Notification/Notification";
 import { useChain } from "@cosmos-kit/react";
 import { intlFormatStyle } from "@/constants/modals";
+import { fetchNllState } from "../api/fetchNllState";
 
 const Home = ({
   params,
@@ -331,26 +332,9 @@ const Home = ({
 
 export const getServerSideProps = async () => {
   const cosmWasmClient = await CosmWasmClient.connect(rpcEndpoint);
+  const nllGameState = await fetchNllState(cosmWasmClient);
 
-  const contract = new SenseifiStakingNllQueryClient(
-    cosmWasmClient,
-    seiStakingNLLContract
-  );
-
-  const [params, globalState, totalRewards] = await Promise.all([
-    contract.getParams(),
-    contract.getGlobalState(),
-    contract.getTotalRewards(),
-  ]);
-
-  const pastGamesStates: GameState[] = [];
-  const numPastGames = BigInt(globalState.game_counter) - BigInt(1);
-
-  for (let i = BigInt(0); i < numPastGames; i++) {
-    pastGamesStates.push(await contract.getGameState({ gameId: i.toString() }));
-  }
-
-  return { props: { params, globalState, totalRewards, pastGamesStates } };
+  return { props: nllGameState };
 };
 
 export default Home;
