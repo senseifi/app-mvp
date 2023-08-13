@@ -356,7 +356,7 @@ const Portfolio = ({
               </>
             ) : (
               <Typography>
-                You haven't participated in any lossless lotteries yet
+                You haven&apos;t participated in any lossless lotteries yet
               </Typography>
             )}
           </GridWithLabel>
@@ -406,7 +406,7 @@ const Portfolio = ({
               </>
             ) : (
               <Typography>
-                You haven't participated in any liquidity pools yet
+                You haven&apos;t participated in any liquidity pools yet
               </Typography>
             )}
           </GridWithLabel>

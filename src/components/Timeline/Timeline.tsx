@@ -21,7 +21,7 @@ const Timeline = ({
         position: "relative",
       }}
     >
-      <Box
+      {/* <Box
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -50,7 +50,7 @@ const Timeline = ({
         </Box>
 
         <TimelineTrack />
-      </Box>
+      </Box> */}
     </Grid>
   );
 };
