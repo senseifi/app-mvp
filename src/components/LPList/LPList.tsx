@@ -30,6 +30,7 @@ import {
 } from "@/contract_clients/SenseifiStakingPool.client";
 import { StdFee, coin } from "@cosmjs/amino";
 import { getTokenImg, toAU, toSU } from "@/utils";
+import { intlFormatStyle } from "@/constants/modals";
 
 const ITEM_HEIGHT = 48;
 
@@ -251,10 +252,14 @@ const LPList = ({
               body={apr != undefined ? `${apr}%` : "- %"}
             /> */}
           </Grid>
-          <Grid item md={2} p="0 !important">
+          <Grid item md={3} p="0 !important">
             <PoolText
               header="TVL"
-              body={toAU(tvl) + " " + stakePretty.toUpperCase()}
+              body={
+                Intl.NumberFormat("en-US", intlFormatStyle).format(toAU(tvl)) +
+                " " +
+                stakePretty.toUpperCase()
+              }
             />
           </Grid>
           <Grid item md={1.2} p="0 !important">

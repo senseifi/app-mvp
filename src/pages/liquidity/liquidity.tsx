@@ -7,14 +7,12 @@ import LPList from "@/components/LPList/LPList";
 import { PoolList } from "@/types/customTypes";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { chainName, rpcEndpoint } from "@/config/sei";
-import { SenseifiStakingPoolQueryClient } from "@/contract_clients/SenseifiStakingPool.client";
-import { stakingContracts } from "@/config/contracts";
-import { getPrettyDenom, nsToSecs } from "@/utils";
+
 import StakingDepositModal from "@/components/Modals/StakingDepositModal";
 import { useChain } from "@cosmos-kit/react";
 import StakingWithdrawModal from "@/components/Modals/StakingWithdrawModal";
 import ClaimRewardsModal from "@/components/Modals/ClaimRewardsModal";
-import { SenseifiSingleRewardStakingPoolQueryClient } from "@/contract_clients/SenseifiSingleRewardStakingPool.client";
+
 import { fetchUserStateForPool } from "../api/userStatePool";
 import { fetchPoolDataForPool } from "../api/poolData";
 import { fetchStakingPools } from "../api/fetchStakingPools";
@@ -72,7 +70,7 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
 
   useEffect(() => {
     setPoolList(stakingPools);
-  }, [stakingPools]);
+  }, [stakingPools, chain.address]);
 
   useEffect(() => {
     poolList.forEach((v, i) =>
@@ -186,7 +184,7 @@ export const getServerSideProps = async () => {
 
   return {
     props: {
-      stakingPools,
+      stakingPools: stakingPools,
     },
   };
 };

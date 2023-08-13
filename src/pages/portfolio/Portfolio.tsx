@@ -83,7 +83,7 @@ const Portfolio = ({
 
   useEffect(() => {
     setPoolList(stakingPools);
-  }, [stakingPools]);
+  }, [stakingPools, chain.address]);
 
   useEffect(() => {
     (async function () {

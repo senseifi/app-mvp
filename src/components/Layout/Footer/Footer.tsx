@@ -4,9 +4,16 @@ import theme from "@/styles/theme";
 import telegram from "@/assets/social/telegram.png";
 import twitter from "@/assets/social/twitter.png";
 import discord from "@/assets/social/discord.png";
-import { Box, Link, Theme, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Theme,
+  Link as LinkMUI,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import Image from "next/image";
 import React from "react";
+import Link from "next/link";
 
 const Footer = () => {
   const theme: Theme = useTheme();
@@ -22,40 +29,42 @@ const Footer = () => {
       sx={{
         display: "flex",
         flexDirection: "row",
+        justifyContent: "space-between",
         borderTop: `1px solid ${theme.palette.secondary.main}`,
         p: 1,
       }}
     >
       <DarkModeToggle />
-      <Typography
-        paragraph
-        gutterBottom
-        sx={{ textAlign: "center", width: "100%" }}
-      >
-        Copyright &copy; SenSei Fi, {new Date().getFullYear()}.
-      </Typography>
+      <Box sx={{ textAlign: "center", width: "100%", mb: 1 }}>
+        <Typography>
+          Copyright &copy; SenSei Fi, {new Date().getFullYear()}.
+        </Typography>
+        <Link href="/tnc" style={{ opacity: 0.4 }}>
+          Terms & Conditions
+        </Link>
+      </Box>
       <Box sx={{ display: "flex", gap: 2, mx: 2, my: "auto" }}>
-        <Link
+        <LinkMUI
           href="https://t.me/SenSeiFi"
           target="_blank"
           sx={socialIconsStyle}
         >
           <Image src={telegram} alt="Telegram link" />
-        </Link>
-        <Link
+        </LinkMUI>
+        <LinkMUI
           href="https://twitter.com/SenSei_DeFi"
           target="_blank"
           sx={socialIconsStyle}
         >
           <Image src={twitter} alt="Twitter link" />
-        </Link>
-        <Link
+        </LinkMUI>
+        <LinkMUI
           href="https://discord.gg/b6h3paCYy4"
           target="_blank"
           sx={socialIconsStyle}
         >
           <Image src={discord} alt="Discord link" />
-        </Link>
+        </LinkMUI>
       </Box>
     </Box>
   );

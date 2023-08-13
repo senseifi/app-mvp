@@ -276,3 +276,12 @@ svg.coin-flip {
   border: 1px solid;
   border-radius: 10px;
 }
+
+pre {
+  white-space: pre-wrap;
+}
+
+#tnc {
+  max-width: 1200px;
+  margin: auto;
+}

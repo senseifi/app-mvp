@@ -175,7 +175,7 @@ const SideBar = () => {
               </Grid>
             </Grid>
           </MenuItem>
-          <MenuItem
+          {/* <MenuItem
             icon={<IntegrationInstructions />}
             //component={<Link to="developers" />}
             // eslint-disable-next-line
@@ -200,7 +200,7 @@ const SideBar = () => {
                 SOON
               </Grid>
             </Grid>
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem
             icon={<Error />}
             //component={<Link to="help" />}
