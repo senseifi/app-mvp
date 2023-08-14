@@ -140,12 +140,13 @@ const CurrentDraws = ({
                   borderRadius: ` 0% 0% 0% 30% / 0% 0% 0% 30% `,
                   width: `50px`,
                   height: `50px`,
-
-                  backgroundImage: `linear-gradient(45deg,${theme.palette.secondary.main} 30%,#FFDB2C 60%)`,
+                  borderLeft: "1px solid",
+                  borderBottom: "1px solid",
+                  backgroundImage: `linear-gradient(45deg,#FFF 10%,#071428 50%,#FFDB2C 80%)`,
                   "&:hover": {
                     width: `60px`,
                     height: `60px`,
-                    backgroundImage: `linear-gradient(45deg,${theme.palette.secondary.main} 20%,#FFDB2C 40%)`,
+                    backgroundImage: `linear-gradient(45deg,#FFF 20%,#071428 50%,#FFDB2C 65%)`,
                     transition: "all 0.1s ease-in-out",
                   },
                 }}

@@ -203,30 +203,22 @@ const SideBar = () => {
             </Grid>
           </MenuItem> */}
           <MenuItem
+            onClick={() => toggleSidebar(false)}
             icon={<Error />}
-            //component={<Link to="help" />}
-            // eslint-disable-next-line
+            component={<Link href="/help" />}
+            rootStyles={
+              router.pathname == "/help"
+                ? {
+                    borderRadius: "10px",
+                    backgroundColor: themePalette.secondary.main,
+                    "& span": {
+                      color: themePalette.primary.main,
+                    },
+                  }
+                : {}
+            }
           >
-            <Grid
-              container
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Grid item>Help</Grid>
-              <Grid
-                item
-                sx={{
-                  fontSize: "10px",
-                  px: 1,
-                  backgroundColor: "#ffdc2c6e",
-                  border: "1px solid #FFDB2C",
-                  borderRadius: "5px",
-                }}
-              >
-                SOON
-              </Grid>
-            </Grid>
+            Help
           </MenuItem>
         </Menu>
         {isSmallScreen ? (

@@ -55,7 +55,6 @@ const tnc = () => {
             </div>
           ))}
         </pre>
-        <Typography></Typography>
       </section>
     </Box>
   );
