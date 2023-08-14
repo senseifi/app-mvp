@@ -142,6 +142,12 @@ const CurrentDraws = ({
                   height: `50px`,
 
                   backgroundImage: `linear-gradient(45deg,${theme.palette.secondary.main} 30%,#FFDB2C 60%)`,
+                  "&:hover": {
+                    width: `60px`,
+                    height: `60px`,
+                    backgroundImage: `linear-gradient(45deg,${theme.palette.secondary.main} 20%,#FFDB2C 40%)`,
+                    transition: "all 0.1s ease-in-out",
+                  },
                 }}
               />
             </>

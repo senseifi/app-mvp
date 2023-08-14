@@ -18,6 +18,7 @@ const tnc = () => {
           variant="h1"
           sx={{
             fontWeight: "medium",
+            fontSize: "4rem !important",
           }}
         >
           Terms and Conditions

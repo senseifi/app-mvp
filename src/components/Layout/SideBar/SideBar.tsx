@@ -19,8 +19,9 @@ import {
   IntegrationInstructions,
   WaterDrop,
 } from "@mui/icons-material";
-import { Box, Button, Grid, useMediaQuery } from "@mui/material";
+import { Box, Button, Grid, Typography, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/router";
+import DarkModeToggle from "@/components/DarkModeToggle/DarkModeToggle";
 
 const SideBar = () => {
   const theme: Theme = useTheme();
@@ -228,6 +229,16 @@ const SideBar = () => {
             </Grid>
           </MenuItem>
         </Menu>
+        {isSmallScreen ? (
+          <Box
+            sx={{
+              mt: 10,
+              px: 3,
+            }}
+          >
+            <DarkModeToggle />
+          </Box>
+        ) : null}
       </Sidebar>
     </Box>
   );
