@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 import Layout from "@/components/Layout";
 import { ColorModeContext } from "@/components/DarkModeToggle";
 import createAppTheme from "@/styles/theme";
-import { PaletteMode } from "@mui/material";
+import { PaletteMode, useMediaQuery } from "@mui/material";
 
 import { ChainProvider } from "@cosmos-kit/react";
 import { chains, assets } from "chain-registry";
@@ -29,7 +29,15 @@ import PageLoadingAnim from "@/components/PageLoadingAnim";
 import { Router } from "next/router";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [mode, setMode] = useState<PaletteMode>("light");
+  const [mode, setMode] = useState<PaletteMode>("dark");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const initialMode =
+        (localStorage.getItem("colorMode") as PaletteMode) || "dark";
+      setMode(initialMode);
+    }
+  }, []);
+
   const theme = useMemo(() => createAppTheme(mode), [mode]);
 
   const toggleMode = () => {
