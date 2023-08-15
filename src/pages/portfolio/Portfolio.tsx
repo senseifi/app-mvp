@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   Grid,
+  Skeleton,
   Theme,
   Tooltip,
   Typography,
@@ -112,25 +113,36 @@ const Portfolio = ({
     (async function () {
       if (client === undefined) return;
       if (wallet.accounts[0]?.address === undefined) return;
+      try {
+        setIsLoading(true);
+        handleFetchStats();
 
-      handleFetchStats();
+        const userBalance = await client.getBalance(
+          wallet.accounts[0]?.address,
+          params.denom
+        );
+        setUserBalance(userBalance.amount);
 
-      const userBalance = await client.getBalance(
-        wallet.accounts[0]?.address,
-        params.denom
-      );
-      setUserBalance(userBalance.amount);
-
-      poolList.forEach((v, i) =>
-        fetchUserStateForPool(
-          i,
-          poolList,
-          setPoolList,
-          showNotif,
-          client,
-          wallet
-        )
-      );
+        poolList.forEach((v, i) =>
+          fetchUserStateForPool(
+            i,
+            poolList,
+            setPoolList,
+            showNotif,
+            client,
+            wallet
+          )
+        );
+      } catch (e) {
+        let errorMsg = "";
+        if (typeof e === "string") {
+          errorMsg = e.toUpperCase();
+        } else if (e instanceof Error) {
+          errorMsg = e.message;
+        }
+      } finally {
+        setIsLoading(false);
+      }
     })();
   }, [wallet.accounts[0]?.address, params.denom, client]);
 
@@ -257,9 +269,13 @@ const Portfolio = ({
                   >
                     Sei&nbsp;
                   </Typography>
-                  <Typography sx={{ fontSize: 20 }}>
-                    {roundToDP(toAU(userBalance), 3)}
-                  </Typography>
+                  {isLoading ? (
+                    <Skeleton animation="wave" height="2rem" />
+                  ) : (
+                    <Typography sx={{ fontSize: 20 }}>
+                      {roundToDP(toAU(userBalance), 3)}
+                    </Typography>
+                  )}
                 </Grid>
                 {!isSmallScreen && (
                   <Grid
@@ -357,24 +373,32 @@ const Portfolio = ({
                   <Grid item md={1.5}>
                     <Box display="flex" sx={{ mt: isSmallScreen ? 2 : "" }}>
                       <Image alt="sensei icon" src={senIcon} width={24} />
-                      <Typography>
-                        {stats.userTickets !== undefined
-                          ? Intl.NumberFormat("en-US").format(
-                              toAU(stats.userTickets)
-                            )
-                          : "-"}
-                      </Typography>
+                      {isLoading ? (
+                        <Skeleton animation="wave" width="100%" />
+                      ) : (
+                        <Typography>
+                          {stats.userTickets !== undefined
+                            ? Intl.NumberFormat("en-US").format(
+                                toAU(stats.userTickets)
+                              )
+                            : "-"}
+                        </Typography>
+                      )}
                     </Box>
                   </Grid>
                   <Grid item md={5} sx={{ my: isSmallScreen ? 2 : "" }}>
-                    <Typography>
-                      {stats.userDeposit !== undefined
-                        ? Intl.NumberFormat("en-US").format(
-                            toAU(stats.userDeposit)
-                          )
-                        : "-"}{" "}
-                      Sei
-                    </Typography>
+                    {isLoading ? (
+                      <Skeleton animation="wave" width="100%" />
+                    ) : (
+                      <Typography>
+                        {stats.userDeposit !== undefined
+                          ? Intl.NumberFormat("en-US").format(
+                              toAU(stats.userDeposit)
+                            )
+                          : "-"}{" "}
+                        Sei
+                      </Typography>
+                    )}
                   </Grid>
                   <Grid item md={2}>
                     <Grid container gap={1}>
@@ -435,7 +459,11 @@ const Portfolio = ({
                 >
                   {poolList.map((pool, i) =>
                     pool.userState !== undefined ? (
-                      <LPListForProfile key={i} index={i} poolList={pool} />
+                      isLoading ? (
+                        <Skeleton animation="wave" width="100%" height="3rem" />
+                      ) : (
+                        <LPListForProfile key={i} index={i} poolList={pool} />
+                      )
                     ) : null
                   )}
 

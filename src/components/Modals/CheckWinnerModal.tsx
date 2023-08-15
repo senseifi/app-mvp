@@ -202,7 +202,7 @@ const CheckWinnerModal = ({
         sx={{
           width: isSmallScreen ? "100%" : 400,
           bgcolor: theme.palette.primary.main,
-          borderRadius: 2,
+          borderRadius: 4,
           border: "4px solid",
           borderColor:
             usrIsWinner === "undefined" || usrIsWinner === "true"
