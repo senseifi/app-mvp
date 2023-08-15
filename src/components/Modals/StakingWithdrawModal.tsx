@@ -24,7 +24,6 @@ import { Close, Help } from "@mui/icons-material";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import { modalProps } from "@/constants/modals";
 
-import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import { coin, StdFee } from "@cosmjs/amino";
 import { toAU, toSU } from "@/utils";
@@ -47,6 +46,12 @@ const style = {
   p: 4,
 };
 
+import {
+  useCosmWasmClient,
+  useWallet,
+  useSigningCosmWasmClient,
+} from "sei-js/packages/react/dist";
+
 const StakingWithdrawModal = ({
   open,
   setOpen,
@@ -60,7 +65,9 @@ const StakingWithdrawModal = ({
   showNotif: Function;
   updatePoolData: Function;
 }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const { signingCosmWasmClient } = useSigningCosmWasmClient();
+  const wallet = useWallet();
 
   //reset states and close modal
   const handleClose = () => {
@@ -85,12 +92,11 @@ const StakingWithdrawModal = ({
 
   useEffect(() => {
     (async function () {
-      if (chain.address === undefined) return;
+      if (client === undefined) return;
+      if (wallet.accounts[0]?.address === undefined) return;
 
       try {
         setIsLoading(true);
-
-        const client = await chain.getCosmWasmClient();
 
         const contract = new SenseifiStakingPoolQueryClient(
           client,
@@ -98,7 +104,7 @@ const StakingWithdrawModal = ({
         );
 
         const [stake] = await Promise.all([
-          contract.getUserState({ user: chain.address }),
+          contract.getUserState({ user: wallet.accounts[0]?.address }),
         ]);
 
         setStakedAmount(stake.total_stake);
@@ -116,19 +122,19 @@ const StakingWithdrawModal = ({
         setIsLoading(false);
       }
     })();
-  }, [chain.address, poolList]);
+  }, [wallet.accounts[0]?.address, poolList, client]);
 
   const unstake = async () => {
-    if (chain.address === undefined || otherValue === undefined) return;
+    if (signingCosmWasmClient === undefined) return;
+    if (wallet.accounts[0]?.address === undefined || otherValue === undefined)
+      return;
 
     try {
       setIsLoading(true);
 
-      const client = await chain.getSigningCosmWasmClient();
-
       const contract = new SenseifiStakingPoolClient(
-        client,
-        chain.address,
+        signingCosmWasmClient,
+        wallet.accounts[0]?.address,
         poolList.address
       );
 

@@ -3,18 +3,18 @@ import { SenseifiStakingPoolQueryClient } from "@/contract_clients/SenseifiStaki
 import { PoolList, showNotiFunction } from "@/types/customTypes";
 import { getPrettyDenom, nsToSecs } from "@/utils";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { ChainContext } from "@cosmos-kit/core";
 
 export const fetchPoolDataForPool = async (
-  chain: ChainContext,
   index: number,
   poolList: PoolList[],
   setPoolList: React.Dispatch<React.SetStateAction<PoolList[]>>,
-  showNotif: showNotiFunction
+  showNotif: showNotiFunction,
+  client: CosmWasmClient | undefined
 ) => {
+  if (client === undefined) return;
+
   try {
     let latestPool: PoolList;
-    const client = await chain.getCosmWasmClient();
     if (!poolList[index].multiReward) {
       const contract = new SenseifiSingleRewardStakingPoolQueryClient(
         client,

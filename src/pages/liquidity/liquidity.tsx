@@ -9,16 +9,28 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { chainName, rpcEndpoint } from "@/config/sei";
 
 import StakingDepositModal from "@/components/Modals/StakingDepositModal";
-import { useChain } from "@cosmos-kit/react";
 import StakingWithdrawModal from "@/components/Modals/StakingWithdrawModal";
 import ClaimRewardsModal from "@/components/Modals/ClaimRewardsModal";
 
 import { fetchUserStateForPool } from "../api/userStatePool";
 import { fetchPoolDataForPool } from "../api/poolData";
 import { fetchStakingPools } from "../api/fetchStakingPools";
+import {
+  useCosmWasmClient,
+  useWallet,
+  useSigningCosmWasmClient,
+} from "sei-js/packages/react/dist";
 
 const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const { signingCosmWasmClient } = useSigningCosmWasmClient();
+  const wallet = useWallet();
+
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+
+  useEffect(() => {
+    setIsWalletConnected(wallet.connectedWallet !== undefined);
+  }, [wallet.connectedWallet]);
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -37,7 +49,7 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
   };
 
   const onClickDeposit = (index: number) => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -47,7 +59,7 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
   };
 
   const onClickWithdraw = (index: number) => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -57,7 +69,7 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
   };
 
   const onClickClaim = (index: number) => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -70,18 +82,25 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
 
   useEffect(() => {
     setPoolList(stakingPools);
-  }, [stakingPools, chain.address]);
+  }, [stakingPools, wallet.accounts[0]?.address]);
 
   useEffect(() => {
     poolList.forEach((v, i) =>
-      fetchUserStateForPool(chain, i, poolList, setPoolList, showNotif)
+      fetchUserStateForPool(i, poolList, setPoolList, showNotif, client, wallet)
     );
-  }, [chain.address]);
+  }, [wallet.accounts[0]?.address]);
 
   const updatePoolData = async (index: number) => {
     return Promise.all([
-      fetchPoolDataForPool(chain, index, poolList, setPoolList, showNotif),
-      fetchUserStateForPool(chain, index, poolList, setPoolList, showNotif),
+      fetchPoolDataForPool(index, poolList, setPoolList, showNotif, client),
+      fetchUserStateForPool(
+        index,
+        poolList,
+        setPoolList,
+        showNotif,
+        client,
+        wallet
+      ),
     ]);
   };
 

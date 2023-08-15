@@ -22,7 +22,6 @@ import PoolText from "../PoolText/PoolText";
 import timeRemaining from "../TimeRemaining";
 import Image from "next/image";
 import { PoolList } from "@/types/customTypes";
-import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import {
   SenseifiStakingPoolClient,
@@ -31,6 +30,12 @@ import {
 import { StdFee, coin } from "@cosmjs/amino";
 import { getTokenImg, toAU, toSU } from "@/utils";
 import { intlFormatStyle } from "@/constants/modals";
+
+import {
+  useCosmWasmClient,
+  useWallet,
+  useSigningCosmWasmClient,
+} from "sei-js/packages/react/dist";
 
 const ITEM_HEIGHT = 48;
 
@@ -70,7 +75,10 @@ const LPList = ({
   onClickWithdraw: Function;
   onClickClaim: Function;
 }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const { signingCosmWasmClient } = useSigningCosmWasmClient();
+  const wallet = useWallet();
+
   const theme: Theme = useTheme();
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -90,14 +98,13 @@ const LPList = ({
   };
 
   const supplyRewards = async () => {
-    if (chain.address === undefined) return;
+    if (wallet.accounts[0]?.address === undefined) return;
+    if (signingCosmWasmClient === undefined) return;
 
     try {
-      const client = await chain.getSigningCosmWasmClient();
-
       const contract = new SenseifiStakingPoolClient(
-        client,
-        chain.address,
+        signingCosmWasmClient,
+        wallet.accounts[0]?.address,
         address
       );
 
