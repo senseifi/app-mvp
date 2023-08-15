@@ -87,6 +87,7 @@ const Home = ({
       winner: v.winner,
       prizeClaimed: v.prize_claimed,
     };
+
     return draw;
   });
 
@@ -330,7 +331,7 @@ const Home = ({
           </Grid>
         </Box>
         <Box component="section" mb={10}>
-          <WinnerHistory />
+          <WinnerHistory drawList={currentDraws} />
         </Box>
       </Box>
     </>

@@ -162,6 +162,8 @@ const createAppTheme = (mode: PaletteMode) =>
         styleOverrides: {
           root: {
             fontSize: "1rem",
+            // maxWidth: "300px",
+            padding: "1rem 1.2rem",
             "@media (max-width: 600px)": {
               fontSize: "0.875rem",
               padding: "10px",

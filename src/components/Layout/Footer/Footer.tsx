@@ -45,11 +45,28 @@ const Footer = () => {
         <Typography>
           Copyright &copy; SenSei Fi, {new Date().getFullYear()}.
         </Typography>
-        <Link href="/tnc" style={{ opacity: 0.4 }}>
+        <Link
+          href="/tnc"
+          style={{
+            opacity: 0.4,
+            color: theme.palette.mode === "dark" ? "#FFF" : "#000",
+          }}
+        >
           Terms & Conditions
         </Link>
       </Box>
-      <Box sx={{ display: "flex", gap: 2, mx: 2, my: "auto" }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          mx: 2,
+          my: "auto",
+          "& img": {
+            width: 30,
+            height: 30,
+          },
+        }}
+      >
         <LinkMUI
           href="https://t.me/SenSeiFi"
           target="_blank"
@@ -83,7 +100,19 @@ const Footer = () => {
         p: 1,
       }}
     >
-      <Box sx={{ display: "flex", gap: 2, mx: "auto", mb: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          mx: "auto",
+          mb: 2,
+
+          "& img": {
+            width: 30,
+            height: 30,
+          },
+        }}
+      >
         <LinkMUI
           href="https://t.me/SenSeiFi"
           target="_blank"
@@ -110,7 +139,13 @@ const Footer = () => {
         <Typography>
           Copyright &copy; SenSei Fi, {new Date().getFullYear()}.
         </Typography>
-        <Link href="/tnc" style={{ opacity: 0.4 }}>
+        <Link
+          href="/tnc"
+          style={{
+            opacity: 0.4,
+            color: theme.palette.mode === "dark" ? "#FFF" : "#000",
+          }}
+        >
           Terms & Conditions
         </Link>
       </Box>
