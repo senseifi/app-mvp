@@ -103,6 +103,21 @@ const NavBar = () => {
             <SwapCalls />
           </IconButton>
         </Link> */}
+          <Typography
+            variant="yellowText"
+            sx={{
+              my: "auto",
+              fontWeight: 500,
+              ...(isSmallScreen
+                ? {
+                    position: "absolute",
+                    transform: "translate(-70%, 50%)",
+                  }
+                : null),
+            }}
+          >
+            Mainnet
+          </Typography>
           <Button
             onClick={() =>
               isWalletConnected ? wallet.disconnect() : openModal()
