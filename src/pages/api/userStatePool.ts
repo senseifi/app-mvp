@@ -1,22 +1,24 @@
 import { SenseifiSingleRewardStakingPoolQueryClient } from "@/contract_clients/SenseifiSingleRewardStakingPool.client";
 import { SenseifiStakingPoolQueryClient } from "@/contract_clients/SenseifiStakingPool.client";
 import { PoolList, showNotiFunction } from "@/types/customTypes";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 
 export const fetchUserStateForPool = async (
-  chain: ChainContext,
   index: number,
   poolList: PoolList[],
   setPoolList: React.Dispatch<React.SetStateAction<PoolList[]>>,
-  showNotif: showNotiFunction
+  showNotif: showNotiFunction,
+  client: CosmWasmClient | undefined,
+  wallet: any
 ) => {
+  if (client === undefined) return;
+
   try {
     let total_stake: string | undefined;
 
-    if (chain.address === undefined) {
+    if (wallet.accounts[0]?.address === undefined) {
       total_stake = undefined;
     } else {
-      const client = await chain.getCosmWasmClient();
-
       if (!poolList[index].multiReward) {
         const contract = new SenseifiSingleRewardStakingPoolQueryClient(
           client,
@@ -24,7 +26,7 @@ export const fetchUserStateForPool = async (
         );
 
         const userState = await contract.getUserState({
-          user: chain.address,
+          user: wallet.accounts[0]?.address,
         });
 
         total_stake = userState.total_stake;
@@ -35,7 +37,7 @@ export const fetchUserStateForPool = async (
         );
 
         const userState = await contract.getUserState({
-          user: chain.address,
+          user: wallet.accounts[0]?.address,
         });
 
         total_stake = userState.total_stake;

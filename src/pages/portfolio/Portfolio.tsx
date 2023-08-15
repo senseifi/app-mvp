@@ -12,7 +12,6 @@ import {
   useMediaQuery,
 } from "@mui/material";
 
-import { useChain } from "@cosmos-kit/react";
 import { chainName, rpcEndpoint } from "@/config/sei";
 import Avatar from "boring-avatars";
 import "@fontsource/work-sans/300.css";
@@ -20,6 +19,7 @@ import "@fontsource/work-sans/300.css";
 import GridWithLabel from "@/components/GridWithLabel/GridWithLabel";
 import senIcon from "@/assets/senIcon.png";
 import Image from "next/image";
+import useSelectWallet from "@/hooks/useSelectWallet";
 
 import {
   GameState,
@@ -39,6 +39,12 @@ import LPListForProfile from "@/components/LPList/LPListForProfile";
 
 import { fetchNllState } from "../api/fetchNllState";
 
+import {
+  useCosmWasmClient,
+  useWallet,
+  useSigningCosmWasmClient,
+} from "sei-js/packages/react/dist";
+
 const Portfolio = ({
   params,
   stakingPools,
@@ -46,7 +52,17 @@ const Portfolio = ({
   params: Params;
   stakingPools: PoolList[];
 }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const { signingCosmWasmClient } = useSigningCosmWasmClient();
+  const wallet = useWallet();
+  const { openModal } = useSelectWallet();
+
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+
+  useEffect(() => {
+    setIsWalletConnected(wallet.connectedWallet !== undefined);
+  }, [wallet.connectedWallet]);
+
   const router = useRouter();
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -76,29 +92,46 @@ const Portfolio = ({
   });
 
   const handleFetchStats = () => {
-    fetchStats(showNotif, setIsLoading, setStats, setShowDetails, chain);
+    fetchStats(
+      showNotif,
+      setIsLoading,
+      setStats,
+      setShowDetails,
+      client,
+      wallet
+    );
   };
 
   const [poolList, setPoolList] = useState<PoolList[]>([]);
 
   useEffect(() => {
     setPoolList(stakingPools);
-  }, [stakingPools, chain.address]);
+  }, [stakingPools, wallet.accounts[0]?.address]);
 
   useEffect(() => {
     (async function () {
-      if (chain.address === undefined) return;
+      if (client === undefined) return;
 
       handleFetchStats();
-      const client = await chain.getCosmWasmClient();
-      const userBalance = await client.getBalance(chain.address, params.denom);
+
+      const userBalance = await client.getBalance(
+        wallet.accounts[0]?.address,
+        params.denom
+      );
       setUserBalance(userBalance.amount);
 
       poolList.forEach((v, i) =>
-        fetchUserStateForPool(chain, i, poolList, setPoolList, showNotif)
+        fetchUserStateForPool(
+          i,
+          poolList,
+          setPoolList,
+          showNotif,
+          client,
+          wallet
+        )
       );
     })();
-  }, [chain.address, params.denom]);
+  }, [wallet.accounts[0]?.address, params.denom]);
 
   //START- notification handlers
   const [openNotif, setOpenNotif] = useState(false);
@@ -168,15 +201,17 @@ const Portfolio = ({
               size={isSmallScreen ? "75%" : "120"}
               square
               name={
-                !chain.isWalletConnected ? "sei1" : chain.address?.slice(4, 20)
+                !isWalletConnected
+                  ? "sei1"
+                  : wallet.accounts[0]?.address?.slice(4, 20)
               }
               variant="beam"
               colors={["#00255d", "#FFAB03", "#FFDB2C", "#FC3903", "#00A8C6"]}
             />
           </Grid>
-          {!chain.isWalletConnected ? (
+          {!isWalletConnected ? (
             <Typography
-              onClick={chain.openView}
+              onClick={openModal}
               sx={{
                 fontSize: 24,
                 fontWeight: 300,
@@ -249,7 +284,9 @@ const Portfolio = ({
                   >
                     Address&nbsp;
                   </Typography>
-                  <Typography sx={{ fontSize: 20 }}>{chain.address}</Typography>
+                  <Typography sx={{ fontSize: 20 }}>
+                    {wallet.accounts[0]?.address}
+                  </Typography>
                 </Grid>
               </Grid>
               {isSmallScreen && (
@@ -285,7 +322,7 @@ const Portfolio = ({
         <Typography variant="h2">Your Total Savings: </Typography>
         <div>
           <GridWithLabel container label="Lossless Lottery">
-            {!chain.isWalletConnected ? (
+            {!isWalletConnected ? (
               <Typography sx={{ opacity: 0.6, py: 1 }}>
                 wallet not connected
               </Typography>
@@ -361,7 +398,7 @@ const Portfolio = ({
             )}
           </GridWithLabel>
           <GridWithLabel container label="Liquidity Pools">
-            {!chain.isWalletConnected ? (
+            {!isWalletConnected ? (
               <Typography sx={{ opacity: 0.6, py: 1 }}>
                 wallet not connected
               </Typography>
