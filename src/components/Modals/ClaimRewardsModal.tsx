@@ -203,7 +203,7 @@ const ClaimRewardsModal = ({
               sx={{
                 width: isSmallScreen ? "100%" : 400,
                 bgcolor: theme.palette.primary.main,
-                borderRadius: 2,
+                borderRadius: 4,
                 border: "4px solid",
                 borderColor: theme.palette.tertiary.main,
                 boxShadow: "0px 0px 24px #FFF",

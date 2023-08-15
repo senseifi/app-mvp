@@ -21,6 +21,7 @@ import WormholeIcon from "@/components/WormholeIcon/WormholeIcon";
 import { useWallet } from "sei-js/packages/react/dist";
 import { WalletSelectModal } from "@/components/SeiWallet";
 import useSelectWallet from "@/hooks/useSelectWallet";
+import { useRouter } from "next/router";
 
 const NavBar = () => {
   const wallet = useWallet();
@@ -38,6 +39,7 @@ const NavBar = () => {
   );
 
   const { toggleSidebar } = useProSidebar();
+  const router = useRouter();
 
   return (
     <>
@@ -66,16 +68,18 @@ const NavBar = () => {
         ) : (
           ""
         )}
-        <Link href="/home" style={{ width: "min-width" }}>
-          <Image
-            alt="SenSei Finance Logo"
-            src={logoLight}
-            style={{
-              maxHeight: "100%",
-              width: "auto",
-            }}
-          />
-        </Link>
+
+        <Image
+          onClick={() => router.push("/")}
+          alt="SenSei Finance Logo"
+          src={logoLight}
+          style={{
+            height: "100%",
+            width: "auto",
+            cursor: "pointer",
+          }}
+        />
+
         <Box sx={{ display: "flex", gap: "1rem" }}>
           {/* <Link href="/wormhole">
           <IconButton
