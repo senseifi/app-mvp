@@ -15,10 +15,6 @@ import { PaletteMode, useMediaQuery } from "@mui/material";
 
 import { SeiWalletProvider } from "sei-js/packages/react/dist";
 import "../components/SeiWallet/WalletSelectModal/styles.css";
-import { seiTestnet2AssetList, seiTestnet2Chain } from "@/config/sei";
-import { WalletErrorView } from "@/components/WalletModalViews/WalletErrorView";
-import { WalletNotExistView } from "@/components/WalletModalViews/WalletNotExistView";
-import { wallets as finWallets } from "../FinWallet/index";
 import NextNProgress from "nextjs-progressbar";
 import PageLoadingAnim from "@/components/PageLoadingAnim";
 import { Router } from "next/router";
