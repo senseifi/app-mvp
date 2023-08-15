@@ -111,6 +111,7 @@ const Portfolio = ({
   useEffect(() => {
     (async function () {
       if (client === undefined) return;
+      if (wallet.accounts[0]?.address === undefined) return;
 
       handleFetchStats();
 
