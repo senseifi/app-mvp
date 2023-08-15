@@ -212,6 +212,24 @@ svg.coin-flip {
   background-color: #071428 !important;
 }
 
+#globalLoader {
+  position: fixed;
+  z-index: 99999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #071428;
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+#globalLoader svg {
+  width: 250px;
+  height: auto;
+}
 #squid-widget > div {
   margin: 2rem auto;
 }
@@ -257,4 +275,13 @@ svg.coin-flip {
   color: #071428;
   border: 1px solid;
   border-radius: 10px;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+#tnc {
+  max-width: 1200px;
+  margin: auto;
 }

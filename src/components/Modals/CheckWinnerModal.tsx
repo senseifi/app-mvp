@@ -32,7 +32,6 @@ import FlipClockCountdown from "@leenguyen/react-flip-clock-countdown";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import CoinFlipSVG from "../CoinFlipSVG";
 import { Draw } from "@/types/customTypes";
-import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import {
   SenseifiStakingNllClient,
@@ -43,6 +42,11 @@ import { StdFee, coin } from "@cosmjs/amino";
 import { Params } from "@/contract_clients/SenseifiStakingNll.types";
 import { toAU } from "@/utils";
 import Loader from "../Loader/Loader";
+import {
+  useCosmWasmClient,
+  useWallet,
+  useSigningCosmWasmClient,
+} from "sei-js/packages/react/dist";
 
 const style = {
   position: "absolute",
@@ -68,7 +72,9 @@ const CheckWinnerModal = ({
   params: Params;
   showNotif: Function;
 }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const { signingCosmWasmClient } = useSigningCosmWasmClient();
+  const wallet = useWallet();
 
   const theme: Theme = useTheme();
 
@@ -87,10 +93,10 @@ const CheckWinnerModal = ({
 
   useEffect(() => {
     (async function () {
+      if (client === undefined) return;
+
       try {
         setIsLoading(true);
-
-        const client = await chain.getCosmWasmClient();
 
         const contract = new SenseifiStakingNllQueryClient(
           client,
@@ -122,28 +128,28 @@ const CheckWinnerModal = ({
         setIsLoading(false);
       }
     })();
-  }, [gameID]);
+  }, [gameID, client]);
 
   const checkingWinner = () => {
     setLoadingWinner(true);
     setTimeout(() => {
       setLoadingWinner(false);
-      setUsrIsWinner(draw?.winner === chain.address ? "true" : "false");
+      setUsrIsWinner(
+        draw?.winner === wallet.accounts[0]?.address ? "true" : "false"
+      );
     }, 5000);
   };
 
   const claimPrize = async () => {
-    if (chain.address === undefined) return;
+    if (signingCosmWasmClient === undefined) return;
 
     if (draw?.prizeClaimed === false) {
       try {
         setIsLoading(true);
 
-        const client = await chain.getSigningCosmWasmClient();
-
         const contract = new SenseifiStakingNllClient(
-          client,
-          chain.address,
+          signingCosmWasmClient,
+          wallet.accounts[0]?.address,
           seiStakingNLLContract
         );
 
@@ -196,7 +202,7 @@ const CheckWinnerModal = ({
         sx={{
           width: isSmallScreen ? "100%" : 400,
           bgcolor: theme.palette.primary.main,
-          borderRadius: 2,
+          borderRadius: 4,
           border: "4px solid",
           borderColor:
             usrIsWinner === "undefined" || usrIsWinner === "true"
@@ -230,11 +236,12 @@ const CheckWinnerModal = ({
           </Typography>
         )}
 
-        {loadingWinner ? (
+        {loadingWinner && (
           <Box width="50%" m="auto">
             <CoinFlipSVG />
           </Box>
-        ) : (
+        )}
+        {/* : (
           <>
             {usrIsWinner === "undefined" && (
               <Box display="flex" mt={3} sx={{ justifyContent: "center" }}>
@@ -242,7 +249,7 @@ const CheckWinnerModal = ({
               </Box>
             )}
           </>
-        )}
+        )} */}
 
         {timeToDraw == 0 ? (
           <>

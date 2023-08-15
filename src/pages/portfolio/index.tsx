@@ -1,1 +1,1 @@
-export { default } from "./Portfolio";
+export { default, getServerSideProps } from "./Portfolio";

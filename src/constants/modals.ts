@@ -92,3 +92,10 @@ export const gameDetailsGridProps = {
   py: 1,
   sx: { borderBottom: "1px solid gray" },
 };
+
+export const intlFormatStyle = {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 4,
+  // minimumSignificantDigits: 1,
+  // maximumSignificantDigits: 10,
+};

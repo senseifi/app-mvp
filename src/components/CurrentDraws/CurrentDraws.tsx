@@ -17,17 +17,18 @@ import seiCoin from "../../assets/sei-coin.png";
 import Image from "next/image";
 import { grey } from "@mui/material/colors";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Draw } from "@/types/customTypes";
+import { Draw, PoolStats, showNotiFunction } from "@/types/customTypes";
 import FlipClockCountdown from "@leenguyen/react-flip-clock-countdown";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import { Info, Person, Undo } from "@mui/icons-material";
-import { gameDetailsGridProps } from "@/constants/modals";
+import { gameDetailsGridProps, intlFormatStyle } from "@/constants/modals";
 import { calculateTickets, nsToSecs, toAU } from "@/utils";
-import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
 import Loader from "../Loader/Loader";
+import { fetchStats } from "@/pages/api/nllStats";
+import { useCosmWasmClient, useWallet } from "sei-js/packages/react/dist";
 
 const ITEM_HEIGHT = 48;
 
@@ -50,9 +51,10 @@ const CurrentDraws = ({
   onWithdrawClick: Function;
   onCheckDrawClick: Function;
   onClaimWithdrawalClick: Function;
-  showNotif: Function;
+  showNotif: showNotiFunction;
 }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const wallet = useWallet();
 
   //Withdraw button for compact UI and encouraging people to keep playing
 
@@ -76,13 +78,7 @@ const CurrentDraws = ({
   //After clicking withdraw, once the amount is available
   const [claimAvailable, setClaimAvailable] = useState(false);
 
-  const [stats, setStats] = useState<{
-    totalDeposit: string;
-    totalTickets: string;
-    numDepositors: string;
-    userDeposit: undefined | string;
-    userTickets: undefined | string;
-  }>({
+  const [stats, setStats] = useState<PoolStats>({
     totalDeposit: "",
     totalTickets: "",
     numDepositors: "",
@@ -90,78 +86,15 @@ const CurrentDraws = ({
     userTickets: undefined,
   });
 
-  const fetchStats = async () => {
-    try {
-      setIsLoading(true);
-
-      const client = await chain.getCosmWasmClient();
-
-      const contract = new SenseifiStakingNllQueryClient(
-        client,
-        seiStakingNLLContract
-      );
-
-      const [params, globalState] = await Promise.all([
-        contract.getParams(),
-        contract.getGlobalState(),
-      ]);
-
-      const totalTickets = BigInt(globalState.total_tickets);
-      const totalStake = BigInt(globalState.total_stake);
-      const numDepositors = globalState.num_stakers;
-      const lastUpdateTime = BigInt(nsToSecs(globalState.last_update_time));
-      const gameStartTime = BigInt(nsToSecs(globalState.game_start_time));
-      const currentTime = BigInt(Math.floor(Date.now() / 1000));
-
-      const newTotalTickets = calculateTickets(
-        totalTickets,
-        totalStake,
-        lastUpdateTime,
-        gameStartTime,
-        gameStartTime + BigInt(gameDurationSecs)
-      );
-
-      let newUserTickets: BigInt | undefined = undefined;
-      let userStake: BigInt | undefined = undefined;
-
-      if (chain.address) {
-        const userState = await contract.getUserState({ user: chain.address });
-
-        const totalTickets = BigInt(userState.total_tickets);
-        const totalStake = BigInt(userState.total_stake);
-        const lastUpdateTime = BigInt(nsToSecs(userState.last_update_time));
-
-        userStake = totalStake;
-        newUserTickets = calculateTickets(
-          totalTickets,
-          totalStake,
-          lastUpdateTime,
-          gameStartTime,
-          gameStartTime + BigInt(gameDurationSecs)
-        );
-      }
-
-      setStats({
-        totalDeposit: totalStake.toString(),
-        totalTickets: newTotalTickets.toString(),
-        numDepositors: numDepositors,
-        userDeposit: userStake?.toString(),
-        userTickets: newUserTickets?.toString(),
-      });
-
-      setShowDetails(true);
-    } catch (e) {
-      let errorMsg = "";
-      if (typeof e === "string") {
-        errorMsg = e.toUpperCase();
-      } else if (e instanceof Error) {
-        errorMsg = e.message;
-      }
-
-      showNotif(errorMsg, "error");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleFetchStats = () => {
+    fetchStats(
+      showNotif,
+      setIsLoading,
+      setStats,
+      setShowDetails,
+      client,
+      wallet
+    );
   };
 
   if (!notActive) {
@@ -169,26 +102,64 @@ const CurrentDraws = ({
       <>
         <Box
           justifyContent="center"
-          mx={isSmallScreen ? "auto" : 2}
+          ml={isSmallScreen ? "auto" : ""}
+          mr={isSmallScreen ? "auto" : 3}
           my={2}
           border="2px solid"
           borderRadius={3}
           borderColor={theme.palette.secondary.main}
           position={"relative"}
           overflow={"hidden"}
+          width={isSmallScreen ? "100%" : "auto"}
+          minWidth={isSmallScreen ? "" : 300}
         >
           {isLoading && <Loader />}
           {draw?.active ? (
-            <Box textAlign="end" height={10} position="absolute" right={0}>
-              <IconButton
-                aria-label="more"
-                color="secondary"
-                sx={{ p: 0.5 }}
-                onClick={fetchStats}
+            <>
+              <Box
+                onClick={handleFetchStats}
+                textAlign="end"
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                  borderBottomLeftRadius: 10,
+                  width: `50px`,
+                  height: `50px`,
+
+                  // borderTop: `50px solid #FFDB2C`,
+                  borderLeft: `50px solid transparent`,
+                }}
               >
-                <Info />
-              </IconButton>
-            </Box>
+                {/* <IconButton
+                  aria-label="more"
+                  color="secondary"
+                  sx={{ p: 0.5 }}
+                  onClick={fetchStats}
+                >
+                  <Info />
+                </IconButton> */}
+              </Box>
+              <Box
+                onClick={handleFetchStats}
+                textAlign="end"
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                  borderRadius: ` 0% 0% 0% 30% / 0% 0% 0% 30% `,
+                  width: `50px`,
+                  height: `50px`,
+                  borderLeft: "1px solid",
+                  borderBottom: "1px solid",
+                  backgroundImage: `linear-gradient(45deg,#FFF 10%,#071428 50%,#FFDB2C 80%)`,
+                  "&:hover": {
+                    width: `60px`,
+                    height: `60px`,
+                    backgroundImage: `linear-gradient(45deg,#FFF 20%,#071428 50%,#FFDB2C 65%)`,
+                    transition: "all 0.1s ease-in-out",
+                  },
+                }}
+              />
+            </>
           ) : null}
           {showDetails && (
             <Box
@@ -196,7 +167,7 @@ const CurrentDraws = ({
               borderRadius={3}
               sx={{
                 position: "absolute",
-                zIndex: 999999,
+                zIndex: 999,
                 width: "100%",
                 height: "100%",
               }}
@@ -229,12 +200,16 @@ const CurrentDraws = ({
               <Grid container my={1}>
                 <Grid {...gameDetailsGridProps}>
                   <Typography>No. of Depositors:</Typography>
-                  <Typography>{stats.numDepositors}</Typography>
+                  <Typography>
+                    {Intl.NumberFormat("en-US").format(
+                      Number(stats.numDepositors)
+                    )}
+                  </Typography>
                 </Grid>
                 <Grid {...gameDetailsGridProps}>
                   <Typography>Total Deposit:</Typography>
                   <Typography>
-                    {Intl.NumberFormat("en-US").format(
+                    {Intl.NumberFormat("en-US", intlFormatStyle).format(
                       toAU(stats.totalDeposit)
                     )}{" "}
                     Sei
@@ -243,7 +218,7 @@ const CurrentDraws = ({
                 <Grid {...gameDetailsGridProps}>
                   <Typography>Total Tickets:</Typography>
                   <Typography>
-                    {Intl.NumberFormat("en-US").format(
+                    {Intl.NumberFormat("en-US", intlFormatStyle).format(
                       toAU(stats.totalTickets)
                     )}
                   </Typography>
@@ -301,14 +276,20 @@ const CurrentDraws = ({
             >
               <Typography>Grand Prize:&nbsp;</Typography>
               <Typography fontWeight="bold">
-                {draw === undefined ? "" : toAU(draw.prize)}
+                {draw === undefined
+                  ? ""
+                  : Intl.NumberFormat("en-US", intlFormatStyle).format(
+                      toAU(draw.prize)
+                    )}
               </Typography>
             </Grid>
             {draw?.totDeposit !== undefined ? (
               <Grid container px={3} justifyContent="center">
                 <Typography>Total Deposits:&nbsp;</Typography>
                 <Typography fontWeight="bold" mb={2}>
-                  {toAU(draw.totDeposit)}
+                  {Intl.NumberFormat("en-US", intlFormatStyle).format(
+                    toAU(draw.totDeposit)
+                  )}
                 </Typography>
               </Grid>
             ) : (
@@ -329,22 +310,26 @@ const CurrentDraws = ({
                 color: theme.palette.secondary.main,
               }}
               digitBlockStyle={{
-                width: 20,
-                height: 30,
+                width: 25,
+                height: 35,
                 fontSize: 20,
                 color: theme.palette.primary.main,
                 background: theme.palette.secondary.main,
               }}
-              dividerStyle={{ color: theme.palette.primary.main, height: 1 }}
+              dividerStyle={{
+                color: `${theme.palette.primary.main}A0`,
+                height: 1,
+              }}
               separatorStyle={{
                 color: theme.palette.secondary.main,
                 size: "4px",
               }}
               duration={0.5}
+              style={{ justifyContent: "space-between" }}
             />
             <Grid container spacing={1} marginTop={2} justifyContent="center">
               {draw?.active ? (
-                <Grid item xs={10} md={10}>
+                <Grid item xs={10.5} md={10.5}>
                   <Button
                     variant="yellowFill"
                     size="small"
@@ -356,12 +341,12 @@ const CurrentDraws = ({
                   </Button>
                 </Grid>
               ) : (
-                <Grid item xs={10} md={10}>
+                <Grid item xs={12} md={12}>
                   <Button
                     variant="yellowBorder"
                     size="small"
                     fullWidth
-                    sx={{ fontSize: "0.875rem" }}
+                    sx={{ fontSize: ".875rem" }}
                     onClick={() =>
                       onCheckDrawClick(draw === undefined ? "" : draw.id)
                     }
@@ -371,7 +356,12 @@ const CurrentDraws = ({
                 </Grid>
               )}
               {draw?.active && (
-                <Grid item xs={2} md={2} sx={{ paddingLeft: "0 !important" }}>
+                <Grid
+                  item
+                  xs={1.5}
+                  md={1.5}
+                  sx={{ paddingLeft: "0 !important" }}
+                >
                   <IconButton
                     aria-label="more"
                     id="long-button"
@@ -380,6 +370,10 @@ const CurrentDraws = ({
                     aria-haspopup="true"
                     onClick={handleClick}
                     color="secondary"
+                    sx={{
+                      width: "100%",
+                      borderRadius: "0.5rem",
+                    }}
                   >
                     {claimAvailable ? (
                       <Badge badgeContent="!" color="tertiary">

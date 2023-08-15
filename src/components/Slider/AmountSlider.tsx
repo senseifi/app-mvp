@@ -56,12 +56,13 @@ const AmountSlider = ({
       </Typography>
       <Grid container spacing={2} alignItems="center">
         <Grid item>
-          <Box width={25}>
+          <Box>
             <Image
               alt="stake coin icon"
-              width={50}
-              height={50}
+              width={30}
+              height={30}
               src={getTokenImg(tokenDenom)}
+              style={{ padding: "0.2rem", marginBottom: "0.5rem" }}
             />
           </Box>
         </Grid>

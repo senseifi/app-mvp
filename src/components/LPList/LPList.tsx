@@ -12,15 +12,16 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
 import { MoreVert, SwapHoriz } from "@mui/icons-material";
 import "@fontsource/work-sans/600.css";
+
 import PoolText from "../PoolText/PoolText";
 
 import timeRemaining from "../TimeRemaining";
 import Image from "next/image";
 import { PoolList } from "@/types/customTypes";
-import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import {
   SenseifiStakingPoolClient,
@@ -28,16 +29,15 @@ import {
 } from "@/contract_clients/SenseifiStakingPool.client";
 import { StdFee, coin } from "@cosmjs/amino";
 import { getTokenImg, toAU, toSU } from "@/utils";
+import { intlFormatStyle } from "@/constants/modals";
+
+import {
+  useCosmWasmClient,
+  useWallet,
+  useSigningCosmWasmClient,
+} from "sei-js/packages/react/dist";
 
 const ITEM_HEIGHT = 48;
-
-//token to usd exchange rates: 1 token = x USD
-//token1
-type Token = "sei" | "sen" | "pepe";
-interface EarningsBreakdown {
-  earnAmt1: number; //quantity in earn1 tokens (not USD)
-  earnAmt2?: number; //quantity in earn2 tokens (not USD)
-}
 
 const exchangeRates: Record<string, number> = {
   sei: 0.5,
@@ -75,7 +75,10 @@ const LPList = ({
   onClickWithdraw: Function;
   onClickClaim: Function;
 }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const { signingCosmWasmClient } = useSigningCosmWasmClient();
+  const wallet = useWallet();
+
   const theme: Theme = useTheme();
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -84,32 +87,6 @@ const LPList = ({
 
   let time = timeRemaining(endTime);
   const ICON_WIDTH = isSmallScreen ? 45 : 50;
-  //calculate rewards in earn1 and earn2
-  // const rewardsCalc = () => {
-  //   const dailyReturnPercent = apr / 365;
-  //   const stakeConverted = 45 * exchangeRates[stake];
-  //   const dailyReturnAmt = (dailyReturnPercent / 100) * stakeConverted;
-
-  //   if (
-  //     earn2 === undefined ||
-  //     distributionRatio === undefined //second condition added to quiet ts-check
-  //   ) {
-  //     const earnings: EarningsBreakdown = {
-  //       earnAmt1: dailyReturnAmt * exchangeRates[earn1],
-  //     };
-  //     return earnings;
-  //   } else {
-  //     const earnings: EarningsBreakdown = {
-  //       earnAmt1:
-  //         (dailyReturnAmt * (1 - distributionRatio)) / exchangeRates[earn1],
-  //       earnAmt2: (dailyReturnAmt * distributionRatio) / exchangeRates[earn2],
-  //     };
-  //     return earnings;
-  //   }
-  // };
-
-  // const { earnAmt1, earnAmt2 } = rewardsCalc();
-  // const [userState, setUserState] = useState<UserState | undefined>(undefined);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -121,14 +98,13 @@ const LPList = ({
   };
 
   const supplyRewards = async () => {
-    if (chain.address === undefined) return;
+    if (wallet.accounts[0]?.address === undefined) return;
+    if (signingCosmWasmClient === undefined) return;
 
     try {
-      const client = await chain.getSigningCosmWasmClient();
-
       const contract = new SenseifiStakingPoolClient(
-        client,
-        chain.address,
+        signingCosmWasmClient,
+        wallet.accounts[0]?.address,
         address
       );
 
@@ -283,10 +259,14 @@ const LPList = ({
               body={apr != undefined ? `${apr}%` : "- %"}
             /> */}
           </Grid>
-          <Grid item md={2} p="0 !important">
+          <Grid item md={3} p="0 !important">
             <PoolText
               header="TVL"
-              body={toAU(tvl) + " " + stakePretty.toUpperCase()}
+              body={
+                Intl.NumberFormat("en-US", intlFormatStyle).format(toAU(tvl)) +
+                " " +
+                stakePretty.toUpperCase()
+              }
             />
           </Grid>
           <Grid item md={1.2} p="0 !important">

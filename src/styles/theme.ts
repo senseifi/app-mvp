@@ -1,4 +1,5 @@
 import { PaletteMode, createTheme } from "@mui/material";
+import "@fontsource/work-sans";
 import "@fontsource/work-sans/500.css";
 import "@fontsource/work-sans/600.css";
 
@@ -146,10 +147,11 @@ const createAppTheme = (mode: PaletteMode) =>
               textTransform: "uppercase",
               backgroundColor: yellow,
               color: navyBlue,
-
+              border: `2px solid ${yellow}`,
               "&:hover": {
                 color: mode === "light" ? navyBlue : yellow,
                 backgroundColor: "rgba(255, 219, 44, 0.2)",
+                borderColor: "transparent",
               },
             },
           },
@@ -160,6 +162,8 @@ const createAppTheme = (mode: PaletteMode) =>
         styleOverrides: {
           root: {
             fontSize: "1rem",
+            // maxWidth: "300px",
+            padding: "1rem 1.2rem",
             "@media (max-width: 600px)": {
               fontSize: "0.875rem",
               padding: "10px",
@@ -191,6 +195,28 @@ const createAppTheme = (mode: PaletteMode) =>
           },
         },
       },
+
+      MuiSelect: {
+        styleOverrides: {
+          select: {
+            padding: "10px 16px",
+          },
+        },
+      },
+      MuiMenu: {
+        styleOverrides: {
+          list: {
+            "& .Mui-selected": {
+              backgroundColor: "rgba(7, 20, 40, 0.16)",
+            },
+          },
+          paper: {
+            boxShadow: "0 0 2px 0 black",
+            borderRadius: 8,
+          },
+        },
+      },
+
       MuiAlert: {
         styleOverrides: {
           root: {

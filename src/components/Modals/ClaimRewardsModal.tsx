@@ -24,7 +24,6 @@ import { Close, Help } from "@mui/icons-material";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import { modalProps } from "@/constants/modals";
 
-import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import { coin, StdFee } from "@cosmjs/amino";
 import { toAU, toSU } from "@/utils";
@@ -36,6 +35,11 @@ import {
   SenseifiStakingPoolQueryClient,
 } from "@/contract_clients/SenseifiStakingPool.client";
 import { SenseifiSingleRewardStakingPoolQueryClient } from "@/contract_clients/SenseifiSingleRewardStakingPool.client";
+import {
+  useCosmWasmClient,
+  useWallet,
+  useSigningCosmWasmClient,
+} from "sei-js/packages/react/dist";
 
 const style = {
   position: "absolute",
@@ -61,7 +65,9 @@ const ClaimRewardsModal = ({
   showNotif: Function;
   updatePoolData: Function;
 }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const { signingCosmWasmClient } = useSigningCosmWasmClient();
+  const wallet = useWallet();
 
   //reset states and close modal
   const handleClose = () => {
@@ -80,12 +86,12 @@ const ClaimRewardsModal = ({
 
   useEffect(() => {
     (async function () {
-      if (chain.address === undefined) return;
+      if (wallet.accounts[0]?.address === undefined) return;
+      if (client === undefined) return;
 
       try {
         setIsLoading(true);
 
-        const client = await chain.getCosmWasmClient();
         let isDisabled = false;
         let rewardStr = "";
 
@@ -95,7 +101,9 @@ const ClaimRewardsModal = ({
             poolList.address
           );
 
-          const stake = await contract.getUserState({ user: chain.address });
+          const stake = await contract.getUserState({
+            user: wallet.accounts[0]?.address,
+          });
 
           isDisabled = toAU(stake.reward) == 0;
 
@@ -107,7 +115,7 @@ const ClaimRewardsModal = ({
           );
 
           const [stake] = await Promise.all([
-            contract.getLatestReward({ user: chain.address }),
+            contract.getLatestReward({ user: wallet.accounts[0]?.address }),
           ]);
 
           isDisabled = toAU(stake[0]) == 0 && toAU(stake[1]) == 0;
@@ -133,19 +141,18 @@ const ClaimRewardsModal = ({
         setIsLoading(false);
       }
     })();
-  }, [chain.address, poolList]);
+  }, [wallet.accounts[0]?.address, poolList, client]);
 
   const claimRewards = async () => {
-    if (chain.address === undefined) return;
+    if (wallet.accounts[0]?.address === undefined) return;
+    if (signingCosmWasmClient === undefined) return;
 
     try {
       setIsLoading(true);
 
-      const client = await chain.getSigningCosmWasmClient();
-
       const contract = new SenseifiStakingPoolClient(
-        client,
-        chain.address,
+        signingCosmWasmClient,
+        wallet.accounts[0]?.address,
         poolList.address
       );
 
@@ -196,7 +203,7 @@ const ClaimRewardsModal = ({
               sx={{
                 width: isSmallScreen ? "100%" : 400,
                 bgcolor: theme.palette.primary.main,
-                borderRadius: 2,
+                borderRadius: 4,
                 border: "4px solid",
                 borderColor: theme.palette.tertiary.main,
                 boxShadow: "0px 0px 24px #FFF",

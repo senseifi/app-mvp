@@ -1,3 +1,6 @@
+import { intlFormatStyle } from "@/constants/modals";
+import { Draw } from "@/types/customTypes";
+import { toAU } from "@/utils";
 import {
   Box,
   Table,
@@ -34,7 +37,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const WinnerHistory = () => {
+const WinnerHistory = ({ drawList }: { drawList: Draw[] }) => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -52,101 +55,69 @@ const WinnerHistory = () => {
           Winner History
         </Typography>
         <TableContainer>
-          {!isSmallScreen ? (
+          {
             /* Longer format for standard screens */
             <Table>
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>Transaction ID</StyledTableCell>
-                  <StyledTableCell>Date/Time</StyledTableCell>
-                  <StyledTableCell>Winner</StyledTableCell>
                   <StyledTableCell>Round</StyledTableCell>
+                  <StyledTableCell>Prize</StyledTableCell>
+                  <StyledTableCell>Winner</StyledTableCell>
                 </TableRow>
               </TableHead>
 
               <TableBody>
                 {
                   //winners.slice(0, listLength).map((winner) =>
-                  winners.map((winner) => (
-                    <StyledTableRow key={winners.indexOf(winner)}>
-                      {/* first 4 and last 4 characters of TxID */}
-                      <TableCell>
-                        {winner.transaction_id.substring(0, 4)}...
-                        {winner.transaction_id.substring(
-                          winner.transaction_id.length - 4
+                  drawList.map((draw) =>
+                    !draw.active ? (
+                      <StyledTableRow key={draw.id}>
+                        <TableCell>{draw.id}</TableCell>
+                        <TableCell>
+                          {Intl.NumberFormat("en-US", intlFormatStyle).format(
+                            toAU(draw.prize)
+                          )}{" "}
+                          Sei
+                        </TableCell>
+                        {/* first 4 and last 4 characters of account address */}
+                        {!isSmallScreen ? (
+                          <TableCell>
+                            {draw.winner?.substring(0, 10)}.....
+                            {draw.winner?.substring(draw.winner.length - 10)}
+                          </TableCell>
+                        ) : (
+                          <TableCell>
+                            {draw.winner?.substring(0, 5)}....
+                          </TableCell>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        {<Moment unix date={winner.timestamp} />}
-                      </TableCell>
-                      {/* first 4 and last 4 characters of account address */}
-                      <TableCell>
-                        {winner.account.substring(0, 4)}...
-                        {winner.account.substring(winner.account.length - 4)}
-                      </TableCell>
-                      <TableCell>{winner.game_id}</TableCell>
-                    </StyledTableRow>
-                  ))
+                      </StyledTableRow>
+                    ) : null
+                  )
                 }
               </TableBody>
             </Table>
-          ) : (
-            /* Shorter format for smaller screens */
-
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>Tx ID</StyledTableCell>
-                  <StyledTableCell>Date</StyledTableCell>
-                  <StyledTableCell>Winner</StyledTableCell>
-                  <StyledTableCell>Round</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {winners.map((winner) => (
-                  <StyledTableRow key={winners.indexOf(winner)}>
-                    {/* first 4 and last 4 characters of TxID */}
-                    <TableCell>
-                      {winner.transaction_id.substring(0, 4)}...
-                    </TableCell>
-                    <TableCell>
-                      {
-                        <Moment
-                          unix
-                          date={winner.timestamp}
-                          format="DD MMM 'YY"
-                        />
-                      }
-                    </TableCell>
-                    {/* first 4 and last 4 characters of account address */}
-                    <TableCell>{winner.account.substring(0, 4)}...</TableCell>
-                    <TableCell>{winner.game_id}</TableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+          }
         </TableContainer>
       </Box>
     </>
   );
 };
 
-type Winner = {
-  transaction_id: String;
-  timestamp: String;
-  account: String;
-  game_id: String;
-};
+// type Winner = {
+//   transaction_id: String;
+//   timestamp: String;
+//   account: String;
+//   game_id: String;
+// };
 
-const winners: Winner[] = [
-  {
-    transaction_id:
-      "633802AE295E5DB38ECC516744BFB0858585D543850FC31C95DA03E7F7CFC1E3",
-    timestamp: "1684926120",
-    account: "sei1tzwc7x0yj4ygchfedz3x9xnjnts47p4rwhvxn6",
-    game_id: "0",
-  },
-];
+// const winners: Winner[] = [
+//   {
+//     transaction_id:
+//       "633802AE295E5DB38ECC516744BFB0858585D543850FC31C95DA03E7F7CFC1E3",
+//     timestamp: "1684926120",
+//     account: "sei1tzwc7x0yj4ygchfedz3x9xnjnts47p4rwhvxn6",
+//     game_id: "0",
+//   },
+// ];
 
 export default WinnerHistory;

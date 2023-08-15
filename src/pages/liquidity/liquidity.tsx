@@ -7,22 +7,30 @@ import LPList from "@/components/LPList/LPList";
 import { PoolList } from "@/types/customTypes";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { chainName, rpcEndpoint } from "@/config/sei";
-import { SenseifiStakingPoolQueryClient } from "@/contract_clients/SenseifiStakingPool.client";
-import { stakingContracts } from "@/config/contracts";
-import {
-  GlobalState,
-  Params,
-  UserState,
-} from "@/contract_clients/SenseifiStakingPool.types";
-import { getPrettyDenom, nsToSecs } from "@/utils";
+
 import StakingDepositModal from "@/components/Modals/StakingDepositModal";
-import { useChain } from "@cosmos-kit/react";
 import StakingWithdrawModal from "@/components/Modals/StakingWithdrawModal";
 import ClaimRewardsModal from "@/components/Modals/ClaimRewardsModal";
-import { SenseifiSingleRewardStakingPoolQueryClient } from "@/contract_clients/SenseifiSingleRewardStakingPool.client";
+
+import { fetchUserStateForPool } from "../api/userStatePool";
+import { fetchPoolDataForPool } from "../api/poolData";
+import { fetchStakingPools } from "../api/fetchStakingPools";
+import {
+  useCosmWasmClient,
+  useWallet,
+  useSigningCosmWasmClient,
+} from "sei-js/packages/react/dist";
 
 const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const { signingCosmWasmClient } = useSigningCosmWasmClient();
+  const wallet = useWallet();
+
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+
+  useEffect(() => {
+    setIsWalletConnected(wallet.connectedWallet !== undefined);
+  }, [wallet.connectedWallet]);
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -41,7 +49,7 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
   };
 
   const onClickDeposit = (index: number) => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -51,7 +59,7 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
   };
 
   const onClickWithdraw = (index: number) => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -61,7 +69,7 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
   };
 
   const onClickClaim = (index: number) => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -74,149 +82,26 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
 
   useEffect(() => {
     setPoolList(stakingPools);
-  }, [stakingPools]);
-
-  const fetchUserState = async (index: number) => {
-    try {
-      let total_stake: string | undefined;
-
-      if (chain.address === undefined) {
-        total_stake = undefined;
-      } else {
-        const client = await chain.getCosmWasmClient();
-
-        if (!poolList[index].multiReward) {
-          const contract = new SenseifiSingleRewardStakingPoolQueryClient(
-            client,
-            poolList[index].address
-          );
-
-          const userState = await contract.getUserState({
-            user: chain.address,
-          });
-
-          total_stake = userState.total_stake;
-        } else {
-          const contract = new SenseifiStakingPoolQueryClient(
-            client,
-            poolList[index].address
-          );
-
-          const userState = await contract.getUserState({
-            user: chain.address,
-          });
-
-          total_stake = userState.total_stake;
-        }
-      }
-
-      console.log(total_stake);
-
-      setPoolList((v) => {
-        const temp = [...v];
-        const pool = temp[index];
-        pool.userState = total_stake != undefined ? { total_stake } : undefined;
-        temp[index] = pool;
-        return temp;
-      });
-    } catch (e) {
-      let errorMsg = "";
-      if (typeof e === "string") {
-        errorMsg = e.toUpperCase();
-      } else if (e instanceof Error) {
-        errorMsg = e.message;
-      }
-
-      showNotif(errorMsg, "error");
-    }
-  };
+  }, [stakingPools, wallet.accounts[0]?.address]);
 
   useEffect(() => {
-    poolList.forEach((v, i) => fetchUserState(i));
-  }, [chain.address]);
-
-  const fetchPoolData = async (index: number) => {
-    try {
-      const client = await chain.getCosmWasmClient();
-      let latestPool: PoolList;
-
-      if (!poolList[index].multiReward) {
-        const contract = new SenseifiSingleRewardStakingPoolQueryClient(
-          client,
-          poolList[index].address
-        );
-
-        const [params, globalState] = await Promise.all([
-          contract.getParams(),
-          contract.getGlobalState(),
-        ]);
-
-        latestPool = {
-          address: poolList[index].address,
-          multiReward: false,
-          stake: params.stake_denom,
-          stakePretty: getPrettyDenom(params.stake_denom),
-          earn1: params.reward_denom,
-          earn1Pretty: getPrettyDenom(params.reward_denom),
-          apr: 69,
-          tvl: globalState.total_stake,
-          endTime: nsToSecs(params.finish_time),
-          primaryEndTime: nsToSecs(params.finish_time),
-          primaryRewardRate: parseInt(params.reward_rate),
-        };
-      } else {
-        const contract = new SenseifiStakingPoolQueryClient(
-          client,
-          poolList[index].address
-        );
-
-        const [params, globalState] = await Promise.all([
-          contract.getParams(),
-          contract.getGlobalState(),
-        ]);
-
-        latestPool = {
-          address: poolList[index].address,
-          multiReward: true,
-          stake: params.stake_denom,
-          stakePretty: getPrettyDenom(params.stake_denom),
-          earn1: params.primary_reward_denom,
-          earn1Pretty: getPrettyDenom(params.primary_reward_denom),
-          earn2: params.secondary_reward_denom,
-          earn2Pretty: getPrettyDenom(params.secondary_reward_denom),
-          apr: 69,
-          tvl: globalState.total_stake,
-          endTime:
-            nsToSecs(params.primary_finish_time) <
-            nsToSecs(params.secondary_finish_time)
-              ? nsToSecs(params.secondary_finish_time)
-              : nsToSecs(params.primary_finish_time),
-          primaryEndTime: nsToSecs(params.primary_finish_time),
-          secondaryEndTime: nsToSecs(params.secondary_finish_time),
-          primaryRewardRate: parseInt(params.primary_reward_rate),
-          secondaryRewardRate: parseInt(params.secondary_reward_rate),
-        };
-      }
-
-      setPoolList((v) => {
-        const temp = [...v];
-        temp[index] = latestPool;
-        return temp;
-      });
-    } catch (e) {
-      let errorMsg = "";
-      if (typeof e === "string") {
-        errorMsg = e.toUpperCase();
-      } else if (e instanceof Error) {
-        errorMsg = e.message;
-      }
-
-      showNotif(errorMsg, "error");
-    }
-  };
+    poolList.forEach((v, i) =>
+      fetchUserStateForPool(i, poolList, setPoolList, showNotif, client, wallet)
+    );
+  }, [wallet.accounts[0]?.address]);
 
   const updatePoolData = async (index: number) => {
-    return Promise.all([fetchPoolData(index), fetchUserState(index)]);
+    return Promise.all([
+      fetchPoolDataForPool(index, poolList, setPoolList, showNotif, client),
+      fetchUserStateForPool(
+        index,
+        poolList,
+        setPoolList,
+        showNotif,
+        client,
+        wallet
+      ),
+    ]);
   };
 
   //START- notification handlers
@@ -314,71 +199,7 @@ const Liquidity = ({ stakingPools }: { stakingPools: PoolList[] }) => {
 export const getServerSideProps = async () => {
   const cosmWasmClient = await CosmWasmClient.connect(rpcEndpoint);
 
-  const stakingPools: PoolList[] = [];
-
-  for (let i in stakingContracts) {
-    const ctcAddr = stakingContracts[i].address;
-    const multiReward = stakingContracts[i].multiReward;
-    let poolList: PoolList;
-
-    if (!multiReward) {
-      const contract = new SenseifiSingleRewardStakingPoolQueryClient(
-        cosmWasmClient,
-        ctcAddr
-      );
-
-      const [params, globalState] = await Promise.all([
-        contract.getParams(),
-        contract.getGlobalState(),
-      ]);
-
-      poolList = {
-        address: ctcAddr,
-        multiReward: false,
-        stake: params.stake_denom,
-        stakePretty: getPrettyDenom(params.stake_denom),
-        earn1: params.reward_denom,
-        earn1Pretty: getPrettyDenom(params.reward_denom),
-        tvl: globalState.total_stake,
-        endTime: nsToSecs(params.finish_time),
-        primaryEndTime: nsToSecs(params.finish_time),
-        primaryRewardRate: parseInt(params.reward_rate),
-      };
-    } else {
-      const contract = new SenseifiStakingPoolQueryClient(
-        cosmWasmClient,
-        ctcAddr
-      );
-
-      const [params, globalState] = await Promise.all([
-        contract.getParams(),
-        contract.getGlobalState(),
-      ]);
-
-      poolList = {
-        address: ctcAddr,
-        multiReward: true,
-        stake: params.stake_denom,
-        stakePretty: getPrettyDenom(params.stake_denom),
-        earn1: params.primary_reward_denom,
-        earn1Pretty: getPrettyDenom(params.primary_reward_denom),
-        earn2: params.secondary_reward_denom,
-        earn2Pretty: getPrettyDenom(params.secondary_reward_denom),
-        tvl: globalState.total_stake,
-        endTime:
-          nsToSecs(params.primary_finish_time) <
-          nsToSecs(params.secondary_finish_time)
-            ? nsToSecs(params.secondary_finish_time)
-            : nsToSecs(params.primary_finish_time),
-        primaryEndTime: nsToSecs(params.primary_finish_time),
-        secondaryEndTime: nsToSecs(params.secondary_finish_time),
-        primaryRewardRate: parseInt(params.primary_reward_rate),
-        secondaryRewardRate: parseInt(params.secondary_reward_rate),
-      };
-    }
-
-    stakingPools.push(poolList);
-  }
+  const stakingPools = await fetchStakingPools(cosmWasmClient);
 
   return {
     props: {

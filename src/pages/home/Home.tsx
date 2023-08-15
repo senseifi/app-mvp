@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 import styles from "@/styles/Home.module.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -35,7 +35,10 @@ import {
 import { nsToSecs, toAU, bigIntMax } from "@/utils";
 
 import Notification from "@/components/Notification/Notification";
-import { useChain } from "@cosmos-kit/react";
+import { intlFormatStyle } from "@/constants/modals";
+import { fetchNllState } from "../api/fetchNllState";
+
+import { useWallet } from "sei-js/packages/react/dist";
 
 const Home = ({
   params,
@@ -48,7 +51,13 @@ const Home = ({
   totalRewards: string;
   pastGamesStates: GameState[];
 }) => {
-  const chain = useChain(chainName);
+  const wallet = useWallet();
+
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+
+  useEffect(() => {
+    setIsWalletConnected(wallet.connectedWallet !== undefined);
+  }, [wallet.connectedWallet]);
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -78,6 +87,7 @@ const Home = ({
       winner: v.winner,
       prizeClaimed: v.prize_claimed,
     };
+
     return draw;
   });
 
@@ -97,7 +107,7 @@ const Home = ({
       : undefined;
 
   const onWithdrawClick = () => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -106,7 +116,7 @@ const Home = ({
   };
 
   const onEnterNowClick = () => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -116,7 +126,7 @@ const Home = ({
 
   const onCheckDrawClick = (gameID: string | undefined) => {
     if (gameID === undefined) return;
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -125,7 +135,7 @@ const Home = ({
   };
 
   const onClaimWithdrawalClick = () => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -235,17 +245,6 @@ const Home = ({
                       {isSmallScreen ? "Enter" : "Enter to Win"}
                     </Button>
                   </Grid>
-                  <Grid xs={12} md={6}>
-                    <Button
-                      variant="yellowBorder"
-                      size="large"
-                      fullWidth
-                      disabled={lastPastGameID === undefined}
-                      onClick={() => onCheckDrawClick(lastPastGameID)}
-                    >
-                      Check Draw
-                    </Button>
-                  </Grid>
                 </Grid>
               </Box>
               <CountdownDisplay
@@ -269,7 +268,12 @@ const Home = ({
               <Box textAlign="center" marginTop={5}>
                 <Box>
                   <Typography fontSize={20}>Grand Prize:</Typography>
-                  <ShineButton>{toAU(grandPrize)} Sei</ShineButton>
+                  <ShineButton>
+                    {Intl.NumberFormat("en-US", intlFormatStyle).format(
+                      toAU(grandPrize)
+                    )}{" "}
+                    Sei
+                  </ShineButton>
                 </Box>
 
                 <Grid
@@ -280,7 +284,10 @@ const Home = ({
                 >
                   <Typography fontSize={20}>Total Deposits:</Typography>
                   <Typography fontSize={30}>
-                    {toAU(globalState.total_stake)} Sei
+                    {Intl.NumberFormat("en-US", intlFormatStyle).format(
+                      toAU(globalState.total_stake)
+                    )}{" "}
+                    Sei
                   </Typography>
                 </Grid>
               </Box>
@@ -324,7 +331,7 @@ const Home = ({
           </Grid>
         </Box>
         <Box component="section" mb={10}>
-          <WinnerHistory />
+          <WinnerHistory drawList={currentDraws} />
         </Box>
       </Box>
     </>
@@ -333,26 +340,9 @@ const Home = ({
 
 export const getServerSideProps = async () => {
   const cosmWasmClient = await CosmWasmClient.connect(rpcEndpoint);
+  const nllGameState = await fetchNllState(cosmWasmClient);
 
-  const contract = new SenseifiStakingNllQueryClient(
-    cosmWasmClient,
-    seiStakingNLLContract
-  );
-
-  const [params, globalState, totalRewards] = await Promise.all([
-    contract.getParams(),
-    contract.getGlobalState(),
-    contract.getTotalRewards(),
-  ]);
-
-  const pastGamesStates: GameState[] = [];
-  const numPastGames = BigInt(globalState.game_counter) - BigInt(1);
-
-  for (let i = BigInt(0); i < numPastGames; i++) {
-    pastGamesStates.push(await contract.getGameState({ gameId: i.toString() }));
-  }
-
-  return { props: { params, globalState, totalRewards, pastGamesStates } };
+  return { props: nllGameState };
 };
 
 export default Home;

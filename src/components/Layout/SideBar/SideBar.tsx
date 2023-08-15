@@ -19,8 +19,9 @@ import {
   IntegrationInstructions,
   WaterDrop,
 } from "@mui/icons-material";
-import { Box, Button, Grid, useMediaQuery } from "@mui/material";
+import { Box, Button, Grid, Typography, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/router";
+import DarkModeToggle from "@/components/DarkModeToggle/DarkModeToggle";
 
 const SideBar = () => {
   const theme: Theme = useTheme();
@@ -96,6 +97,7 @@ const SideBar = () => {
           }}
         >
           <MenuItem
+            onClick={() => toggleSidebar(false)}
             icon={<Home />}
             component={<Link href="/home" />}
             rootStyles={
@@ -113,36 +115,20 @@ const SideBar = () => {
             Home
           </MenuItem>
           <MenuItem
+            // onClick={() => toggleSidebar(false)}
             icon={<WaterDrop />}
-            component={<Link href="/liquidity" />}
-            rootStyles={
-              router.pathname == "/liquidity"
-                ? {
-                    borderRadius: "10px",
-                    backgroundColor: themePalette.secondary.main,
-                    "& span": {
-                      color: themePalette.primary.main,
-                    },
-                  }
-                : {}
-            }
-          >
-            Liquidity
-          </MenuItem>
-          <MenuItem
-            icon={<AccountBalanceWallet />}
-            // component={<Link href="/portfolio" />}
-            // rootStyles={
-            //   router.pathname == "/portfolio"
-            //     ? {
-            //         borderRadius: "10px",
-            //         backgroundColor: themePalette.secondary.main,
-            //         "& span": {
-            //           color: themePalette.primary.main,
-            //         },
-            //       }
-            //     : {}
-            // }
+            // component={<Link href={"/liquidity"} />}
+            // // rootStyles={
+            // //   router.pathname == "/liquidity"
+            // //     ? {
+            // //         borderRadius: "10px",
+            // //         backgroundColor: themePalette.secondary.main,
+            // //         "& span": {
+            // //           color: themePalette.primary.main,
+            // //         },
+            // //       }
+            // //     : {}
+            // // }
           >
             <Grid
               container
@@ -150,7 +136,7 @@ const SideBar = () => {
               justifyContent="space-between"
               alignItems="center"
             >
-              <Grid item>Portfolio</Grid>
+              <Grid>Liquidity</Grid>
               <Grid
                 item
                 sx={{
@@ -164,6 +150,24 @@ const SideBar = () => {
                 SOON
               </Grid>
             </Grid>
+          </MenuItem>
+          <MenuItem
+            onClick={() => toggleSidebar(false)}
+            icon={<AccountBalanceWallet />}
+            component={<Link href="/portfolio" />}
+            rootStyles={
+              router.pathname == "/portfolio"
+                ? {
+                    borderRadius: "10px",
+                    backgroundColor: themePalette.secondary.main,
+                    "& span": {
+                      color: themePalette.primary.main,
+                    },
+                  }
+                : {}
+            }
+          >
+            Portfolio
           </MenuItem>
           <MenuItem
             icon={<EmojiEvents />}
@@ -191,7 +195,7 @@ const SideBar = () => {
               </Grid>
             </Grid>
           </MenuItem>
-          <MenuItem
+          {/* <MenuItem
             icon={<IntegrationInstructions />}
             //component={<Link to="developers" />}
             // eslint-disable-next-line
@@ -216,34 +220,36 @@ const SideBar = () => {
                 SOON
               </Grid>
             </Grid>
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem
+            onClick={() => toggleSidebar(false)}
             icon={<Error />}
-            //component={<Link to="help" />}
-            // eslint-disable-next-line
+            component={<Link href="/help" />}
+            rootStyles={
+              router.pathname == "/help"
+                ? {
+                    borderRadius: "10px",
+                    backgroundColor: themePalette.secondary.main,
+                    "& span": {
+                      color: themePalette.primary.main,
+                    },
+                  }
+                : {}
+            }
           >
-            <Grid
-              container
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Grid item>Help</Grid>
-              <Grid
-                item
-                sx={{
-                  fontSize: "10px",
-                  px: 1,
-                  backgroundColor: "#ffdc2c6e",
-                  border: "1px solid #FFDB2C",
-                  borderRadius: "5px",
-                }}
-              >
-                SOON
-              </Grid>
-            </Grid>
+            Help
           </MenuItem>
         </Menu>
+        {isSmallScreen ? (
+          <Box
+            sx={{
+              mt: 10,
+              px: 3,
+            }}
+          >
+            <DarkModeToggle />
+          </Box>
+        ) : null}
       </Sidebar>
     </Box>
   );
