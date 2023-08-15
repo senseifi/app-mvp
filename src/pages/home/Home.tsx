@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 import styles from "@/styles/Home.module.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -35,9 +35,10 @@ import {
 import { nsToSecs, toAU, bigIntMax } from "@/utils";
 
 import Notification from "@/components/Notification/Notification";
-import { useChain } from "@cosmos-kit/react";
 import { intlFormatStyle } from "@/constants/modals";
 import { fetchNllState } from "../api/fetchNllState";
+
+import { useWallet } from "sei-js/packages/react/dist";
 
 const Home = ({
   params,
@@ -50,7 +51,13 @@ const Home = ({
   totalRewards: string;
   pastGamesStates: GameState[];
 }) => {
-  const chain = useChain(chainName);
+  const wallet = useWallet();
+
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+
+  useEffect(() => {
+    setIsWalletConnected(wallet.connectedWallet !== undefined);
+  }, [wallet.connectedWallet]);
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -99,7 +106,7 @@ const Home = ({
       : undefined;
 
   const onWithdrawClick = () => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -108,7 +115,7 @@ const Home = ({
   };
 
   const onEnterNowClick = () => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -118,7 +125,7 @@ const Home = ({
 
   const onCheckDrawClick = (gameID: string | undefined) => {
     if (gameID === undefined) return;
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }
@@ -127,7 +134,7 @@ const Home = ({
   };
 
   const onClaimWithdrawalClick = () => {
-    if (!chain.isWalletConnected) {
+    if (!isWalletConnected) {
       showNotif("Please connect your wallet first :)", "info");
       return;
     }

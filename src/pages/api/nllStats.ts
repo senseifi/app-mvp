@@ -3,19 +3,20 @@ import { PoolStats, showNotiFunction } from "@/types/customTypes";
 import { calculateTickets, nsToSecs, toAU } from "@/utils";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
-import { ChainContext } from "@cosmos-kit/core";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 
 export async function fetchStats(
   showNotif: showNotiFunction,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setStats: React.Dispatch<React.SetStateAction<PoolStats>>,
   setShowDetails: React.Dispatch<React.SetStateAction<boolean>>,
-  chain: ChainContext
+  client: CosmWasmClient | undefined,
+  wallet: any
 ) {
+  if (client === undefined) return;
+
   try {
     setIsLoading(true);
-
-    const client = await chain.getCosmWasmClient();
 
     const contract = new SenseifiStakingNllQueryClient(
       client,
@@ -45,8 +46,10 @@ export async function fetchStats(
     let newUserTickets: BigInt | undefined = undefined;
     let userStake: BigInt | undefined = undefined;
 
-    if (chain.address) {
-      const userState = await contract.getUserState({ user: chain.address });
+    if (wallet.connectedWallet !== undefined) {
+      const userState = await contract.getUserState({
+        user: wallet.accounts[0]?.address,
+      });
 
       const totalTickets = BigInt(userState.total_tickets);
       const totalStake = BigInt(userState.total_stake);

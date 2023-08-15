@@ -23,12 +23,12 @@ import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import { Info, Person, Undo } from "@mui/icons-material";
 import { gameDetailsGridProps, intlFormatStyle } from "@/constants/modals";
 import { calculateTickets, nsToSecs, toAU } from "@/utils";
-import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import { SenseifiStakingNllQueryClient } from "@/contract_clients/SenseifiStakingNll.client";
 import { gameDurationSecs, seiStakingNLLContract } from "@/config/contracts";
 import Loader from "../Loader/Loader";
 import { fetchStats } from "@/pages/api/nllStats";
+import { useCosmWasmClient, useWallet } from "sei-js/packages/react/dist";
 
 const ITEM_HEIGHT = 48;
 
@@ -53,7 +53,8 @@ const CurrentDraws = ({
   onClaimWithdrawalClick: Function;
   showNotif: showNotiFunction;
 }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const wallet = useWallet();
 
   //Withdraw button for compact UI and encouraging people to keep playing
 
@@ -86,7 +87,14 @@ const CurrentDraws = ({
   });
 
   const handleFetchStats = () => {
-    fetchStats(showNotif, setIsLoading, setStats, setShowDetails, chain);
+    fetchStats(
+      showNotif,
+      setIsLoading,
+      setStats,
+      setShowDetails,
+      client,
+      wallet
+    );
   };
 
   if (!notActive) {

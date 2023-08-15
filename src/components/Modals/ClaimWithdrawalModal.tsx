@@ -15,7 +15,6 @@ import { Close } from "@mui/icons-material";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import { modalProps } from "@/constants/modals";
 
-import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import {
   GlobalState,
@@ -29,6 +28,12 @@ import {
   SenseifiStakingNllQueryClient,
 } from "@/contract_clients/SenseifiStakingNll.client";
 import Loader from "../Loader/Loader";
+
+import {
+  useCosmWasmClient,
+  useWallet,
+  useSigningCosmWasmClient,
+} from "sei-js/packages/react/dist";
 
 const style = {
   position: "absolute",
@@ -52,7 +57,9 @@ const ClaimWithdrawalModal = ({
   params: Params;
   showNotif: Function;
 }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const { signingCosmWasmClient } = useSigningCosmWasmClient();
+  const wallet = useWallet();
 
   //reset states and close modal
   const handleClose = () => {
@@ -71,12 +78,10 @@ const ClaimWithdrawalModal = ({
 
   useEffect(() => {
     (async function () {
-      if (chain.address === undefined) return;
+      if (client === undefined) return;
 
       try {
         setIsLoading(true);
-
-        const client = await chain.getCosmWasmClient();
 
         const contract = new SenseifiStakingNllQueryClient(
           client,
@@ -86,7 +91,7 @@ const ClaimWithdrawalModal = ({
         const [globalState, ctcbalance, userState] = await Promise.all([
           contract.getGlobalState(),
           client.getBalance(seiStakingNLLContract, params.denom),
-          contract.getUserState({ user: chain.address }),
+          contract.getUserState({ user: wallet.accounts[0]?.address }),
         ]);
 
         setUnstakeAmount(userState.total_unstake);
@@ -118,18 +123,17 @@ const ClaimWithdrawalModal = ({
         setIsLoading(false);
       }
     })();
-  }, [chain.address, params.denom]);
+  }, [wallet.accounts[0]?.address, params.denom, client]);
 
   const claimWithdrawal = async () => {
-    if (chain.address === undefined) return;
+    if (signingCosmWasmClient === undefined) return;
+
     try {
       setIsLoading(true);
 
-      const client = await chain.getSigningCosmWasmClient();
-
       const contract = new SenseifiStakingNllClient(
-        client,
-        chain.address,
+        signingCosmWasmClient,
+        wallet.accounts[0]?.address,
         seiStakingNLLContract
       );
 

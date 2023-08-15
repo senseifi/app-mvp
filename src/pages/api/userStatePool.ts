@@ -1,7 +1,6 @@
 import { SenseifiSingleRewardStakingPoolQueryClient } from "@/contract_clients/SenseifiSingleRewardStakingPool.client";
 import { SenseifiStakingPoolQueryClient } from "@/contract_clients/SenseifiStakingPool.client";
 import { PoolList, showNotiFunction } from "@/types/customTypes";
-import { ChainContext } from "@cosmos-kit/core";
 
 export const fetchUserStateForPool = async (
   chain: ChainContext,

@@ -13,15 +13,10 @@ import { ColorModeContext } from "@/components/DarkModeToggle";
 import createAppTheme from "@/styles/theme";
 import { PaletteMode, useMediaQuery } from "@mui/material";
 
-import { ChainProvider } from "@cosmos-kit/react";
-import { chains, assets } from "chain-registry";
-import { wallets as keplrWallets } from "@cosmos-kit/keplr";
-import { wallets as leapWallets } from "@cosmos-kit/leap";
-import { wallets as coin98Wallets } from "@cosmos-kit/coin98-extension";
-import { wallets as compassWallets } from "@cosmos-kit/compass";
+import { SeiWalletProvider } from "sei-js/packages/react/dist";
+import "../components/SeiWallet/WalletSelectModal/styles.css";
 import { seiTestnet2AssetList, seiTestnet2Chain } from "@/config/sei";
 import { WalletErrorView } from "@/components/WalletModalViews/WalletErrorView";
-import { WalletConnectOptions } from "@cosmos-kit/core";
 import { WalletNotExistView } from "@/components/WalletModalViews/WalletNotExistView";
 import { wallets as finWallets } from "../FinWallet/index";
 import NextNProgress from "nextjs-progressbar";
@@ -51,25 +46,14 @@ export default function App({ Component, pageProps }: AppProps) {
     []
   );
 
-  const wc: WalletConnectOptions = {
-    signClient: { projectId: "4afa5ea436cd7a7f5995d0508c2f6a3b" },
-  };
-
   return (
-    <ChainProvider
-      chains={[...chains, seiTestnet2Chain]}
-      assetLists={[...assets, seiTestnet2AssetList]}
-      wallets={[
-        keplrWallets[0],
-        ...leapWallets,
-        ...coin98Wallets,
-        ...compassWallets,
-        ...finWallets,
-      ]}
-      wrappedWithChakra={true}
-      modalViews={{ Error: WalletErrorView, NotExist: WalletNotExistView }}
-      includeAllWalletsOnMobile={true}
-      walletConnectOptions={wc}
+    <SeiWalletProvider
+      chainConfiguration={{
+        chainId: "atlantic-2",
+        restUrl: "https://rest.atlantic-2.seinetwork.io/",
+        rpcUrl: "https://rpc.atlantic-2.seinetwork.io",
+      }}
+      wallets={["leap", "keplr", "compass", "fin"]}
     >
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
@@ -80,6 +64,6 @@ export default function App({ Component, pageProps }: AppProps) {
           </Layout>
         </ThemeProvider>
       </ColorModeContext.Provider>
-    </ChainProvider>
+    </SeiWalletProvider>
   );
 }

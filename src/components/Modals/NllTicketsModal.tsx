@@ -26,7 +26,6 @@ import "@leenguyen/react-flip-clock-countdown/dist/index.css";
 import { flipcounterProps, modalProps } from "@/constants/modals";
 import AmountSlider from "../Slider/AmountSlider";
 
-import { useChain } from "@cosmos-kit/react";
 import { chainName } from "@/config/sei";
 import {
   GlobalState,
@@ -40,6 +39,11 @@ import {
   SenseifiStakingNllQueryClient,
 } from "@/contract_clients/SenseifiStakingNll.client";
 import Loader from "../Loader/Loader";
+import {
+  useCosmWasmClient,
+  useWallet,
+  useSigningCosmWasmClient,
+} from "sei-js/packages/react/dist";
 
 const style = {
   position: "absolute",
@@ -67,7 +71,15 @@ const TicketsModal = ({
   globalState: GlobalState;
   showNotif: Function;
 }) => {
-  const chain = useChain(chainName);
+  const { cosmWasmClient: client } = useCosmWasmClient();
+  const { signingCosmWasmClient } = useSigningCosmWasmClient();
+  const wallet = useWallet();
+
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+
+  useEffect(() => {
+    setIsWalletConnected(wallet.connectedWallet !== undefined);
+  }, [wallet.connectedWallet]);
 
   //reset states and close modal
   const handleClose = () => {
@@ -85,7 +97,7 @@ const TicketsModal = ({
   const [otherValue, setOtherValue] = useState<number | undefined>();
 
   const [userBalance, setUserBalance] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [ticketFactor, setTicketFactor] = useState(BigInt(0));
   const [stakedAmount, setStakedAmount] = useState("");
 
@@ -118,21 +130,20 @@ const TicketsModal = ({
 
   useEffect(() => {
     (async function () {
-      if (chain.address === undefined) return;
+      setIsLoading(true);
+
+      if (client === undefined) return;
+      if (!isWalletConnected) return;
 
       try {
-        setIsLoading(true);
-
-        const client = await chain.getCosmWasmClient();
-
         const contract = new SenseifiStakingNllQueryClient(
           client,
           seiStakingNLLContract
         );
 
         const [balance, stake] = await Promise.all([
-          client.getBalance(chain.address, params.denom),
-          contract.getUserState({ user: chain.address }),
+          client.getBalance(wallet.accounts[0]?.address, params.denom),
+          contract.getUserState({ user: wallet.accounts[0]?.address }),
         ]);
 
         setUserBalance(balance.amount);
@@ -161,19 +172,23 @@ const TicketsModal = ({
         setIsLoading(false);
       }
     })();
-  }, [chain.address, globalState.game_start_time, params.denom]);
+  }, [
+    wallet.accounts[0]?.address,
+    globalState.game_start_time,
+    params.denom,
+    client,
+  ]);
 
   const stake = async () => {
-    if (chain.address === undefined) return;
+    if (signingCosmWasmClient === undefined) return;
+    if (!isWalletConnected) return;
 
     try {
       setIsLoading(true);
 
-      const client = await chain.getSigningCosmWasmClient();
-
       const contract = new SenseifiStakingNllClient(
-        client,
-        chain.address,
+        signingCosmWasmClient,
+        wallet.accounts[0]?.address,
         seiStakingNLLContract
       );
 
@@ -201,16 +216,19 @@ const TicketsModal = ({
   };
 
   const unstake = async () => {
-    if (chain.address === undefined || otherValue === undefined) return;
+    if (
+      !isWalletConnected ||
+      otherValue === undefined ||
+      signingCosmWasmClient === undefined
+    )
+      return;
 
     try {
       setIsLoading(true);
 
-      const client = await chain.getSigningCosmWasmClient();
-
       const contract = new SenseifiStakingNllClient(
-        client,
-        chain.address,
+        signingCosmWasmClient,
+        wallet.accounts[0]?.address,
         seiStakingNLLContract
       );
 
