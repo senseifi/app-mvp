@@ -115,22 +115,41 @@ const SideBar = () => {
             Home
           </MenuItem>
           <MenuItem
-            onClick={() => toggleSidebar(false)}
+            // onClick={() => toggleSidebar(false)}
             icon={<WaterDrop />}
-            component={<Link href={"/liquidity"} />}
-            rootStyles={
-              router.pathname == "/liquidity"
-                ? {
-                    borderRadius: "10px",
-                    backgroundColor: themePalette.secondary.main,
-                    "& span": {
-                      color: themePalette.primary.main,
-                    },
-                  }
-                : {}
-            }
+            // component={<Link href={"/liquidity"} />}
+            // // rootStyles={
+            // //   router.pathname == "/liquidity"
+            // //     ? {
+            // //         borderRadius: "10px",
+            // //         backgroundColor: themePalette.secondary.main,
+            // //         "& span": {
+            // //           color: themePalette.primary.main,
+            // //         },
+            // //       }
+            // //     : {}
+            // // }
           >
-            Liquidity
+            <Grid
+              container
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Grid>Liquidity</Grid>
+              <Grid
+                item
+                sx={{
+                  fontSize: "10px",
+                  px: 1,
+                  backgroundColor: "#ffdc2c6e",
+                  border: "1px solid #FFDB2C",
+                  borderRadius: "5px",
+                }}
+              >
+                SOON
+              </Grid>
+            </Grid>
           </MenuItem>
           <MenuItem
             onClick={() => toggleSidebar(false)}

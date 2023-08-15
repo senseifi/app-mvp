@@ -45,9 +45,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <SeiWalletProvider
       chainConfiguration={{
-        chainId: "atlantic-2",
-        restUrl: "https://rest.atlantic-2.seinetwork.io/",
-        rpcUrl: "https://rpc.atlantic-2.seinetwork.io",
+        chainId: "pacific-1",
+        restUrl: "https://sei-rest.brocha.in/",
+        rpcUrl: "https://sei-rpc.brocha.in/",
       }}
       wallets={["leap", "keplr", "compass", "fin"]}
     >
