@@ -131,7 +131,7 @@ const Portfolio = ({
         )
       );
     })();
-  }, [wallet.accounts[0]?.address, params.denom]);
+  }, [wallet.accounts[0]?.address, params.denom, client]);
 
   //START- notification handlers
   const [openNotif, setOpenNotif] = useState(false);
