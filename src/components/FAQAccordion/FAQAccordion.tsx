@@ -181,7 +181,7 @@ const FAQAccordion = () => {
       >
         <AccordionSummary aria-controls="panel5d-content" id="panel5d-header">
           <Typography>
-            How can I get involved in SenSei Fi&aposs community?
+            How can I get involved in the SenSei Fi community?
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
