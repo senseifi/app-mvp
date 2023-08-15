@@ -12,6 +12,8 @@ export const fetchStakingPools = async (
 ): Promise<PoolList[]> => {
   const stakingPools: PoolList[] = [];
 
+  if (stakingContracts.length === 0) return stakingPools;
+
   for (let i in stakingContracts) {
     const ctcAddr = stakingContracts[i].address;
     const multiReward = stakingContracts[i].multiReward;

@@ -1,7 +1,7 @@
 export const seiStakingNLLContract =
   "sei1wyh0fyhgtexa3sc7r80e7dqjpzwkhse2mj62ufdxnaaytm5rwe9qudj6y7";
 
-export const stakingContracts = [];
+export const stakingContracts: any = [];
 
 export const gameDurationSecs = 604800;
 
