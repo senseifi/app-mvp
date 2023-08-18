@@ -22,6 +22,7 @@ import {
 import { Box, Button, Grid, Typography, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/router";
 import DarkModeToggle from "@/components/DarkModeToggle/DarkModeToggle";
+import SeiChart from "@/components/SeiChart/SeiChart";
 
 const SideBar = () => {
   const theme: Theme = useTheme();
@@ -77,125 +78,126 @@ const SideBar = () => {
               }
         }
       >
-        <Menu
-          rootStyles={{
-            [`.${menuClasses.button}`]: {
-              color: themePalette.secondary.main,
-              margin: "8px 0px",
-              borderRadius: "10px",
-              "&:hover": {
-                color: themePalette.primary.main,
-                backgroundColor: themePalette.secondary.main,
-                boxShadow: "2px 4px 20px #0000001A",
+        <Box position="relative" height={isSmallScreen ? "" : "100%"}>
+          <Menu
+            rootStyles={{
+              [`.${menuClasses.button}`]: {
+                color: themePalette.secondary.main,
+                margin: "8px 0px",
+                borderRadius: "10px",
+                "&:hover": {
+                  color: themePalette.primary.main,
+                  backgroundColor: themePalette.secondary.main,
+                  boxShadow: "2px 4px 20px #0000001A",
+                },
               },
-            },
-            [`.${menuClasses.menuItemRoot}`]: {
-              margin: `${isSmallScreen ? "0 1rem" : ""}`,
-            },
+              [`.${menuClasses.menuItemRoot}`]: {
+                margin: `${isSmallScreen ? "0 1rem" : ""}`,
+              },
 
-            marginTop: "1rem",
-          }}
-        >
-          <MenuItem
-            onClick={() => toggleSidebar(false)}
-            icon={<Home />}
-            component={<Link href="/home" />}
-            rootStyles={
-              router.pathname == "/home"
-                ? {
-                    borderRadius: "10px",
-                    backgroundColor: themePalette.secondary.main,
-                    "& span": {
-                      color: themePalette.primary.main,
-                    },
-                  }
-                : {}
-            }
+              marginTop: "1rem",
+            }}
           >
-            Home
-          </MenuItem>
-          <MenuItem
-            // onClick={() => toggleSidebar(false)}
-            icon={<WaterDrop />}
-            // component={<Link href={"/liquidity"} />}
-            // // rootStyles={
-            // //   router.pathname == "/liquidity"
-            // //     ? {
-            // //         borderRadius: "10px",
-            // //         backgroundColor: themePalette.secondary.main,
-            // //         "& span": {
-            // //           color: themePalette.primary.main,
-            // //         },
-            // //       }
-            // //     : {}
-            // // }
-          >
-            <Grid
-              container
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
+            <MenuItem
+              onClick={() => toggleSidebar(false)}
+              icon={<Home />}
+              component={<Link href="/home" />}
+              rootStyles={
+                router.pathname == "/home"
+                  ? {
+                      borderRadius: "10px",
+                      backgroundColor: themePalette.secondary.main,
+                      "& span": {
+                        color: themePalette.primary.main,
+                      },
+                    }
+                  : {}
+              }
             >
-              <Grid>Liquidity</Grid>
-              <Grid
-                item
-                sx={{
-                  fontSize: "10px",
-                  px: 1,
-                  backgroundColor: "#ffdc2c6e",
-                  border: "1px solid #FFDB2C",
-                  borderRadius: "5px",
-                }}
-              >
-                SOON
-              </Grid>
-            </Grid>
-          </MenuItem>
-          <MenuItem
-            onClick={() => toggleSidebar(false)}
-            icon={<AccountBalanceWallet />}
-            component={<Link href="/portfolio" />}
-            rootStyles={
-              router.pathname == "/portfolio"
-                ? {
-                    borderRadius: "10px",
-                    backgroundColor: themePalette.secondary.main,
-                    "& span": {
-                      color: themePalette.primary.main,
-                    },
-                  }
-                : {}
-            }
-          >
-            Portfolio
-          </MenuItem>
-          <MenuItem
-            icon={<EmojiEvents />}
-            //component={<Link to="rewards" />}
-            // eslint-disable-next-line
-          >
-            <Grid
-              container
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
+              Home
+            </MenuItem>
+            <MenuItem
+              // onClick={() => toggleSidebar(false)}
+              icon={<WaterDrop />}
+              // component={<Link href={"/liquidity"} />}
+              // // rootStyles={
+              // //   router.pathname == "/liquidity"
+              // //     ? {
+              // //         borderRadius: "10px",
+              // //         backgroundColor: themePalette.secondary.main,
+              // //         "& span": {
+              // //           color: themePalette.primary.main,
+              // //         },
+              // //       }
+              // //     : {}
+              // // }
             >
-              <Grid item>Rewards</Grid>
               <Grid
-                item
-                sx={{
-                  fontSize: "10px",
-                  px: 1,
-                  backgroundColor: "#ffdc2c6e",
-                  border: "1px solid #FFDB2C",
-                  borderRadius: "5px",
-                }}
+                container
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
               >
-                SOON
+                <Grid>Liquidity</Grid>
+                <Grid
+                  item
+                  sx={{
+                    fontSize: "10px",
+                    px: 1,
+                    backgroundColor: "#ffdc2c6e",
+                    border: "1px solid #FFDB2C",
+                    borderRadius: "5px",
+                  }}
+                >
+                  SOON
+                </Grid>
               </Grid>
-            </Grid>
-          </MenuItem>
-          {/* <MenuItem
+            </MenuItem>
+            <MenuItem
+              onClick={() => toggleSidebar(false)}
+              icon={<AccountBalanceWallet />}
+              component={<Link href="/portfolio" />}
+              rootStyles={
+                router.pathname == "/portfolio"
+                  ? {
+                      borderRadius: "10px",
+                      backgroundColor: themePalette.secondary.main,
+                      "& span": {
+                        color: themePalette.primary.main,
+                      },
+                    }
+                  : {}
+              }
+            >
+              Portfolio
+            </MenuItem>
+            <MenuItem
+              icon={<EmojiEvents />}
+              //component={<Link to="rewards" />}
+              // eslint-disable-next-line
+            >
+              <Grid
+                container
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Grid item>Rewards</Grid>
+                <Grid
+                  item
+                  sx={{
+                    fontSize: "10px",
+                    px: 1,
+                    backgroundColor: "#ffdc2c6e",
+                    border: "1px solid #FFDB2C",
+                    borderRadius: "5px",
+                  }}
+                >
+                  SOON
+                </Grid>
+              </Grid>
+            </MenuItem>
+            {/* <MenuItem
             icon={<IntegrationInstructions />}
             //component={<Link to="developers" />}
             // eslint-disable-next-line
@@ -221,35 +223,59 @@ const SideBar = () => {
               </Grid>
             </Grid>
           </MenuItem> */}
-          <MenuItem
-            onClick={() => toggleSidebar(false)}
-            icon={<Error />}
-            component={<Link href="/help" />}
-            rootStyles={
-              router.pathname == "/help"
-                ? {
-                    borderRadius: "10px",
-                    backgroundColor: themePalette.secondary.main,
-                    "& span": {
-                      color: themePalette.primary.main,
-                    },
-                  }
-                : {}
-            }
-          >
-            Help
-          </MenuItem>
-        </Menu>
-        {isSmallScreen ? (
-          <Box
-            sx={{
-              mt: 10,
-              px: 3,
-            }}
-          >
-            <DarkModeToggle />
-          </Box>
-        ) : null}
+            <MenuItem
+              onClick={() => toggleSidebar(false)}
+              icon={<Error />}
+              component={<Link href="/help" />}
+              rootStyles={
+                router.pathname == "/help"
+                  ? {
+                      borderRadius: "10px",
+                      backgroundColor: themePalette.secondary.main,
+                      "& span": {
+                        color: themePalette.primary.main,
+                      },
+                    }
+                  : {}
+              }
+            >
+              Help
+            </MenuItem>
+          </Menu>
+
+          {isSmallScreen ? (
+            <Box
+              sx={{
+                mt: 10,
+                px: 3,
+              }}
+            >
+              <DarkModeToggle />
+              {toggled ? (
+                <Box
+                  sx={{
+                    position: "sticky",
+                    pl: 1,
+                    mt: "2rem",
+                  }}
+                >
+                  <SeiChart />
+                </Box>
+              ) : null}
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                position: "absolute",
+                left: 5,
+                bottom: 10,
+                transform: "translateY(-50%)",
+              }}
+            >
+              <SeiChart sidebarIsOpen={collapsed} />
+            </Box>
+          )}
+        </Box>
       </Sidebar>
     </Box>
   );

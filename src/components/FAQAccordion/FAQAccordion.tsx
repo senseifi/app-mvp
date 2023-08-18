@@ -166,6 +166,8 @@ const FAQAccordion = () => {
             and protocols. SenSei Fi has been audited, please click below to
             view audits on verichains:&nbsp;
           </Typography>
+          <br />
+
           <Link href="https://github.com/verichains/public-audit-reports/blob/main/Verichains%20Public%20Audit%20Report%20-%20SenseiFi%20Staking%20Pool%20-%20v1.0.pdf">
             • SenSei Fi Staking Pools - Certified on May 31, 2023
           </Link>
@@ -201,6 +203,127 @@ const FAQAccordion = () => {
           <Typography>
             Engaging in the community allows you to stay informed, share
             insights, and contribute to the growth of SenSei Fi.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion
+        expanded={expanded === "panel6"}
+        onChange={handleChange("panel6")}
+      >
+        <AccordionSummary aria-controls="panel6d-content" id="panel6d-header">
+          <Typography>How do I use other wallets?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            You can connect your compatible wallet by visiting the SenSei Fi
+            platform and following the wallet connection instructions. Whether
+            you're using a mobile device or a desktop computer, the process is
+            designed to be user-friendly and secure.
+            <br />
+            <br />
+            SenSei Fi is integrated with below wallets:
+            <br />
+            • Keplr
+            <br />
+            • Leap
+            <br />
+            • Leap Mobile
+            <br />
+            • Compass
+            <br />• Fin Wallet
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion
+        expanded={expanded === "panel7"}
+        onChange={handleChange("panel7")}
+      >
+        <AccordionSummary aria-controls="panel7d-content" id="panel7d-header">
+          <Typography>Where do I get Sei token?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            You can get Sei Tokens from most major exchanges including Binance,
+            Gate.io and KuCoin.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion
+        expanded={expanded === "panel8"}
+        onChange={handleChange("panel8")}
+      >
+        <AccordionSummary aria-controls="panel8d-content" id="panel8d-header">
+          <Typography>How do I see my tickets?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            You can view your ticket by clicking on the top right arrow of the
+            draw you have entered.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion
+        expanded={expanded === "panel9"}
+        onChange={handleChange("panel9")}
+      >
+        <AccordionSummary aria-controls="panel9d-content" id="panel9d-header">
+          <Typography>
+            Why do the tickets not match the amount staked?
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            The number of tickets a user receives is determined by two factors:
+            <br />
+            • Total tokens staked
+            <br />
+            • Time of staking
+            <br />
+            <br />
+            For example, staking 100 tokens on day 1 may generate an example of
+            100,000 tickets. However, staking 100 tokens on the last day may
+            only generate an example of 100 tickets.
+            <br />
+            <br />
+            This mechanism prevents users who stake large amounts of tokens on
+            the last day from having an unfair advantage in winning the game.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion
+        expanded={expanded === "panel10"}
+        onChange={handleChange("panel10")}
+      >
+        <AccordionSummary aria-controls="panel10d-content" id="panel10d-header">
+          <Typography>How do I withdraw?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Make sure that your wallet is connected so you will be able to see
+            your entry into the No Loss Prize Games.
+            <br />
+            <br />
+            Click &lsquo;withdraw&rsquo; in the dApp and sign the transaction
+            within your connected wallet. Your tokens will be available to be
+            claimed after a maximum of 72 hours. After which, you can click
+            &lsquo;Claim Withdraw&rsquo; and receive the tokens in your wallet.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion
+        expanded={expanded === "panel11"}
+        onChange={handleChange("panel11")}
+      >
+        <AccordionSummary aria-controls="panel11d-content" id="panel11d-header">
+          <Typography>How do I contact support?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Please open a ticket via the&nbsp;
+            <Link href="https://discord.gg/b6h3paCYy4">
+              SenSei Fi Discord community.
+            </Link>
           </Typography>
         </AccordionDetails>
       </Accordion>
