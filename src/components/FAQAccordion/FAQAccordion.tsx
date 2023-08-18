@@ -218,8 +218,8 @@ const FAQAccordion = () => {
           <Typography>
             You can connect your compatible wallet by visiting the SenSei Fi
             platform and following the wallet connection instructions. Whether
-            you're using a mobile device or a desktop computer, the process is
-            designed to be user-friendly and secure.
+            you&apos;re using a mobile device or a desktop computer, the process
+            is designed to be user-friendly and secure.
             <br />
             <br />
             SenSei Fi is integrated with below wallets:
