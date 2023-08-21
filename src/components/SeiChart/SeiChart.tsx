@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { CoinGeckoClient } from "coingecko-api-v3";
-import { Sparklines, SparklinesLine, SparklinesSpots } from "react-sparklines";
+import { Sparklines, SparklinesCurve, SparklinesSpots } from "react-sparklines";
 import { Box, Typography } from "@mui/material";
 import SeiCoin from "../SeiCoin/SeiCoin";
 
@@ -43,10 +43,11 @@ const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
             <Box
               sx={{
                 display: "flex",
+                alignItems: "center",
                 gap: 1,
               }}
             >
-              <Box width={20} sx={{ display: "flex" }}>
+              <Box width={20} height={20} sx={{ display: "flex" }}>
                 <SeiCoin colored />
               </Box>
               <Typography fontSize={20}>Sei</Typography>
@@ -60,11 +61,17 @@ const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
               display: !sidebarIsOpen ? "flex" : "none",
               alignItems: "center",
               justifyContent: "end",
-              width: "6rem",
+              height: 50,
+              width: "100%",
+
+              "& svg": {
+                height: 50,
+                width: "100%",
+              },
             }}
           >
             <Sparklines data={priceData} height={120}>
-              <SparklinesLine
+              <SparklinesCurve
                 style={{
                   //fill: priceDifference > 0 ? "red" : "lawngreen",
                   fill: "none",
@@ -72,6 +79,7 @@ const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
                   stroke: priceDifference > 0 ? "red" : "lawngreen",
                 }}
               />
+              <SparklinesSpots />
             </Sparklines>
           </Box>
         </Box>
