@@ -70,7 +70,7 @@ const NavBar = () => {
         )}
 
         <Image
-          onClick={() => router.push("/")}
+          onClick={() => router.push("/home")}
           alt="SenSei Finance Logo"
           src={logoLight}
           style={{
