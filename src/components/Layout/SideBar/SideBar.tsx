@@ -271,6 +271,7 @@ const SideBar = () => {
                 left: 5,
                 bottom: 10,
                 transform: "translateY(-50%)",
+                width: "100%",
               }}
             >
               <SeiChart sidebarIsOpen={collapsed} />

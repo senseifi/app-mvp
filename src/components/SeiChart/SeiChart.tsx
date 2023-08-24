@@ -56,32 +56,34 @@ const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
               US${priceData[priceData.length - 1]}
             </Typography>
           </div>
-          <Box
-            sx={{
-              display: !sidebarIsOpen ? "flex" : "none",
-              alignItems: "center",
-              justifyContent: "end",
-              height: 50,
-              width: "100%",
-
-              "& svg": {
-                height: 50,
+          {
+            <Box
+              sx={{
+                display: !sidebarIsOpen ? "flex" : "flex",
+                opacity: !sidebarIsOpen ? 1 : 0,
+                alignItems: "center",
+                justifyContent: "end",
+                height: "100%",
                 width: "100%",
-              },
-            }}
-          >
-            <Sparklines data={priceData} height={120}>
-              <SparklinesCurve
-                style={{
-                  //fill: priceDifference > 0 ? "red" : "lawngreen",
-                  fill: "none",
-                  strokeWidth: 3,
-                  stroke: priceDifference > 0 ? "red" : "lawngreen",
-                }}
-              />
-              <SparklinesSpots />
-            </Sparklines>
-          </Box>
+                transition: "all 1.5s ease-in-out",
+                "& svg": {
+                  height: "50px",
+                  width: "100%",
+                },
+              }}
+            >
+              <Sparklines data={priceData} height={120}>
+                <SparklinesCurve
+                  style={{
+                    //fill: priceDifference > 0 ? "red" : "lawngreen",
+                    fill: "none",
+                    strokeWidth: 3,
+                    stroke: priceDifference > 0 ? "red" : "lawngreen",
+                  }}
+                />
+              </Sparklines>
+            </Box>
+          }
         </Box>
       )}
     </>
