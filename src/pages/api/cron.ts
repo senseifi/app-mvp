@@ -7,26 +7,40 @@ import {
 } from "@/contract_clients/SenseifiStakingNll.client";
 import {
   DirectSecp256k1HdWallet,
+  DirectSecp256k1Wallet,
   OfflineDirectSigner,
 } from "@cosmjs/proto-signing";
 import { seiStakingNLLContract } from "@/config/contracts";
 import { StdFee, coin } from "@cosmjs/amino";
 import { nsToSecs } from "@/utils";
 
+const fromHexString = (hexString: string) =>
+  Uint8Array.from(
+    hexString.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) ?? []
+  );
+
 export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse
 ) {
   try {
-    if (process.env.ADMIN_MNEMONIC === undefined)
-      throw Error("Mnemonic of admin wallet not found");
+    let signer;
 
-    const signer = await DirectSecp256k1HdWallet.fromMnemonic(
-      process.env.ADMIN_MNEMONIC,
-      {
-        prefix: "SEI",
-      }
-    );
+    if (process.env.ADMIN_MNEMONIC !== undefined) {
+      signer = await DirectSecp256k1HdWallet.fromMnemonic(
+        process.env.ADMIN_MNEMONIC,
+        {
+          prefix: "SEI",
+        }
+      );
+    } else if (process.env.ADMIN_PK !== undefined) {
+      signer = await DirectSecp256k1Wallet.fromKey(
+        fromHexString(process.env.ADMIN_PK),
+        "SEI"
+      );
+    } else {
+      throw Error("Mnemonic nor private keys of admin wallet found");
+    }
 
     const adminAddr = await signer.getAccounts().then((v) => v[0].address);
 
