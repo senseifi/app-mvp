@@ -230,6 +230,11 @@ const ClaimWithdrawalModal = ({
                     {toAU(claimAmount)}
                   </span>{" "}
                   Sei avaiable to be claimed
+                  <br />
+                  <span style={{ fontSize: "small", color: "gray" }}>
+                    Due to protocol requirements, it may take upto 21&nbsp;days
+                    for your tokens to be available for claiming.
+                  </span>
                 </Typography>
                 <Typography color="error" my={2} fontSize="small">
                   Once you click claim, your tokens will be transferred to your

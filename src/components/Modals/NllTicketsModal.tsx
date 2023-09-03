@@ -197,9 +197,18 @@ const TicketsModal = ({
         gas: "500000",
       };
       const funds = coin(toSU(selectedValue), params.denom);
-      await contract.stake({ nonWinner: false }, fee, undefined, [funds]);
+      //await contract.stake({ nonWinner: false }, fee, undefined, [funds]);
 
-      showNotif(`Successfully deposited ${selectedValue} SEI`, "success");
+      const txnHash = (
+        await contract.stake({ nonWinner: false }, fee, undefined, [funds])
+      ).transactionHash;
+
+      showNotif(
+        `Successfully deposited ${selectedValue} SEI`,
+        "success",
+        txnHash
+      );
+
       setOpen(false);
     } catch (e) {
       let errorMsg = "";
@@ -237,9 +246,13 @@ const TicketsModal = ({
         gas: "500000",
       };
 
-      await contract.unstake({ amount: toSU(otherValue) }, fee);
+      //await contract.unstake({ amount: toSU(otherValue) }, fee);
 
-      showNotif(`Successfully withdrew ${otherValue} SEI`, "success");
+      const txnHash = (
+        await contract.unstake({ amount: toSU(otherValue) }, fee)
+      ).transactionHash;
+      showNotif(`Successfully withdrew ${otherValue} SEI`, "success", txnHash);
+
       setOpen(false);
     } catch (e) {
       let errorMsg = "";
@@ -385,7 +398,7 @@ const TicketsModal = ({
 
                   <Typography color="error" my={2} fontSize="small">
                     Once you click withdraw, your tokens will be avaiable to be
-                    claimed in about 72Hrs
+                    claimed in about 21 Days.
                   </Typography>
                   <Button
                     variant="outlined"

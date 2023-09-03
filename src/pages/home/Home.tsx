@@ -144,10 +144,12 @@ const Home = ({
 
   const showNotif = (
     message: string,
-    severity: "success" | "info" | "warning" | "error"
+    severity: "success" | "info" | "warning" | "error",
+    txnHash?: string
   ) => {
     setNotifMsg(message);
     setNotifSev(severity);
+    if (txnHash) setTxnHash(txnHash);
     setOpenNotif(true);
   };
 
@@ -156,6 +158,7 @@ const Home = ({
   const [notifSev, setNotifSev] = useState<
     "success" | "info" | "warning" | "error"
   >("info");
+  const [txnHash, setTxnHash] = useState<undefined | string>();
 
   const handleCloseNotif = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
@@ -217,6 +220,7 @@ const Home = ({
             message={notifMsg}
             onClose={handleCloseNotif}
             severity={notifSev}
+            txnHash={txnHash}
           />
           <Grid container spacing={5}>
             <Grid xs={12} md={6}>

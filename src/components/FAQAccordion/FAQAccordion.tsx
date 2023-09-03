@@ -305,9 +305,10 @@ const FAQAccordion = () => {
             <br />
             <br />
             Click &lsquo;withdraw&rsquo; in the dApp and sign the transaction
-            within your connected wallet. Your tokens will be available to be
-            claimed after a maximum of 72 hours. After which, you can click
-            &lsquo;Claim Withdraw&rsquo; and receive the tokens in your wallet.
+            within your connected wallet. Due to protocol requirements, your
+            tokens will be available to be claimed after a maximum of 21 Days.
+            After which, you can click &lsquo;Claim Withdraw&rsquo; and receive
+            the tokens in your wallet.
           </Typography>
         </AccordionDetails>
       </Accordion>
