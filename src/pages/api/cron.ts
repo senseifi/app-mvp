@@ -26,17 +26,17 @@ export default async function handler(
   try {
     let signer;
 
-    if (process.env.ADMIN_MNEMONIC !== undefined) {
+    if (process.env.ADMIN_PK !== undefined) {
+      signer = await DirectSecp256k1Wallet.fromKey(
+        fromHexString(process.env.ADMIN_PK),
+        "SEI"
+      );
+    } else if (process.env.ADMIN_MNEMONIC !== undefined) {
       signer = await DirectSecp256k1HdWallet.fromMnemonic(
         process.env.ADMIN_MNEMONIC,
         {
           prefix: "SEI",
         }
-      );
-    } else if (process.env.ADMIN_PK !== undefined) {
-      signer = await DirectSecp256k1Wallet.fromKey(
-        fromHexString(process.env.ADMIN_PK),
-        "SEI"
       );
     } else {
       throw Error("Mnemonic nor private keys of admin wallet found");
