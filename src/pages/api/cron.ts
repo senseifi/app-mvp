@@ -79,7 +79,7 @@ export default async function handler(
     );
 
     const fee: StdFee = {
-      amount: [coin("10000", params.denom)],
+      amount: [coin("100000", params.denom)],
       gas: "500000",
     };
 
