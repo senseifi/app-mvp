@@ -13,7 +13,7 @@ import {
   Chip,
 } from "@mui/material";
 import React, { CSSProperties, useState } from "react";
-import seiCoin from "../../assets/sei-coin.png";
+import savvCoin from "../../assets/savvio-coin.png";
 import Image from "next/image";
 import { grey } from "@mui/material/colors";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -259,7 +259,7 @@ const CurrentDraws = ({
             </Box>
             <Image
               alt="coin"
-              src={seiCoin}
+              src={savvCoin}
               width={isSmallScreen ? 100 : 150}
               placeholder="blur"
               style={{ display: "flex", margin: "auto" }}

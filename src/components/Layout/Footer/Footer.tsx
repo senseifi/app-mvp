@@ -43,7 +43,7 @@ const Footer = () => {
       <DarkModeToggle />
       <Box sx={{ textAlign: "center", width: "100%", mb: 1 }}>
         <Typography>
-          Copyright &copy; SenSei Fi, {new Date().getFullYear()}.
+          Copyright &copy; Savvio Fi, {new Date().getFullYear()}.
         </Typography>
         <Link
           href="/tnc"
@@ -137,7 +137,7 @@ const Footer = () => {
       </Box>
       <Box sx={{ textAlign: "center", width: "100%", mb: 1 }}>
         <Typography>
-          Copyright &copy; SenSei Fi, {new Date().getFullYear()}.
+          Copyright &copy; Savvio Fi, {new Date().getFullYear()}.
         </Typography>
         <Link
           href="/tnc"

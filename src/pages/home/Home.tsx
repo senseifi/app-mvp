@@ -199,11 +199,11 @@ const Home = ({
       )}
       <Box>
         <Head>
-          <title>Sensei App Homepage</title>
+          <title>Savvio App Homepage</title>
           <meta name="description" content="Gamified Defi on Sei network" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-          <meta property="og:title" content="SenSei Fi" />
+          <meta property="og:title" content="Savvio Fi" />
           <meta
             property="og:description"
             content="Gamified Defi on Sei network"
@@ -234,7 +234,7 @@ const Home = ({
                 sx={{ fontStyle: "italic", fontSize: "1.5rem" }}
               >
                 Win or Not, you never lose your investment - everyone&apos;s a
-                winner when you play with SenSei&nbsp;Fi.
+                winner when you play with Savvio&nbsp;Fi.
               </Typography>
 
               <Box>
