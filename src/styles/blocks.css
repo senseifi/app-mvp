@@ -1,0 +1,226 @@
+@-webkit-keyframes glow {
+  0%,
+  45% {
+    opacity: 0;
+  }
+  60%,
+  100% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes glow {
+  0%,
+  45% {
+    opacity: 0;
+  }
+  60%,
+  100% {
+    opacity: 0.35;
+  }
+}
+@-webkit-keyframes dots {
+  0%,
+  35% {
+    transform: translate(0);
+    opacity: 0;
+  }
+  60%,
+  80% {
+    transform: translate(55px, -35px);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(55px, -35px);
+    opacity: 0;
+  }
+}
+@keyframes dots {
+  0%,
+  35% {
+    transform: translate(0);
+    opacity: 0;
+  }
+  60%,
+  80% {
+    transform: translate(55px, -35px);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(55px, -35px);
+    opacity: 0;
+  }
+}
+@-webkit-keyframes up {
+  to {
+    transform: translate(0, -25px);
+  }
+}
+@keyframes up {
+  to {
+    transform: translate(0, -25px);
+  }
+}
+@-webkit-keyframes p {
+  85%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes p {
+  85%,
+  100% {
+    opacity: 0;
+  }
+}
+@-webkit-keyframes particles {
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  50% {
+    transform: translate(10px, 15px);
+  }
+}
+@keyframes particles {
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  50% {
+    transform: translate(10px, 15px);
+  }
+}
+
+#d-app > g:nth-child(1) {
+  -webkit-animation: updown 3s 200ms ease-in-out infinite alternate;
+  animation: updown 3s 200ms ease-in-out infinite alternate;
+}
+
+#d-app g:nth-child(2) {
+  -webkit-animation: updown 3s 400ms ease-in-out infinite alternate;
+  animation: updown 3s 400ms ease-in-out infinite alternate;
+}
+
+#d-app g:nth-child(3) {
+  -webkit-animation: updown 3s 600ms ease-in-out infinite alternate;
+  animation: updown 3s 600ms ease-in-out infinite alternate;
+}
+
+#d-app g:nth-child(4) {
+  -webkit-animation: updown 3s 800ms ease-in-out infinite alternate;
+  animation: updown 3s 800ms ease-in-out infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(1) {
+  -webkit-animation: updown 2s 50ms ease infinite alternate;
+  animation: updown 2s 50ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(2) {
+  -webkit-animation: updown 2s 100ms ease infinite alternate;
+  animation: updown 2s 100ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(3) {
+  -webkit-animation: updown 2s 150ms ease infinite alternate;
+  animation: updown 2s 150ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(4) {
+  -webkit-animation: updown 2s 200ms ease infinite alternate;
+  animation: updown 2s 200ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(5) {
+  -webkit-animation: updown 2s 250ms ease infinite alternate;
+  animation: updown 2s 250ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(6) {
+  -webkit-animation: updown 2s 300ms ease infinite alternate;
+  animation: updown 2s 300ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(7) {
+  -webkit-animation: updown 2s 350ms ease infinite alternate;
+  animation: updown 2s 350ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(8) {
+  -webkit-animation: updown 2s 400ms ease infinite alternate;
+  animation: updown 2s 400ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(9) {
+  -webkit-animation: updown 2s 450ms ease infinite alternate;
+  animation: updown 2s 450ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(10) {
+  -webkit-animation: updown 2s 500ms ease infinite alternate;
+  animation: updown 2s 500ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(11) {
+  -webkit-animation: updown 2s 550ms ease infinite alternate;
+  animation: updown 2s 550ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(12) {
+  -webkit-animation: updown 2s 600ms ease infinite alternate;
+  animation: updown 2s 600ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(13) {
+  -webkit-animation: updown 2s 650ms ease infinite alternate;
+  animation: updown 2s 650ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(14) {
+  -webkit-animation: updown 2s 700ms ease infinite alternate;
+  animation: updown 2s 700ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(15) {
+  -webkit-animation: updown 2s 750ms ease infinite alternate;
+  animation: updown 2s 750ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(16) {
+  -webkit-animation: updown 2s 800ms ease infinite alternate;
+  animation: updown 2s 800ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(17) {
+  -webkit-animation: updown 2s 850ms ease infinite alternate;
+  animation: updown 2s 850ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(18) {
+  -webkit-animation: updown 2s 900ms ease infinite alternate;
+  animation: updown 2s 900ms ease infinite alternate;
+}
+
+#d-appswrapper g:nth-child(1) g > circle:nth-child(19) {
+  -webkit-animation: updown 2s 950ms ease infinite alternate;
+  animation: updown 2s 950ms ease infinite alternate;
+}
+
+@-webkit-keyframes updown {
+  100% {
+    transform: translate(0, -10px);
+  }
+}
+
+@keyframes updown {
+  100% {
+    transform: translate(0, -10px);
+  }
+}
+#Layer_1 > g:nth-child(2) > g:nth-child(18) > g:nth-child(12) {
+  -webkit-animation: arrows 1s ease-in-out infinite alternate,
+    p 2s ease infinite alternate;
+  animation: arrows 1s ease-in-out infinite alternate,
+    p 2s ease infinite alternate;
+}

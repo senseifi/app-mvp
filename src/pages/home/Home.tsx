@@ -39,6 +39,7 @@ import { intlFormatStyle } from "@/constants/modals";
 import { fetchNllState } from "../api/fetchNllState";
 
 import { useWallet } from "sei-js/packages/react/dist";
+import HeroImage from "@/components/HeroImage";
 
 const Home = ({
   params,
@@ -259,16 +260,8 @@ const Home = ({
               />
             </Grid>
             <Grid xs={12} md={6} alignSelf="center">
-              <Image
-                alt="Spinning Sei coin"
-                src={seiCoin}
-                style={{
-                  display: "flex",
-                  margin: "auto",
-                  maxWidth: isSmallScreen ? "50%" : "300px",
-                  height: "auto",
-                }}
-              />
+              <HeroImage />
+
               <Box textAlign="center" marginTop={5}>
                 <Box>
                   <Typography fontSize={20}>Grand Prize:</Typography>

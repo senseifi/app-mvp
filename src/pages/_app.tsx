@@ -1,3 +1,4 @@
+import "@/styles/blocks.css";
 import "@/styles/globals.css";
 import "@fontsource/work-sans/variable.css";
 import "@fontsource/work-sans/400.css";
