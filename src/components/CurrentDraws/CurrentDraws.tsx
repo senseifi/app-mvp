@@ -150,11 +150,11 @@ const CurrentDraws = ({
                   height: `50px`,
                   borderLeft: "1px solid",
                   borderBottom: "1px solid",
-                  backgroundImage: `linear-gradient(45deg,#FFF 10%,#071428 50%,#FFDB2C 80%)`,
+                  backgroundImage: `linear-gradient(45deg,#FFF 10%,#232423 50%,#70E4CB 80%)`,
                   "&:hover": {
                     width: `60px`,
                     height: `60px`,
-                    backgroundImage: `linear-gradient(45deg,#FFF 20%,#071428 50%,#FFDB2C 65%)`,
+                    backgroundImage: `linear-gradient(45deg,#FFF 20%,#232423 50%,#70E4CB 65%)`,
                     transition: "all 0.1s ease-in-out",
                   },
                 }}
@@ -179,7 +179,7 @@ const CurrentDraws = ({
               >
                 <IconButton
                   aria-label="more"
-                  sx={{ p: 0.5, color: "#071428" }}
+                  sx={{ p: 0.5, color: "#232423" }}
                   onClick={() => setShowDetails(false)}
                 >
                   <Undo />
@@ -192,7 +192,7 @@ const CurrentDraws = ({
                 borderBottom="1px solid"
                 sx={{
                   backgroundColor: theme.palette.tertiary.main,
-                  color: "#071428",
+                  color: "#232423",
                 }}
               >
                 Game Stats
@@ -331,7 +331,7 @@ const CurrentDraws = ({
               {draw?.active ? (
                 <Grid item xs={10.5} md={10.5}>
                   <Button
-                    variant="yellowFill"
+                    variant="gradientFill"
                     size="small"
                     fullWidth
                     sx={{ fontSize: "0.875rem" }}
@@ -343,7 +343,7 @@ const CurrentDraws = ({
               ) : (
                 <Grid item xs={12} md={12}>
                   <Button
-                    variant="yellowBorder"
+                    variant="gradientBorder"
                     size="small"
                     fullWidth
                     sx={{ fontSize: ".875rem" }}

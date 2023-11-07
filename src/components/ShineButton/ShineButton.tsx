@@ -2,7 +2,7 @@ import { Theme, styled, useTheme } from "@mui/material";
 
 const ShineButton = styled("p")(({ theme }) => ({
   color: "#fff",
-  background: `linear-gradient(to right, ${theme.palette.tertiary.main} 0, #fffea7 10%, ${theme.palette.tertiary.main} 20%)`,
+  background: `linear-gradient(to right, ${theme.palette.tertiary.main} 0, #c3ff4c 10%, ${theme.palette.tertiary.main} 20%)`,
   backgroundPosition: 0,
   backgroundClip: "text",
   WebkitBackgroundClip: "text",

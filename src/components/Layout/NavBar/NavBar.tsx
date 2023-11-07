@@ -53,7 +53,7 @@ const NavBar = () => {
           display: "flex",
           justifyContent: "space-between",
           flexDirection: "row",
-          background: "#071428",
+          background: "#232423",
           boxShadow: "0 0 20px  #ffffff50",
           zIndex: 999,
         }}
@@ -108,7 +108,7 @@ const NavBar = () => {
           </IconButton>
         </Link> */}
           <Typography
-            variant="yellowText"
+            variant="aquaGreenText"
             sx={{
               my: "auto",
               fontWeight: 500,

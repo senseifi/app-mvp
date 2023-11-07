@@ -145,8 +145,8 @@ const SideBar = () => {
                   sx={{
                     fontSize: "10px",
                     px: 1,
-                    backgroundColor: "#ffdc2c6e",
-                    border: "1px solid #FFDB2C",
+                    backgroundColor: "#70E4CB6e",
+                    border: "1px solid #70E4CB",
                     borderRadius: "5px",
                   }}
                 >
@@ -189,8 +189,8 @@ const SideBar = () => {
                   sx={{
                     fontSize: "10px",
                     px: 1,
-                    backgroundColor: "#ffdc2c6e",
-                    border: "1px solid #FFDB2C",
+                    backgroundColor: "#70E4CB6e",
+                    border: "1px solid #70E4CB",
                     borderRadius: "5px",
                   }}
                 >

@@ -56,7 +56,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Layout>
-            <NextNProgress color="#FFDB2C" />
+            <NextNProgress color="#70E4CB" />
             <Component {...pageProps} />
           </Layout>
         </ThemeProvider>

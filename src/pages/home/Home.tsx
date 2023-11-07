@@ -228,7 +228,7 @@ const Home = ({
               <Typography variant="h1" sx={{ fontWeight: "medium" }}>
                 No Loss DeFi
                 <br />
-                <Typography variant="yellowText">Prize Game</Typography>
+                <Typography variant="gradientText">Prize Game</Typography>
               </Typography>
               <Typography
                 variant="subtitle1"
@@ -242,7 +242,7 @@ const Home = ({
                 <Grid container spacing={2} marginTop={2}>
                   <Grid xs={12} md={6}>
                     <Button
-                      variant="yellowFill"
+                      variant="gradientFill"
                       size="large"
                       fullWidth
                       onClick={onEnterNowClick}

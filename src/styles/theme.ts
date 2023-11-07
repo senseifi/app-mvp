@@ -17,11 +17,15 @@ declare module "@mui/material/styles" {
 
   interface TypographyVariants {
     yellowText: React.CSSProperties;
+    gradientText: React.CSSProperties;
+    aquaGreenText: React.CSSProperties;
   }
 
   // allow configuration using `createTheme`
   interface TypographyVariantsOptions {
     yellowText?: React.CSSProperties;
+    gradientText?: React.CSSProperties;
+    aquaGreenText?: React.CSSProperties;
   }
 }
 
@@ -29,6 +33,8 @@ declare module "@mui/material/styles" {
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
     yellowText: true;
+    gradientText: true;
+    aquaGreenText: true;
   }
 }
 
@@ -37,6 +43,8 @@ declare module "@mui/material/Button" {
   interface ButtonPropsVariantOverrides {
     yellowBorder: true;
     yellowFill: true;
+    gradientFill: true;
+    gradientBorder: true;
   }
 }
 declare module "@mui/material/Radio" {
@@ -55,6 +63,13 @@ const radius: number = 10;
 const yellow: string = "#FFDB2C";
 const navyBlue: string = "#071428";
 
+const limeGreenGradient: string = `linear-gradient(350deg, #F0FE3B 0%, #C9FC6E 23.41%, #A6FA9D 48.15%, #8CF9BF 70.07%, #7CF8D4 88.10%, #77F8DC 100%)
+`;
+const aquaGreen: string = "#70E4CB";
+const aquaGreenWhite: string = "#F1FCFA";
+const aquaGreenBlack: string = "#364340";
+const lightBlack: string = "#232423";
+
 const createAppTheme = (mode: PaletteMode) =>
   createTheme({
     palette: {
@@ -65,36 +80,36 @@ const createAppTheme = (mode: PaletteMode) =>
               main: "#FFFFFF",
             },
             secondary: {
-              main: navyBlue,
+              main: lightBlack,
             },
             tertiary: {
-              main: yellow,
+              main: aquaGreen,
             },
             text: {
-              primary: navyBlue,
+              primary: lightBlack,
               secondary: "#FFDB2C",
             },
             background: {
               default: "#FFFFFF",
             },
-            divider: navyBlue,
+            divider: lightBlack,
           }
         : {
             primary: {
-              main: navyBlue,
+              main: lightBlack,
             },
             secondary: {
               main: "#FFFFFF",
             },
             tertiary: {
-              main: yellow,
+              main: aquaGreen,
             },
             text: {
               primary: "#FFFFFF",
               secondary: "#FFDB2C",
             },
             background: {
-              default: navyBlue,
+              default: lightBlack,
             },
             divider: "#FFFFFF",
           }),
@@ -102,6 +117,15 @@ const createAppTheme = (mode: PaletteMode) =>
 
     typography: {
       fontFamily: "Work Sans, sans-serif",
+      gradientText: {
+        color: "transparent",
+        background: limeGreenGradient,
+        backgroundClip: "text",
+        WebkitBackgroundClip: "text",
+      },
+      aquaGreenText: {
+        color: "#70E4CB",
+      },
       yellowText: {
         color: "#FFDB2C",
       },
@@ -111,7 +135,7 @@ const createAppTheme = (mode: PaletteMode) =>
         },
       },
       h2: {
-        color: "#FFDB2C",
+        color: "#70E4CB",
         fontSize: "2rem",
         fontWeight: 500,
       },
@@ -129,29 +153,43 @@ const createAppTheme = (mode: PaletteMode) =>
         },
         variants: [
           {
-            props: { variant: "yellowBorder" },
+            props: { variant: "gradientBorder" },
             style: {
               textTransform: "uppercase",
-              border: `2px solid ${yellow}`,
-              backgroundColor: "transparent",
+              background: mode === "light" ? "#FFF" : lightBlack,
+
+              "&::before": {
+                content: '""',
+                background: limeGreenGradient,
+                borderRadius: "inherit",
+                position: "absolute",
+                zIndex: -1,
+                margin: "-2px",
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+              },
+
               "&:hover": {
-                color: mode === "light" ? navyBlue : yellow,
-                borderColor: "transparent",
-                backgroundColor: "rgba(255, 219, 44, 0.2)",
+                color: aquaGreen,
+                background: mode === "light" ? aquaGreenWhite : aquaGreenBlack,
+                "&::before": {
+                  background: mode === "light" ? "#FFF" : lightBlack,
+                },
               },
             },
           },
           {
-            props: { variant: "yellowFill" },
+            props: { variant: "gradientFill" },
             style: {
               textTransform: "uppercase",
-              backgroundColor: yellow,
-              color: navyBlue,
-              border: `2px solid ${yellow}`,
+              background: limeGreenGradient,
+              color: lightBlack,
+
               "&:hover": {
-                color: mode === "light" ? navyBlue : yellow,
-                backgroundColor: "rgba(255, 219, 44, 0.2)",
-                borderColor: "transparent",
+                color: aquaGreen,
+                background: mode === "light" ? aquaGreenWhite : aquaGreenBlack,
               },
             },
           },
@@ -162,8 +200,6 @@ const createAppTheme = (mode: PaletteMode) =>
         styleOverrides: {
           root: {
             fontSize: "1rem",
-            // maxWidth: "300px",
-            padding: "1rem 1.2rem",
             "@media (max-width: 600px)": {
               fontSize: "0.875rem",
               padding: "10px",

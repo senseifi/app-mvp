@@ -31,7 +31,7 @@ const GridWithLabel: React.FC<GridWithLabelProps> = ({
         {...rest}
       >
         <Typography
-          variant={theme.palette.mode === "dark" ? "yellowText" : "inherit"}
+          variant={theme.palette.mode === "dark" ? "aquaGreenText" : "inherit"}
           sx={{
             position: "absolute",
             top: -12,

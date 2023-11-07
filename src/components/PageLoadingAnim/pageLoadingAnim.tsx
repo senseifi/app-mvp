@@ -15,11 +15,11 @@ const pageLoadingAnim = () => {
         className=""
       >
         <style type="text/css">
-          {`.st0{fill:#ffdc2c;stroke:url(#SVGID_1_);stroke-width:6;stroke-linejoin:bevel;stroke-miterlimit:10; }
+          {`.st0{fill:#70E4CB;stroke:url(#SVGID_1_);stroke-width:6;stroke-linejoin:bevel;stroke-miterlimit:10; }
       .st1{fill:none;stroke:#FFFFFF;stroke-width:35;stroke-linecap:round;stroke-miterlimit:10;}
       .st2{fill:#FFFFFF;}
-      .st3{fill:none;stroke:#071428;stroke-width:22;stroke-linecap:round;stroke-miterlimit:10;}
-      .st4{fill:#071428;}`}
+      .st3{fill:none;stroke:#232423;stroke-width:22;stroke-linecap:round;stroke-miterlimit:10;}
+      .st4{fill:#232423;}`}
         </style>
         <linearGradient
           id="SVGID_1_"
