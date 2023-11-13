@@ -12,8 +12,8 @@ const Swap = () => {
     <>
       <Box>
         <Head>
-          <title>Sensei Portfolio page</title>
-          <meta name="description" content="Your portfolio on SenSei Fi" />
+          <title>Savvio Fi Portfolio page</title>
+          <meta name="description" content="Your portfolio on Savvio Fi" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>

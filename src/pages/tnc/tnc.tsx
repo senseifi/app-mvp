@@ -7,7 +7,7 @@ const tnc = () => {
   return (
     <Box>
       <Head>
-        <title>Sensei Liquidity Pools</title>
+        <title>Savvio Fi Liquidity Pools</title>
         <meta name="description" content="Gamified Defi on Sei network" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 

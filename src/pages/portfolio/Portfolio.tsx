@@ -165,8 +165,8 @@ const Portfolio = ({
   return (
     <Box>
       <Head>
-        <title>Sensei Portfolio page</title>
-        <meta name="description" content="Your portfolio on SenSei Fi" />
+        <title>Savvio Fi Portfolio page</title>
+        <meta name="description" content="Your portfolio on Savvio Fi" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -372,7 +372,7 @@ const Portfolio = ({
                 >
                   <Grid item md={1.5}>
                     <Box display="flex" sx={{ mt: isSmallScreen ? 2 : "" }}>
-                      <Image alt="sensei icon" src={senIcon} width={24} />
+                      <Image alt="Savvio icon" src={senIcon} width={24} />
                       {isLoading ? (
                         <Skeleton animation="wave" width="100%" />
                       ) : (

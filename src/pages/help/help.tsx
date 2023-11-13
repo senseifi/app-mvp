@@ -8,8 +8,8 @@ const help = () => {
   return (
     <Box>
       <Head>
-        <title>Sensei Liquidity Pools</title>
-        <meta name="description" content="Gamified Defi on Sei network" />
+        <title>Savvio Fi Liquidity Pools</title>
+        <meta name="description" content="Gamified Defi" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         <link rel="icon" href="/favicon.ico" />
