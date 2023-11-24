@@ -15,6 +15,13 @@ import {
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
+import { IconContext } from "react-icons";
+import {
+  FaDiscord,
+  FaTelegramPlane,
+  FaTwitter,
+  FaMediumM,
+} from "react-icons/fa";
 
 const Footer = () => {
   const theme: Theme = useTheme();
@@ -43,7 +50,7 @@ const Footer = () => {
       <DarkModeToggle />
       <Box sx={{ textAlign: "center", width: "100%", mb: 1 }}>
         <Typography>
-          Copyright &copy; Savvio Fi, {new Date().getFullYear()}.
+          Copyright &copy; Savvio, {new Date().getFullYear()}.
         </Typography>
         <Link
           href="/tnc"
@@ -61,13 +68,12 @@ const Footer = () => {
           gap: 2,
           mx: 2,
           my: "auto",
-          "& img": {
-            width: 30,
-            height: 30,
+          svg: {
+            fill: "#9e9e9e",
           },
         }}
       >
-        <LinkMUI
+        {/* <LinkMUI
           href="https://t.me/SenSeiFi"
           target="_blank"
           sx={socialIconsStyle}
@@ -87,7 +93,39 @@ const Footer = () => {
           sx={socialIconsStyle}
         >
           <Image src={discord} alt="Discord link" />
-        </LinkMUI>
+        </LinkMUI> */}
+        <IconContext.Provider value={{ size: "30px" }}>
+          <a
+            href="https://medium.com/@savvio_fi"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FaMediumM />
+          </a>
+        </IconContext.Provider>
+        <IconContext.Provider value={{ size: "30px" }}>
+          <a href="https://t.me/Savvio_DeFi" target="_blank" rel="noreferrer">
+            <FaTelegramPlane />
+          </a>
+        </IconContext.Provider>
+        <IconContext.Provider value={{ size: "30px" }}>
+          <a
+            href="https://twitter.com/Savvio_DeFi"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FaTwitter />
+          </a>
+        </IconContext.Provider>
+        <IconContext.Provider value={{ size: "30px" }}>
+          <a
+            href="https://discord.gg/xJUE8Bxn"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FaDiscord />
+          </a>
+        </IconContext.Provider>
       </Box>
     </Box>
   ) : (
@@ -105,39 +143,69 @@ const Footer = () => {
           display: "flex",
           gap: 2,
           mx: "auto",
-          mb: 2,
-
-          "& img": {
-            width: 30,
-            height: 30,
+          a: {
+            color: "white !important",
           },
         }}
       >
-        <LinkMUI
-          href="https://t.me/SenSeiFi"
+        <IconContext.Provider value={{ size: "30px" }}>
+          <a
+            href="https://medium.com/@savvio_fi"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FaMediumM />
+          </a>
+        </IconContext.Provider>
+        <IconContext.Provider value={{ size: "30px" }}>
+          <a href="https://t.me/Savvio_DeFi" target="_blank" rel="noreferrer">
+            <FaTelegramPlane />
+          </a>
+        </IconContext.Provider>
+        <IconContext.Provider value={{ size: "30px" }}>
+          <a
+            href="https://twitter.com/Savvio_DeFi"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FaTwitter />
+          </a>
+        </IconContext.Provider>
+        <IconContext.Provider value={{ size: "30px" }}>
+          <a
+            href="https://discord.gg/xJUE8Bxn"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FaDiscord />
+          </a>
+        </IconContext.Provider>
+        {/* <LinkMUI
+          href="https://t.me/Savvio_DeFi"
           target="_blank"
           sx={socialIconsStyle}
         >
           <Image src={telegram} alt="Telegram link" />
         </LinkMUI>
+      
         <LinkMUI
-          href="https://twitter.com/SenSei_DeFi"
+          href="https://twitter.com/Savvio_DeFi"
           target="_blank"
           sx={socialIconsStyle}
         >
           <Image src={twitter} alt="Twitter link" />
         </LinkMUI>
         <LinkMUI
-          href="https://discord.gg/b6h3paCYy4"
+          href="https://discord.gg/xJUE8Bxn"
           target="_blank"
           sx={socialIconsStyle}
         >
           <Image src={discord} alt="Discord link" />
-        </LinkMUI>
+        </LinkMUI> */}
       </Box>
       <Box sx={{ textAlign: "center", width: "100%", mb: 1 }}>
         <Typography>
-          Copyright &copy; Savvio Fi, {new Date().getFullYear()}.
+          Copyright &copy; Savvio, {new Date().getFullYear()}.
         </Typography>
         <Link
           href="/tnc"

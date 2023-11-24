@@ -8,7 +8,7 @@ const help = () => {
   return (
     <Box>
       <Head>
-        <title>Savvio Fi Liquidity Pools</title>
+        <title>Savvio Liquidity Pools</title>
         <meta name="description" content="Gamified Defi" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 

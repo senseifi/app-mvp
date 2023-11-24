@@ -165,8 +165,8 @@ const Portfolio = ({
   return (
     <Box>
       <Head>
-        <title>Savvio Fi Portfolio page</title>
-        <meta name="description" content="Your portfolio on Savvio Fi" />
+        <title>Savvio Portfolio page</title>
+        <meta name="description" content="Your portfolio on Savvio" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

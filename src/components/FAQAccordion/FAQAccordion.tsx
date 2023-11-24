@@ -78,15 +78,15 @@ const FAQAccordion = () => {
         onChange={handleChange("panel1")}
       >
         <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
-          <Typography>What is Savvio Fi?</Typography>
+          <Typography>What is Savvio?</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
-            Savvio Fi is a leading gamified decentralised finance (DeFi)
-            platform that offers secure and predictable savings options with
-            bonus token and NFT rewards. It combines the excitement of
-            gamification with the stability of DeFi, providing users with a
-            unique and rewarding financial experience.
+            Savvio is a leading gamified decentralised finance (DeFi) platform
+            that offers secure and predictable savings options with bonus token
+            and NFT rewards. It combines the excitement of gamification with the
+            stability of DeFi, providing users with a unique and rewarding
+            financial experience.
           </Typography>
         </AccordionDetails>
       </Accordion>
@@ -95,7 +95,7 @@ const FAQAccordion = () => {
         onChange={handleChange("panel2")}
       >
         <AccordionSummary aria-controls="panel2d-content" id="panel2d-header">
-          <Typography>How does Savvio Fi work?</Typography>
+          <Typography>How does Savvio work?</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
@@ -115,11 +115,11 @@ const FAQAccordion = () => {
       >
         <AccordionSummary aria-controls="panel3d-content" id="panel3d-header">
           <Typography>
-            What sets Savvio Fi apart from other DeFi platforms?
+            What sets Savvio apart from other DeFi platforms?
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>Savvio Fi offers several key differentiators:</Typography>
+          <Typography>Savvio offers several key differentiators:</Typography>
           <List
             sx={{
               listStyleType: "disc",
@@ -135,7 +135,7 @@ const FAQAccordion = () => {
               financial activities.
             </ListItem>
             <ListItem>
-              Secure Self-Managed Accounts: Savvio Fi ensures complete ownership
+              Secure Self-Managed Accounts: Savvio ensures complete ownership
               and control over funds through secure self-managed accounts,
               enhancing user security.
             </ListItem>
@@ -145,7 +145,7 @@ const FAQAccordion = () => {
               LP aggregators.
             </ListItem>
             <ListItem>
-              Transparency: Savvio Fi emphasises clear and understandable
+              Transparency: Savvio emphasises clear and understandable
               offerings, fostering trust among users.
             </ListItem>
           </List>
@@ -156,15 +156,15 @@ const FAQAccordion = () => {
         onChange={handleChange("panel4")}
       >
         <AccordionSummary aria-controls="panel4d-content" id="panel4d-header">
-          <Typography>Is Savvio Fi safe and secure?</Typography>
+          <Typography>Is Savvio safe and secure?</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
-            Yes, Savvio Fi places a strong emphasis on security. It offers
-            secure self-managed accounts, implements advanced security measures,
-            and underwent audits to ensure the solidity of its smart contracts
-            and protocols. Savvio Fi has been audited, please click below to
-            view audits on verichains:&nbsp;
+            Yes, Savvio places a strong emphasis on security. It offers secure
+            self-managed accounts, implements advanced security measures, and
+            underwent audits to ensure the solidity of its smart contracts and
+            protocols. Savvio has been audited, please click below to view
+            audits on verichains:&nbsp;
           </Typography>
           <br />
 
@@ -183,12 +183,12 @@ const FAQAccordion = () => {
       >
         <AccordionSummary aria-controls="panel5d-content" id="panel5d-header">
           <Typography>
-            How can I get involved in the Savvio Fi community?
+            How can I get involved in the Savvio community?
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
-            Joining the Savvio Fi community is easy. You can participate in
+            Joining the Savvio community is easy. You can participate in
             discussions, ask questions, and connect with other users on social
             platforms listed below:&nbsp;
           </Typography>
@@ -202,7 +202,7 @@ const FAQAccordion = () => {
           <br />
           <Typography>
             Engaging in the community allows you to stay informed, share
-            insights, and contribute to the growth of Savvio Fi.
+            insights, and contribute to the growth of Savvio.
           </Typography>
         </AccordionDetails>
       </Accordion>
@@ -216,13 +216,13 @@ const FAQAccordion = () => {
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
-            You can connect your compatible wallet by visiting the Savvio Fi
+            You can connect your compatible wallet by visiting the Savvio
             platform and following the wallet connection instructions. Whether
             you&apos;re using a mobile device or a desktop computer, the process
             is designed to be user-friendly and secure.
             <br />
             <br />
-            Savvio Fi is integrated with below wallets:
+            Savvio is integrated with below wallets:
             <br />
             • Keplr
             <br />
@@ -323,7 +323,7 @@ const FAQAccordion = () => {
           <Typography>
             Please open a ticket via the&nbsp;
             <Link href="https://discord.gg/b6h3paCYy4">
-              Savvio Fi Discord community.
+              Savvio Discord community.
             </Link>
           </Typography>
         </AccordionDetails>

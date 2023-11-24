@@ -71,7 +71,7 @@ const NavBar = () => {
 
         <Image
           onClick={() => router.push("/home")}
-          alt="SenSei Finance Logo"
+          alt="Savvio Logo"
           src={logoLight}
           style={{
             height: "100%",
