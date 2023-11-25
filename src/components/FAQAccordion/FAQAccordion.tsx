@@ -240,11 +240,11 @@ const FAQAccordion = () => {
         onChange={handleChange("panel7")}
       >
         <AccordionSummary aria-controls="panel7d-content" id="panel7d-header">
-          <Typography>Where do I get Sei token?</Typography>
+          <Typography>Where do I get Apt token?</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
-            You can get Sei Tokens from most major exchanges including Binance,
+            You can get Apt Tokens from most major exchanges including Binance,
             Gate.io and KuCoin.
           </Typography>
         </AccordionDetails>

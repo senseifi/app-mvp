@@ -77,7 +77,7 @@ const WinnerHistory = ({ drawList }: { drawList: Draw[] }) => {
                           {Intl.NumberFormat("en-US", intlFormatStyle).format(
                             toAU(draw.prize)
                           )}{" "}
-                          Sei
+                          Apt
                         </TableCell>
                         {/* first 4 and last 4 characters of account address */}
                         {!isSmallScreen ? (

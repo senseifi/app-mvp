@@ -18,20 +18,22 @@ import { useProSidebar } from "react-pro-sidebar";
 import { chainName } from "@/config/sei";
 import { truncateAddress } from "@/utils";
 import WormholeIcon from "@/components/WormholeIcon/WormholeIcon";
-import { useWallet } from "sei-js/packages/react/dist";
+
 import { WalletSelectModal } from "@/components/SeiWallet";
 import useSelectWallet from "@/hooks/useSelectWallet";
 import { useRouter } from "next/router";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { WalletConnector } from "@aptos-labs/wallet-adapter-mui-design";
 
 const NavBar = () => {
-  const wallet = useWallet();
+  const { account, connected, network, wallet } = useWallet();
   const { openModal } = useSelectWallet();
 
   const [isWalletConnected, setIsWalletConnected] = useState(false);
 
-  useEffect(() => {
-    setIsWalletConnected(wallet.connectedWallet !== undefined);
-  }, [wallet.connectedWallet]);
+  // useEffect(() => {
+  //   setIsWalletConnected(wallet.connectedWallet !== undefined);
+  // }, [wallet.connectedWallet]);
 
   const theme: Theme = useTheme();
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -120,9 +122,10 @@ const NavBar = () => {
                 : null),
             }}
           >
-            Mainnet
+            Testnet
           </Typography>
-          <Button
+          <WalletConnector />
+          {/* <Button
             onClick={() =>
               isWalletConnected ? wallet.disconnect() : openModal()
             }
@@ -147,7 +150,7 @@ const NavBar = () => {
             ) : (
               <span style={{ marginRight: "0.5rem" }}>Connect&nbsp;Wallet</span>
             )}
-          </Button>
+          </Button> */}
         </Box>
       </Box>
     </>

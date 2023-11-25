@@ -267,7 +267,7 @@ const Portfolio = ({
                   <Typography
                     sx={{ fontSize: 24, fontWeight: 300, lineHeight: 1.2 }}
                   >
-                    Sei&nbsp;
+                    Apt&nbsp;
                   </Typography>
                   {isLoading ? (
                     <Skeleton animation="wave" height="2rem" />
@@ -396,7 +396,7 @@ const Portfolio = ({
                               toAU(stats.userDeposit)
                             )
                           : "-"}{" "}
-                        Sei
+                        Apt
                       </Typography>
                     )}
                   </Grid>

@@ -269,7 +269,7 @@ const Home = ({
                     {Intl.NumberFormat("en-US", intlFormatStyle).format(
                       toAU(grandPrize)
                     )}{" "}
-                    Sei
+                    Apt
                   </ShineButton>
                 </Box>
 
@@ -284,7 +284,7 @@ const Home = ({
                     {Intl.NumberFormat("en-US", intlFormatStyle).format(
                       toAU(globalState.total_stake)
                     )}{" "}
-                    Sei
+                    Apt
                   </Typography>
                 </Grid>
               </Box>

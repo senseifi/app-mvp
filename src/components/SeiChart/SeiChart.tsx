@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { CoinGeckoClient } from "coingecko-api-v3";
 import { Sparklines, SparklinesCurve, SparklinesSpots } from "react-sparklines";
 import { Box, Typography } from "@mui/material";
-import SeiCoin from "../SeiCoin/SeiCoin";
+import AptCoin from "../AptCoin/AptCoin";
 
 const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
   const client = new CoinGeckoClient({
@@ -15,7 +15,7 @@ const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
 
   const fetchSeiPrice = async () => {
     const data = await client.coinIdMarketChart({
-      id: "sei-network",
+      id: "aptos",
       vs_currency: "usd",
       days: 1,
     });
@@ -48,9 +48,9 @@ const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
               }}
             >
               <Box width={20} height={20} sx={{ display: "flex" }}>
-                <SeiCoin colored />
+                <AptCoin />
               </Box>
-              <Typography fontSize={20}>Sei</Typography>
+              <Typography fontSize={20}>Apt</Typography>
             </Box>
             <Typography fontWeight="bold" fontSize={15}>
               US${priceData[priceData.length - 1]}

@@ -218,7 +218,7 @@ const ClaimWithdrawalModal = ({
                   <span style={{ fontWeight: "bold" }}>
                     {toAU(unstakeAmount)}
                   </span>{" "}
-                  Sei
+                  Apt
                 </Typography>
                 <Typography
                   my={3}
@@ -229,7 +229,7 @@ const ClaimWithdrawalModal = ({
                   <span style={{ fontWeight: "bold" }}>
                     {toAU(claimAmount)}
                   </span>{" "}
-                  Sei avaiable to be claimed
+                  Apt avaiable to be claimed
                   <br />
                   <span style={{ fontSize: "small", color: "gray" }}>
                     Due to protocol requirements, it may take upto 21&nbsp;days

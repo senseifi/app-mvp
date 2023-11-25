@@ -212,7 +212,7 @@ const CurrentDraws = ({
                     {Intl.NumberFormat("en-US", intlFormatStyle).format(
                       toAU(stats.totalDeposit)
                     )}{" "}
-                    Sei
+                    Apt
                   </Typography>
                 </Grid>
                 <Grid {...gameDetailsGridProps}>
@@ -231,7 +231,7 @@ const CurrentDraws = ({
                           toAU(stats.userDeposit)
                         )
                       : "-"}{" "}
-                    Sei
+                    Apt
                   </Typography>
                 </Grid>
                 <Grid {...gameDetailsGridProps}>

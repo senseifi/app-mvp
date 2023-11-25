@@ -378,11 +378,11 @@ const TicketsModal = ({
                     <span style={{ fontWeight: "bold" }}>
                       {toAU(stakedAmount)}
                     </span>{" "}
-                    Sei deposited in this pool
+                    Apt deposited in this pool
                   </Typography>
                   <TextField
                     type="number"
-                    label="Sei Amount"
+                    label="Apt Amount"
                     variant="outlined"
                     color="secondary"
                     margin="dense"
