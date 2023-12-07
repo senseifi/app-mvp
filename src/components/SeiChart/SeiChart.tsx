@@ -15,7 +15,7 @@ const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
 
   const fetchSeiPrice = async () => {
     const data = await client.coinIdMarketChart({
-      id: "aptos",
+      id: "skale",
       vs_currency: "usd",
       days: 1,
     });
@@ -50,7 +50,7 @@ const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
               <Box width={20} height={20} sx={{ display: "flex" }}>
                 <AptCoin />
               </Box>
-              <Typography fontSize={20}>Apt</Typography>
+              <Typography fontSize={20}>Skl</Typography>
             </Box>
             <Typography fontWeight="bold" fontSize={15}>
               US${priceData[priceData.length - 1]}

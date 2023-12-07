@@ -15,21 +15,24 @@ import createAppTheme from "@/styles/theme";
 import { PaletteMode, useMediaQuery } from "@mui/material";
 
 import { SeiWalletProvider } from "sei-js/packages/react/dist";
-import {
-  AptosWalletAdapterProvider,
-  NetworkName,
-} from "@aptos-labs/wallet-adapter-react";
+
 import "../components/SeiWallet/WalletSelectModal/styles.css";
 import NextNProgress from "nextjs-progressbar";
 import PageLoadingAnim from "@/components/PageLoadingAnim";
 import { Router } from "next/router";
-import { PetraWallet } from "petra-plugin-wallet-adapter";
-import { MartianWallet } from "@martianwallet/aptos-wallet-adapter";
-import { TrustWallet } from "@trustwallet/aptos-wallet-adapter";
-import { RiseWallet } from "@rise-wallet/wallet-adapter";
-import { WelldoneWallet } from "@welldone-studio/aptos-wallet-adapter";
-import { MSafeWalletAdapter } from "@msafe/aptos-wallet-adapter";
-import { BloctoWallet } from "@blocto/aptos-wallet-adapter-plugin";
+import { WagmiConfig, createConfig } from "wagmi";
+import { skaleEuropaTestnet } from "wagmi/chains";
+import { ConnectKitProvider, getDefaultConfig } from "connectkit";
+
+const config = createConfig(
+  getDefaultConfig({
+    appName: "Skale Savvio demo app",
+    //infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
+    //alchemyId:  process.env.NEXT_PUBLIC_ALCHEMY_ID,
+    chains: [skaleEuropaTestnet],
+    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  })
+);
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState<PaletteMode>("dark");
@@ -54,30 +57,19 @@ export default function App({ Component, pageProps }: AppProps) {
     []
   );
 
-  const wallets = [
-    // new BloctoWallet({
-    //   network: NetworkName.Testnet,
-    //   bloctoAppId: "6d85f56e-5f2e-46cd-b5f2-5cf9695b4d46",
-    // }),
-    new MartianWallet(),
-    new MSafeWalletAdapter(),
-    new PetraWallet(),
-    new RiseWallet(),
-    new TrustWallet(),
-    new WelldoneWallet(),
-  ];
-
   return (
-    <AptosWalletAdapterProvider plugins={wallets} autoConnect={true}>
-      <ColorModeContext.Provider value={colorMode}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Layout>
-            <NextNProgress color="#70E4CB" />
-            <Component {...pageProps} />
-          </Layout>
-        </ThemeProvider>
-      </ColorModeContext.Provider>
-    </AptosWalletAdapterProvider>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <WagmiConfig config={config}>
+          <ConnectKitProvider debugMode mode={mode}>
+            <CssBaseline />
+            <Layout>
+              <NextNProgress color="#70E4CB" />
+              <Component {...pageProps} />
+            </Layout>
+          </ConnectKitProvider>
+        </WagmiConfig>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }

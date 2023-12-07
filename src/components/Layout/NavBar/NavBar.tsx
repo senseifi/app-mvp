@@ -19,15 +19,16 @@ import { chainName } from "@/config/sei";
 import { truncateAddress } from "@/utils";
 import WormholeIcon from "@/components/WormholeIcon/WormholeIcon";
 
-import { WalletSelectModal } from "@/components/SeiWallet";
+// import { WalletSelectModal } from "@/components/SeiWallet";
 import useSelectWallet from "@/hooks/useSelectWallet";
 import { useRouter } from "next/router";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { WalletConnector } from "@aptos-labs/wallet-adapter-mui-design";
+import { ConnectKitButton } from "connectkit";
+// import { useWallet } from "@aptos-labs/wallet-adapter-react";
+// import { WalletConnector } from "@aptos-labs/wallet-adapter-mui-design";
 
 const NavBar = () => {
-  const { account, connected, network, wallet } = useWallet();
-  const { openModal } = useSelectWallet();
+  // const { account, connected, network, wallet } = useWallet();
+  // const { openModal } = useSelectWallet();
 
   const [isWalletConnected, setIsWalletConnected] = useState(false);
 
@@ -45,7 +46,6 @@ const NavBar = () => {
 
   return (
     <>
-      <WalletSelectModal />
       <Box
         component="nav"
         paddingX={isSmallScreen ? 1 : 10}
@@ -98,7 +98,7 @@ const NavBar = () => {
           >
             Testnet
           </Typography>
-          <WalletConnector />
+          <ConnectKitButton />
         </Box>
       </Box>
     </>
