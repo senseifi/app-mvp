@@ -3,6 +3,7 @@ import { CoinGeckoClient } from "coingecko-api-v3";
 import { Sparklines, SparklinesCurve, SparklinesSpots } from "react-sparklines";
 import { Box, Typography } from "@mui/material";
 import AptCoin from "../AptCoin/AptCoin";
+import Sklicon from "../Sklicon";
 
 const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
   const client = new CoinGeckoClient({
@@ -48,7 +49,7 @@ const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
               }}
             >
               <Box width={20} height={20} sx={{ display: "flex" }}>
-                <AptCoin />
+                <Sklicon />
               </Box>
               <Typography fontSize={20}>Skl</Typography>
             </Box>

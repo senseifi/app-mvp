@@ -1,0 +1,54 @@
+.tokenOption {
+    width: 10%;
+    height: 20%;
+    border: 0.25px solid seashell;
+    border-radius: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.tokenOption:hover {
+    cursor: pointer;
+}
+
+.tokenOption div:nth-child(1) {
+    width: 100%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tokenOption img {
+    height: 65%;
+    width: auto;
+    border-radius: 32px;
+}
+
+.tokenOption div:nth-child(2) {
+    width: 100%;
+    height: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tokenOption div p {
+    border-top: 1px solid seashell;
+    background: seashell;
+    height: 100%;
+    width: 100%;
+    border-radius: 0 0 32px 32px;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tokenOption:hover div p {
+    background: seagreen;
+    color: white;
+    font-weight: bold;
+}

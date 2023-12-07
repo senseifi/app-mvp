@@ -61,3 +61,9 @@ export type showNotiFunction = (
   message: string,
   severity: "success" | "info" | "warning" | "error"
 ) => void;
+
+export type TokenInfo = {
+  image: string;
+  symbol: string;
+  nft?: "erc721" | "erc1155";
+};

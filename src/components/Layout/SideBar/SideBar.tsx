@@ -23,6 +23,7 @@ import { Box, Button, Grid, Typography, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/router";
 import DarkModeToggle from "@/components/DarkModeToggle/DarkModeToggle";
 import SeiChart from "@/components/SeiChart/SeiChart";
+import { ConnectKitButton } from "connectkit";
 
 const SideBar = () => {
   const theme: Theme = useTheme();
@@ -251,18 +252,28 @@ const SideBar = () => {
                 px: 3,
               }}
             >
-              <DarkModeToggle />
+              <Typography
+                variant="aquaGreenText"
+                sx={{
+                  my: "auto",
+                  fontWeight: 500,
+                }}
+              >
+                Testnet
+              </Typography>
+              <ConnectKitButton />
               {toggled ? (
                 <Box
                   sx={{
                     position: "sticky",
                     pl: 1,
-                    mt: "2rem",
+                    my: "1rem",
                   }}
                 >
                   <SeiChart />
                 </Box>
               ) : null}
+              <DarkModeToggle />
             </Box>
           ) : (
             <Box
