@@ -28,9 +28,9 @@ import WormholeIcon from "@/components/WormholeIcon/WormholeIcon";
 import useSelectWallet from "@/hooks/useSelectWallet";
 import { useRouter } from "next/router";
 import { ConnectKitButton } from "connectkit";
-import { getTransfers } from "@/config/metaportConfig";
-import buildMetaport from "@/config/build_metaport";
-import TokenOptions from "@/components/TokenOption";
+// import { getTransfers } from "@/config/metaportConfig";
+// import buildMetaport from "@/config/build_metaport";
+// import TokenOptions from "@/components/TokenOption";
 
 const NavBar = () => {
   const [token, setToken] = useState<string>("");
@@ -40,27 +40,27 @@ const NavBar = () => {
     "staging"
   );
 
-  async function loadMetaport() {
-    const Metaport = (await import("@skalenetwork/metaport")).Metaport;
-    setMetaport(
-      new Metaport({
-        openOnLoad: true,
-        skaleNetwork: "staging",
-        chains: ["mainnet"],
-        tokens: { mainnet: { eth: {} } },
-      })
-    );
-  }
+  // async function loadMetaport() {
+  //   const Metaport = (await import("@skalenetwork/metaport")).Metaport;
+  //   setMetaport(
+  //     new Metaport({
+  //       openOnLoad: true,
+  //       skaleNetwork: "staging",
+  //       chains: ["mainnet"],
+  //       tokens: { mainnet: { eth: {} } },
+  //     })
+  //   );
+  // }
 
-  useEffect(() => {
-    loadMetaport();
-  }, []);
+  // useEffect(() => {
+  //   loadMetaport();
+  // }, []);
 
-  useEffect(() => {
-    if (metaport) {
-      console.log("metaport widget initialized");
-    }
-  }, [metaport]);
+  // useEffect(() => {
+  //   if (metaport) {
+  //     console.log("metaport widget initialized");
+  //   }
+  // }, [metaport]);
 
   const theme: Theme = useTheme();
   const isSmallScreen = useMediaQuery((theme: Theme) =>
