@@ -1,6 +1,6 @@
 import "@/styles/blocks.css";
 import "@/styles/globals.css";
-import "@/styles/tokenOption.css";
+// import "@/styles/tokenOption.css";
 
 import "@fontsource/work-sans/variable.css";
 import "@fontsource/work-sans/400.css";
@@ -22,7 +22,7 @@ import "../components/SeiWallet/WalletSelectModal/styles.css";
 import NextNProgress from "nextjs-progressbar";
 import PageLoadingAnim from "@/components/PageLoadingAnim";
 import { Router } from "next/router";
-import { WagmiConfig, createConfig } from "wagmi";
+import { WagmiConfig, createConfig, PublicClient } from "wagmi";
 import { skaleEuropaTestnet } from "wagmi/chains";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 
@@ -60,18 +60,18 @@ export default function App({ Component, pageProps }: AppProps) {
   );
 
   return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <WagmiConfig config={config}>
-          <ConnectKitProvider debugMode mode={mode}>
+    <WagmiConfig config={config}>
+      <ConnectKitProvider debugMode mode={mode}>
+        <ColorModeContext.Provider value={colorMode}>
+          <ThemeProvider theme={theme}>
             <CssBaseline />
             <Layout>
               <NextNProgress color="#70E4CB" />
               <Component {...pageProps} />
             </Layout>
-          </ConnectKitProvider>
-        </WagmiConfig>
-      </ThemeProvider>
-    </ColorModeContext.Provider>
+          </ThemeProvider>
+        </ColorModeContext.Provider>
+      </ConnectKitProvider>
+    </WagmiConfig>
   );
 }

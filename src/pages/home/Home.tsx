@@ -269,7 +269,7 @@ const Home = ({
                     {Intl.NumberFormat("en-US", intlFormatStyle).format(
                       toAU(grandPrize)
                     )}{" "}
-                    Apt
+                    Skl
                   </ShineButton>
                 </Box>
 
@@ -284,7 +284,7 @@ const Home = ({
                     {Intl.NumberFormat("en-US", intlFormatStyle).format(
                       toAU(globalState.total_stake)
                     )}{" "}
-                    Apt
+                    Skl
                   </Typography>
                 </Grid>
               </Box>

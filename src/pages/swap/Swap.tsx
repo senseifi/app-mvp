@@ -2,7 +2,7 @@ import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import React from "react";
 import { Box, Theme, Typography, useMediaQuery, Link } from "@mui/material";
-import { SquidWidget } from "@0xsquid/widget";
+// import { SquidWidget } from "@0xsquid/widget";
 
 const Swap = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -28,14 +28,14 @@ const Swap = () => {
           </Typography>
         </main>
         <Box>
-          <SquidWidget
+          {/* <SquidWidget
             config={{
               integratorId: "senseifi-swap-widget",
               companyName: "SenSeiFi",
               mainLogoUrl:
                 "https://storage.googleapis.com/branding.senseifi.io/logo-light.png",
             }}
-          />
+          /> */}
         </Box>
       </Box>
     </>

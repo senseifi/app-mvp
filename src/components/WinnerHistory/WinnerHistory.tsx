@@ -67,33 +67,25 @@ const WinnerHistory = ({ drawList }: { drawList: Draw[] }) => {
               </TableHead>
 
               <TableBody>
-                {
-                  //winners.slice(0, listLength).map((winner) =>
-                  drawList.map((draw) =>
-                    !draw.active ? (
-                      <StyledTableRow key={draw.id}>
-                        <TableCell>{draw.id}</TableCell>
-                        <TableCell>
-                          {Intl.NumberFormat("en-US", intlFormatStyle).format(
-                            toAU(draw.prize)
-                          )}{" "}
-                          Apt
-                        </TableCell>
-                        {/* first 4 and last 4 characters of account address */}
-                        {!isSmallScreen ? (
-                          <TableCell>
-                            {draw.winner?.substring(0, 10)}.....
-                            {draw.winner?.substring(draw.winner.length - 10)}
-                          </TableCell>
-                        ) : (
-                          <TableCell>
-                            {draw.winner?.substring(0, 5)}....
-                          </TableCell>
-                        )}
-                      </StyledTableRow>
-                    ) : null
-                  )
-                }
+                {winners.slice(0, winners.length).map((winner) => (
+                  // drawList.map((draw) =>
+                  //   !draw.active ? (
+                  <StyledTableRow key={winner.game_id}>
+                    <TableCell>{winner.game_id}</TableCell>
+                    <TableCell>{winner.prize} Skl</TableCell>
+                    {/* first 4 and last 4 characters of account address */}
+                    {!isSmallScreen ? (
+                      <TableCell>
+                        {winner.account?.substring(0, 10)}.....
+                        {winner.account?.substring(winner.account.length - 10)}
+                      </TableCell>
+                    ) : (
+                      <TableCell>
+                        {winner.account?.substring(0, 5)}....
+                      </TableCell>
+                    )}
+                  </StyledTableRow>
+                ))}
               </TableBody>
             </Table>
           }
@@ -103,21 +95,55 @@ const WinnerHistory = ({ drawList }: { drawList: Draw[] }) => {
   );
 };
 
-// type Winner = {
-//   transaction_id: String;
-//   timestamp: String;
-//   account: String;
-//   game_id: String;
-// };
+type Winner = {
+  transaction_id: string;
+  timestamp: string;
+  account: string;
+  game_id: string;
+  prize: string;
+};
 
-// const winners: Winner[] = [
-//   {
-//     transaction_id:
-//       "633802AE295E5DB38ECC516744BFB0858585D543850FC31C95DA03E7F7CFC1E3",
-//     timestamp: "1684926120",
-//     account: "sei1tzwc7x0yj4ygchfedz3x9xnjnts47p4rwhvxn6",
-//     game_id: "0",
-//   },
-// ];
+const winners: Winner[] = [
+  {
+    transaction_id:
+      "0x721f137605dc3860e35e79699535ff0800a0f1c812a0a6f6314985fa5fb4fd52",
+    timestamp: "1684926120",
+    account: "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8",
+    game_id: "0",
+    prize: "28.42",
+  },
+  {
+    transaction_id:
+      "0x721f137605dc3860e35e79699535ff0800a0f1c812a0a6f6314985fa5fb4fd52",
+    timestamp: "1684926120",
+    account: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    game_id: "1",
+    prize: "20.3",
+  },
+  {
+    transaction_id:
+      "0x721f137605dc3860e35e79699535ff0800a0f1c812a0a6f6314985fa5fb4fd52",
+    timestamp: "1684926120",
+    account: "0x40b38765696e3d5d8d9d834d8aad4bb6e418e489",
+    game_id: "2",
+    prize: "31.88",
+  },
+  {
+    transaction_id:
+      "0x721f137605dc3860e35e79699535ff0800a0f1c812a0a6f6314985fa5fb4fd52",
+    timestamp: "1684926120",
+    account: "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503",
+    game_id: "3",
+    prize: "19.05",
+  },
+  {
+    transaction_id:
+      "0x721f137605dc3860e35e79699535ff0800a0f1c812a0a6f6314985fa5fb4fd52",
+    timestamp: "1684926120",
+    account: "0xe92d1a43df510f82c66382592a047d288f85226f",
+    game_id: "4",
+    prize: "24.92",
+  },
+];
 
 export default WinnerHistory;

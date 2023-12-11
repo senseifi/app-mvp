@@ -41,10 +41,11 @@ const nextConfig = {
 
     // Modify the file loader rule to ignore *.svg, since we have it handled now.
     fileLoaderRule.exclude = /\.svg$/i;
+    config.resolve.fallback = { fs: false, net: false, tls: false };
 
     return config;
   },
-  transpilePackages: ["@0xsquid/widget"],
+  // transpilePackages: ["@0xsquid/widget"],
   reactStrictMode: true,
 };
 
