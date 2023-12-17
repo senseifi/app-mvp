@@ -72,7 +72,7 @@ const WinnerHistory = ({ drawList }: { drawList: Draw[] }) => {
                   //   !draw.active ? (
                   <StyledTableRow key={winner.game_id}>
                     <TableCell>{winner.game_id}</TableCell>
-                    <TableCell>{winner.prize} SKL</TableCell>
+                    <TableCell>{winner.prize} SUI</TableCell>
                     {/* first 4 and last 4 characters of account address */}
                     {!isSmallScreen ? (
                       <TableCell>

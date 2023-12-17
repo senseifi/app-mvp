@@ -1,5 +1,6 @@
 import "@/styles/blocks.css";
 import "@/styles/globals.css";
+import "@suiet/wallet-kit/style.css";
 // import "@/styles/tokenOption.css";
 
 import "@fontsource/work-sans/variable.css";
@@ -22,19 +23,9 @@ import "../components/SeiWallet/WalletSelectModal/styles.css";
 import NextNProgress from "nextjs-progressbar";
 import PageLoadingAnim from "@/components/PageLoadingAnim";
 import { Router } from "next/router";
-import { WagmiConfig, createConfig, PublicClient } from "wagmi";
-import { skaleEuropaTestnet } from "wagmi/chains";
-import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 
-const config = createConfig(
-  getDefaultConfig({
-    appName: "Skale Savvio demo app",
-    //infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
-    //alchemyId:  process.env.NEXT_PUBLIC_ALCHEMY_ID,
-    chains: [skaleEuropaTestnet],
-    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
-  })
-);
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WalletProvider } from "@suiet/wallet-kit";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState<PaletteMode>("dark");
@@ -60,18 +51,16 @@ export default function App({ Component, pageProps }: AppProps) {
   );
 
   return (
-    <WagmiConfig config={config}>
-      <ConnectKitProvider debugMode mode={mode}>
-        <ColorModeContext.Provider value={colorMode}>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Layout>
-              <NextNProgress color="#70E4CB" />
-              <Component {...pageProps} />
-            </Layout>
-          </ThemeProvider>
-        </ColorModeContext.Provider>
-      </ConnectKitProvider>
-    </WagmiConfig>
+    <WalletProvider>
+      <ColorModeContext.Provider value={colorMode}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Layout>
+            <NextNProgress color="#70E4CB" />
+            <Component {...pageProps} />
+          </Layout>
+        </ThemeProvider>
+      </ColorModeContext.Provider>
+    </WalletProvider>
   );
 }

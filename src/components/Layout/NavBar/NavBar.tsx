@@ -27,7 +27,8 @@ import WormholeIcon from "@/components/WormholeIcon/WormholeIcon";
 // import { WalletSelectModal } from "@/components/SeiWallet";
 import useSelectWallet from "@/hooks/useSelectWallet";
 import { useRouter } from "next/router";
-import { ConnectKitButton } from "connectkit";
+
+import { ConnectButton } from "@suiet/wallet-kit";
 // import { getTransfers } from "@/config/metaportConfig";
 // import buildMetaport from "@/config/build_metaport";
 // import TokenOptions from "@/components/TokenOption";
@@ -39,28 +40,6 @@ const NavBar = () => {
   const [environment, setEnvironment] = useState<"staging" | "mainnet">(
     "staging"
   );
-
-  // async function loadMetaport() {
-  //   const Metaport = (await import("@skalenetwork/metaport")).Metaport;
-  //   setMetaport(
-  //     new Metaport({
-  //       openOnLoad: true,
-  //       skaleNetwork: "staging",
-  //       chains: ["mainnet"],
-  //       tokens: { mainnet: { eth: {} } },
-  //     })
-  //   );
-  // }
-
-  // useEffect(() => {
-  //   loadMetaport();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (metaport) {
-  //     console.log("metaport widget initialized");
-  //   }
-  // }, [metaport]);
 
   const theme: Theme = useTheme();
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -131,7 +110,7 @@ const NavBar = () => {
             >
               Testnet
             </Typography>
-            <Button
+            {/* <Button
               variant="outlined"
               startIcon={<MultipleStop />}
               sx={{
@@ -142,8 +121,8 @@ const NavBar = () => {
               }}
             >
               Swap
-            </Button>
-            <ConnectKitButton />
+            </Button> */}
+            <ConnectButton>Connect Wallet</ConnectButton>
           </Box>
         )}
       </Box>
