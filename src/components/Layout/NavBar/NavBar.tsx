@@ -122,7 +122,17 @@ const NavBar = () => {
             >
               Swap
             </Button> */}
-            <ConnectButton>Connect Wallet</ConnectButton>
+            <ConnectButton
+              style={{
+                border: "1px solid white",
+                backgroundColor: "rgba(56,56,56,1)",
+                width: "max-content",
+                borderRadius: 10,
+                lineHeight: 0.8,
+              }}
+            >
+              Connect Wallet
+            </ConnectButton>
           </Box>
         )}
       </Box>
