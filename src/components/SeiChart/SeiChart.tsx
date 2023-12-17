@@ -51,7 +51,7 @@ const SeiChart = ({ sidebarIsOpen }: { sidebarIsOpen?: boolean }) => {
               <Box width={20} height={20} sx={{ display: "flex" }}>
                 <Sklicon />
               </Box>
-              <Typography fontSize={20}>Skl</Typography>
+              <Typography fontSize={20}>SKL</Typography>
             </Box>
             <Typography fontWeight="bold" fontSize={15}>
               US${priceData[priceData.length - 1]}
