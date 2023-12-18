@@ -201,13 +201,16 @@ const Home = ({
       <Box>
         <Head>
           <title>Savvio App Homepage</title>
-          <meta name="description" content="Gamified Defi on Sui network" />
+          <meta
+            name="description"
+            content="Ultimate DeFi destination on Sui Network"
+          />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
 
           <meta property="og:title" content="Savvio" />
           <meta
             property="og:description"
-            content="Gamified Defi on Sui network"
+            content="Ultimate DeFi destination on Sui Network"
           />
           <meta property="og:image" content="/logo192.png" />
           <meta property="og:url" content={process.env.NEXT_PUBLIC_BASE_URL} />
