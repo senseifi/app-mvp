@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import logoLight from "../../../assets/logo-light.png";
+import logoNew from "../../../assets/logo-new.png";
 import logoDark from "../../../assets/logo-dark.png";
 import { AccountBalanceWallet, Menu, SwapCalls } from "@mui/icons-material";
 import { useProSidebar } from "react-pro-sidebar";
@@ -72,11 +72,12 @@ const NavBar = () => {
         <Image
           onClick={() => router.push("/home")}
           alt="SenSei Finance Logo"
-          src={logoLight}
+          src={logoNew}
           style={{
-            height: "100%",
+            height: "90%",
             width: "auto",
             cursor: "pointer",
+            margin: "auto 0",
           }}
         />
 
